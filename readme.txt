@@ -1,5 +1,5 @@
 === WP-Invoice - Web Invoice and Billing ===
-Contributors: Usability Dynamics, Inc,andypotanin,jbrw
+Contributors: Usability Dynamics Inc.,andypotanin,jbrw
 Donate link: http://usabilitydynamics.com/products/wp-invoice/
 Tags: web invoice, bill, paypal, invoice, pay, online payment, send invoice, bill clients, authorize.net, credit cards, recurring billing, ARB
 Requires at least: 3.1
@@ -22,7 +22,7 @@ Once an invoice is created from the WP admin section, an email with a brief desc
 Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, or PayPal account.  For recurring billing we have integrated Authorize.net's ARB API that will allow you to setup payment schedules along with invoices.
 
 
-New Features:
+= New Features =
 * Brand new user interface for much improved invoicing filtering and searching
 * Minimum and Split / Partial Payments
 * Invoices can be reassigned to a different recipient
@@ -33,7 +33,7 @@ New Features:
 * Customizable Invoice and Receipt Templates
 
 
-Features:
+= More Features = 
 
 * Create invoices from the WordPress control panel
 * Prefill customer information using the WordPress user list
