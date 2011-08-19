@@ -4,10 +4,10 @@ Plugin Name: Web Invoicing and Billing
 Plugin URI: http://twincitiestech.com/services/wp-invoice/
 Description: Send itemized web-invoices directly to your clients.  Credit card payments may be accepted via Authorize.net, MerchantPlus NaviGate, or PayPal account. Recurring billing is also available via Authorize.net's ARB. Visit <a href="admin.php?page=wpi_page_settings">WP-Invoice Settings Page</a> to setup.
 Author: UsabilityDynamics.com
-Version: 3.0-rc1
+Version: 3.00
 Author URI: http://UsabilityDynamics.com/
 
-Copyright 2010  Usability Dynamics, Inc.   (email : andy.potanin@UsabilityDynamics.com)
+Copyright 2011  Usability Dynamics, Inc.   (email : andy.potanin@UsabilityDynamics.com)
 
 */
 

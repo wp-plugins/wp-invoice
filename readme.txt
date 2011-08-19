@@ -1,5 +1,5 @@
 === WP-Invoice - Web Invoice and Billing ===
-Contributors: Usability Dynamics, Inc.
+Contributors: Usability Dynamics, Inc,andypotanin,jbrw
 Donate link: http://usabilitydynamics.com/products/wp-invoice/
 Tags: web invoice, bill, paypal, invoice, pay, online payment, send invoice, bill clients, authorize.net, credit cards, recurring billing, ARB
 Requires at least: 3.1
@@ -9,9 +9,9 @@ WP-Invoice lets you create and send web-invoices and setup recurring billing for
 
 == Description ==
 
-http://vimeo.com/27887971
+This is the original WordPress invoicing and billing plugin - completely rewritten and re-released.
 
-This is the original WordPress invoicing plugin - completely rewritten and re-released.
+http://vimeo.com/27887971
 
 **[Download the original WordPress Invoicing plugin now!](http://downloads.wordpress.org/plugin/wp-invoice.zip)**
 
@@ -74,11 +74,11 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 5. Show invoice receipts and invoice history
 6. Create notification e-mail templates
 7. Create pre-defined line items
+8. View 3 standard reports - collected vs uncollected invoices, 10 most valuable clients and top grossing line items
 
 
 == Upgrade Notice ==
-** Version 3.00 **
-
+=Version 3.00=
 * Complete rewrite. Old invoice data is not deleted, please notify us if you have any upgrading issues.
 
 == Change Log ==
