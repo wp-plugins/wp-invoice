@@ -1,8 +1,20 @@
 <?php
 class WPI_Ajax {
-  
-    
-  
+
+
+
+  /**
+   * Check for availability of premium features and download them
+   *
+   * @since 3.01
+   *
+   */
+  function check_plugin_updates() {
+    echo WPI_Functions::check_for_premium_features(true);
+  }
+
+
+
   /**
    * Return user data in JSON format
    *
@@ -209,7 +221,7 @@ class WPI_Ajax {
       $ary['NotificationContent'] = str_replace("%description%",$desc, $ary['NotificationContent']);
       $ary['NotificationContent'] = str_replace("%recipient%",$invoice['user_data']['display_name'],$ary['NotificationContent']);
       $ary['NotificationContent'] = str_replace("%link%", get_invoice_permalink($invoice['invoice_id']),$ary['NotificationContent']);
-      $ary['NotificationContent'] = str_replace("%amount%",WPI_Functions::currency_format($invoice['net'],$invoice_id),$ary['NotificationContent']);
+      $ary['NotificationContent'] = str_replace("%amount%",$invoice['default_currency_code'].' '.number_format($invoice['net'], 2, '.', ','),$ary['NotificationContent']);
       $ary['NotificationContent'] = str_replace("%subject%",$invoice['post_title'],$ary['NotificationContent']);
       $ary['NotificationContent'] = str_replace("%business_name%",$wpi_settings['business_name'],$ary['NotificationContent']);
       $ary['NotificationContent'] = str_replace("%business_email%",$wpi_settings['email_address'],$ary['NotificationContent']);

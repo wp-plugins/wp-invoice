@@ -504,6 +504,12 @@ function checkdate(input){
 
 function wpi_validate_invoice() {
   var validated = true;
+  
+  /*if ( jQuery('#wp_invoice_payment_method').length == 0 ) {
+    validated = false;
+    window.location.hash = '#postbox_payment_methods';
+  }*/
+  
   // If recurring is setup, make sure billing cycles are set
   if( jQuery("#wpi_wpi_invoice_recurring_active_").is(":checked") ) {
     if( jQuery("#wpi_meta_recuring_cycles").val() == "" ) {

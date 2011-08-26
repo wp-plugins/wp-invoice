@@ -666,7 +666,7 @@ function is_paypal_allowed() {
 }
 
 function paid_amount() {
-  global $invoice;
+  global $invoice, $wpi_settings;
   $currency_symbol = (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$");
   echo $currency_symbol . wp_invoice_currency_format( !empty($invoice['total_payments'])?$invoice['total_payments']:0 );
 }

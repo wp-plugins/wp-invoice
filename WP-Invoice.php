@@ -4,7 +4,7 @@ Plugin Name: Web Invoicing and Billing
 Plugin URI: http://twincitiestech.com/services/wp-invoice/
 Description: Send itemized web-invoices directly to your clients.  Credit card payments may be accepted via Authorize.net, MerchantPlus NaviGate, or PayPal account. Recurring billing is also available via Authorize.net's ARB. Visit <a href="admin.php?page=wpi_page_settings">WP-Invoice Settings Page</a> to setup.
 Author: UsabilityDynamics.com
-Version: 3.00
+Version: 3.01
 Author URI: http://UsabilityDynamics.com/
 
 Copyright 2011  Usability Dynamics, Inc.   (email : andy.potanin@UsabilityDynamics.com)
@@ -37,7 +37,7 @@ define('WPI_Path', WP_PLUGIN_DIR . '/wp-invoice');
 /** Path for front-end links */
 define('WPI_URL', WP_PLUGIN_URL . '/wp-invoice');
 
-define("WP_INVOICE_VERSION_NUM", "3.00");
+define("WP_INVOICE_VERSION_NUM", "3.01");
 define("WP_INVOICE_TRANS_DOMAIN", "wp-invoice");
  
 /** Directory paths */
@@ -183,6 +183,7 @@ if (!class_exists('WPI_Core')) {
       add_action('wp_ajax_wpi_list_table', create_function('', ' die(WPI_Ajax::wpi_list_table());'));
       add_action('wp_ajax_wpi_get_user_date', create_function('', ' die(WPI_Ajax::get_user_date($_REQUEST["user_email"]));'));
       
+      add_action('wp_ajax_wpi_ajax_check_plugin_updates', create_function('', ' die(WPI_Ajax::check_plugin_updates());'));
        
       add_action('wp_ajax_wpi_update_user_option', array('WPI_Ajax', 'update_user_option'));
       add_action('wp_ajax_wpi_update_wpi_option', array('WPI_Ajax', 'update_wpi_option'));
@@ -209,6 +210,7 @@ if (!class_exists('WPI_Core')) {
       add_action('wp_ajax_wpi_gateway_server_callback', array('WPI_Gateway_Base', 'server_callback'));
 
       //add_action('admin_print_styles', array('WPI_UI', 'admin_print_styles'));
+      add_action('wpi_integrate_crm_user_panel', array('WPI_UI', 'crm_user_panel'));
 
       /** If we are in debug mode, lets add these actions */
       if($wpi_settings['debug']){

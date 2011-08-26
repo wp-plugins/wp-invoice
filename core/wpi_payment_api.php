@@ -33,6 +33,7 @@ class WPI_Payment_Api {
       'x_card_num'    => '',
       'x_card_code'   => '',
       'x_exp_date'    => '',
+      'x_currency_code' => '',
       // Invoice info
       'x_description' => '',
       // User info
@@ -95,6 +96,9 @@ class WPI_Payment_Api {
                              : '';
           $this->method['x_exp_date']   = !empty( $args['cc_expiration'] )
                              ? $args['cc_expiration']
+                             : '';
+          $this->method['x_currency_code']   = !empty( $args['currency_code'] )
+                             ? $args['currency_code']
                              : '';
           $this->method['x_email']      = !empty( $args['payer_email'] )
                              ? $args['payer_email']

@@ -50,11 +50,21 @@
    <?php if(!is_quote()) { ?>
     <div class="wpi_billing_overview">
         <?php show_payment_selection("Select your favorite way of paying"); ?>
+
         <?php
-          $method = !empty($invoice['default_payment_method'])?$invoice['default_payment_method']:'wpi_paypal';
-          $wpi_settings['installed_gateways'][$method]['object']->frontend_display($invoice);
+        $method = !empty($invoice['default_payment_method']) ? $invoice['default_payment_method'] : 'manual';
+
+        if ( $method == 'manual' ) {
         ?>
-    </div>
+        <p><strong>Manual Payment Information</strong></p>
+        <p><?php echo !empty( $wpi_settings['manual_payment_info'] )?$wpi_settings['manual_payment_info']:'Contact site Administrator for payment information please.'; ?></p>
+        <?php
+        } else {
+          $wpi_settings['installed_gateways'][$method]['object']->frontend_display($invoice);
+        }
+        ?>
+
+      </div>
   <?php } ?>
  
 <?php do_action('wpi_front_end_right_col_bottom'); ?>

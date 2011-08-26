@@ -23,6 +23,7 @@ Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, 
 
 
 = New Features =
+
 * Brand new user interface for much improved invoicing filtering and searching
 * Minimum and Split / Partial Payments
 * Invoices can be reassigned to a different recipient
@@ -78,12 +79,24 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 
 == Upgrade Notice ==
+=Version 3.01=
+* Major fixes. 
+
 =Version 3.00=
 * Complete rewrite. Old invoice data is not deleted, please notify us if you have any upgrading issues.
 
 == Change Log ==
 
-=Version 3.00=
+= Version 3.01 =
+* Invoice currency settings fixed.
+* Bug with loading of custom templates fixed.
+* Added an ability to use manual payment method if there is no any payment venue accepted.
+* Fixed bug with PayPal IPN which logged wrong amount.
+* Fixed bug with email notifications.
+* Default template layout and design improvements.
+* Other simple fixes and improvements.
+
+= Version 3.00 =
 * Complete rewrite and re-launch.
 * Over 130 tasks completed.
 

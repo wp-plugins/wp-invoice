@@ -157,45 +157,15 @@ class WPI_Object_List_Table extends WPI_List_Table {
         break;
         
         case 'post_modified':
-          $r .= date(get_option('date_format'), strtotime($post->post_modified));
-          /*
-          if ( '0000-00-00 00:00:00' == $post->post_modified && 'date' == $column ) {
-            $t_time = $h_time = __( 'Unpublished' );
-            $time_diff = 0;
-          } else {
-            $t_time = get_the_time( __( 'Y/m/d g:i:s A' ) );
-            $m_time = $post->post_modified;
-            $time = get_post_time( 'G', true, $post );
-            
-            $time_diff = time() - $time;
-            
-            if ( $time_diff > 0 && $time_diff < 24*60*60 ) {
-              $h_time = sprintf( __( '%s ago' ), human_time_diff( $time ) );
+          if ( !empty( $post->post_status ) ) {
+            if ( $post->post_status == 'paid' ) {
+              $r .= get_post_status_object($post->post_status)->label.' on '.date(get_option('date_format')." \a\\t H:i:s", strtotime($post->post_modified));
             } else {
-              $h_time = mysql2date( __( 'Y/m/d' ), $m_time );
-            }
-          }
-          
-          if ( isset($mode) && 'excerpt' == $mode) {
-            $r .= apply_filters( 'post_date_column_time', $t_time, $post, $column, $mode );
-          } else {
-            $r .= '<abbr title="' . $t_time . '">' . apply_filters( 'post_date_column_time', $h_time, $post, $column ) . '</abbr>';
-          }
-          $r .= '<br />';
-          
-          /*if ( 'publish' == $post->post_status ) {
-            $r .= __( 'Published' );
-          } elseif ( 'future' == $post->post_status ) {
-            if ( $time_diff > 0 ) {
-              $r .= '<strong class="attention">' . __( 'Missed schedule' ) . '</strong>';
-            } else {
-              $r .= __( 'Scheduled' );
+              $r .= date(get_option('date_format'), strtotime($post->post_date));
             }
           } else {
-            $r .= __( 'Last Modified' );
+            $r .= date(get_option('date_format'), strtotime($post->post_date));
           }
-           * 
-           */
         break;
         
         case 'invoice_id':

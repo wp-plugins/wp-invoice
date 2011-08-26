@@ -1071,6 +1071,23 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         $output .= "</select>";
         return $output;
     }
+    
+    /**
+     * 
+     */
+    function crm_user_panel( $user_id ) {
+      // Determine if WP CRM is installed
+      if ( class_exists( 'WP_CRM_Core' ) ) {
+        
+        echo '<div class="wpi_crm_link"><a target="_blank" href="'.admin_url('admin.php?page=wp_crm_add_new&user_id='.$user_id).'">Go to user\'s WP-CRM Profile</a></div>';
+        
+      } else {
+        
+        echo '<div class="wpi_crm_link"><a target="_blank" href="'.admin_url('plugin-install.php?tab=search&type=term&s=WP-CRM').'">Get our WP-CRM plugin to better manage your customers</a></div>';
+        
+      }
+      
+    }
 
 }
 

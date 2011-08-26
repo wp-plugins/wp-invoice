@@ -71,7 +71,7 @@ class wpi_paypal extends wpi_gateway_base {
         case 'Completed':
           // Add payment amount
           $event_note = WPI_Functions::currency_format(abs($_POST['mc_gross']), $_POST['invoice'])." paid via PayPal";
-          $event_amount = (int)$_POST['mc_gross'];
+          $event_amount = (float)$_POST['mc_gross'];
           $event_type   = 'add_payment';
 
           // Log balance changes

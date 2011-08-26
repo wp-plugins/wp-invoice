@@ -1027,4 +1027,8 @@ div.jqi button{ padding: 3px 10px 3px 10px; margin: 0 10px; }
 #wpd_modal_container a.modalCloseImg {background:url(images/x.png) no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:-15px; right:-16px; cursor:pointer;}
 #wpd_modal_container #basic-modal-content {padding:8px;}
 
+div.wpi_crm_link {
+  padding: 10px;
+}
+
 
