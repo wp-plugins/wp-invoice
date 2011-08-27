@@ -222,7 +222,7 @@ jQuery(document).ready( function() {
       echo WPI_UI::checkbox("class=use_custom_templates&name=wpi_settings[use_custom_templates]&value=yes&label=Use custom templates. If checked, WP-Invoice will use templates in the 'wpi' folder in your active theme's folder.", WPI_Functions::is_true($wpi_settings['use_custom_templates']) ); ?>
       </li>
       <li class="wpi_use_custom_template_settings" style="<?php echo (empty($wpi_settings['use_custom_templates']) || $wpi_settings['use_custom_templates'] == 'no' ? 'display:none;' : ''); ?>">
-      <?php if($no_template_folder) { ?>
+      <?php if(!empty($no_template_folder)) { ?>
       <span class="wpi_red_notification">Note: Currently there is no "wpi" folder in your active template's folder.</span>
       <?php } else { ?>
       <span class="wpi_green_notification">A "wpi" folder has been found, any files with the proper file names will be used instead of the default template files.</span>
@@ -324,6 +324,19 @@ jQuery(document).ready( function() {
                 <?php } ?>
               </div></td>
           </tr>
+          
+          <tr>
+
+            <th>
+              
+              <a class="wp_invoice_tooltip"  title="If you do not want to use any payment venue then setup Manual Payment information"><?php _e("Manual Payment information") ?></a>
+            
+            </th>
+
+            <td><?php echo WPI_UI::textarea("name=manual_payment_info&group=wpi_settings&value=".(!empty( $wpi_settings['manual_payment_info'] )?$wpi_settings['manual_payment_info']:''))?> </td>
+
+          </tr>
+
         </table>
   
   <?php }
@@ -485,73 +498,80 @@ jQuery(document).ready( function() {
           /** Do the JS for our view link */
         jQuery('#wpi_settings_view').click(function(e){
         e.preventDefault();
-        jQuery('#wpi_settings_row').toggle();
-        });
-        /** Do the JS for loading an invoice */
-        jQuery('#wpi_load_invoice').click(function(e){
-          e.preventDefault();
-        
-        var data = {
-          action: 'my_special_action',
-          whatever: 1234
-        };
 
-        jQuery('#wpi_load_invoice_details').load(
-          ajaxurl, { 
-            action: 'wpi_debug_get_invoice', 
-            invoice_id: jQuery("#wpi_load_invoice_number").val()
-          },
-          function(){
-            jQuery("#wpi_load_invoice_row").slideDown();
-          }
-        );
+        jQuery('.wpi_settings_row').toggle();
+
         });
-    
+
+
+
+      // Check plugin updates
+
+      jQuery("#wpi_ajax_check_plugin_updates").click(function() {
+
+
+
+        jQuery('.plugin_status').remove();
+
+
+
+        jQuery.post(ajaxurl, {
+
+            action: 'wpi_ajax_check_plugin_updates'
+
+            }, function(data) {
+
+
+
+            message = "<div class='plugin_status updated fade'><p>" + data + "</p></div>";
+
+            jQuery(message).insertAfter("h2");
+
+          });
+
+      });
+
+
+
+
+
     });
+
     </script>
-  
-     <table class="form-table" >
-        <!-- Not updated 
-        <tr>
-          <th>Load Dummy Invoices</td>
-          <td>#<?php echo WPI_UI::input('name=wp_invoice_load_dummy_quantity'); ?></td>
-        </tr>
-        -->
-        <tr>
-          <th>Load Invoice</th>
-          <td>
-            #<?php echo WPI_UI::input('name=wpi_load_invoice_number'); ?>
-            <a id="wpi_load_invoice" href="#" class="button">Go</a>
-          </td>
-        </tr>
-        <tr class="hidden" id="wpi_load_invoice_row">
-          <td colspan="2">
-            <div id="wpi_load_invoice_details" class="ui-state-highlight ui-corner-all" style="overflow:scroll;height: 300px;width:50%;">
-              <?php echo WPI_Functions::pretty_print_r($wpi_settings); ?>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <th>View $wpi_settings</th>
-          <td>
-            <a id="wpi_settings_view" href="#" class="button">Show/Hide</a>
-          </td>
-        </tr>
-        <tr class="hidden" id="wpi_settings_row">
-          <td colspan="2">
-            <div class="ui-state-highlight ui-corner-all" style="overflow:scroll;height: 300px;width:50%;">
-              <?php echo WPI_Functions::pretty_print_r($wpi_settings); ?>
-            </div>
-          </td>
-        </tr>
- 
-      </table>
-  
+
+
+
+    <div class="wpi_settings_block">
+
+      <?php _e('Force check of allowed premium features:'); ?>
+
+      <input type="button" id="wpi_ajax_check_plugin_updates" value="<?php _e('Check Updates'); ?>">
+
+    </div>
+
+
+
+    <div class="wpi_settings_block">
+
+      <?php _e('Look up the $wpi_settings global settings array. This array stores all the default settings, which are overwritten by database settings, and custom filters:'); ?>
+
+      <input type="button" id="wpi_settings_view" value="<?php _e('Toggle'); ?>">
+
+      <div class="wpi_settings_row hidden">
+
+        <?php echo WPI_Functions::pretty_print_r($wpi_settings); ?>
+
+      </div>
+
+    </div>
+
+
+
   <?php }
-  
-  
-  
-  
+
+
+
+
   
   } /* end class WPI_Settings_page */ ?>
       

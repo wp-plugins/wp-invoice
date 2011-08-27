@@ -87,6 +87,9 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 == Change Log ==
 
+= Version 3.02 =
+* Minor fixes.
+
 = Version 3.01 =
 * Invoice currency settings fixed.
 * Bug with loading of custom templates fixed.
