@@ -46,6 +46,11 @@ jQuery(document).ready(function(){
     jQuery('.wpi_height input', this_row).attr("name", "wpi_settings[image_sizes][" + new_slug + "][height]");
     */
   });
+  
+  jQuery("#minor-publishing table.form-table").find('tbody').toggle();
+  jQuery("#wpi_button_show_advanced").live("click", function(){
+    jQuery(this).parents("#minor-publishing table.form-table").find('tbody').toggle();
+  });
 
 
   // Delete dynamic row
@@ -284,6 +289,20 @@ jQuery('#wpi_revalidate').live('click', function(){
     wpi_recalc_totals();
   });
   
+  jQuery(".wp_invoice_discount_row").keyup(function(){
+    if ( jQuery.trim( jQuery('.item_name', this).val() ).length && !empty(jQuery('.item_amount', this).val()) ) {
+      jQuery('.item_name', this).css({'border-color':''});
+      jQuery(".item_amount", this).css({'border-color':''});
+    } else if ( jQuery.trim( jQuery('.item_name', this).val() ).length && empty(jQuery('.item_amount', this).val()) ) {
+      jQuery(".item_amount", this).css({'border-color':'red'});
+    } else if ( !jQuery.trim( jQuery('.item_name', this).val() ).length && empty(jQuery('.item_amount', this).val()) ) {
+      jQuery('.item_name', this).css({'border-color':''});
+      jQuery(".item_amount", this).css({'border-color':''});
+    } else if ( !jQuery.trim( jQuery('.item_name', this).val() ).length && !empty(jQuery('.item_amount', this).val()) ) {
+      jQuery(".item_name", this).css({'border-color':'red'});
+    }
+  });
+  
   /*
    * Run recalculation function when certain fields are updates
    */
@@ -291,12 +310,24 @@ jQuery('#wpi_revalidate').live('click', function(){
     '.item_type select': function() {wpi_recalc_totals();}
   }));
   
+  
+  jQuery('.item_name, .item_quantity, .item_price, .item_price input, .item_amount').live("blur", function() {
+    wpi_recalc_totals();
+    var name  = jQuery(this).parents('.wp_invoice_itemized_list_row').find('.item_name');
+    var price = jQuery(this).parents('.wp_invoice_itemized_list_row').find('.item_price');
+    var quantity = jQuery(this).parents('.wp_invoice_itemized_list_row').find('.item_quantity');
+    if ( !jQuery.trim(name.val()).length && !empty(price.val()) && !empty(quantity.val()) ) {
+      name.css('border-color', 'red');
+    } else {
+      name.css('border-color', '');
+    }
+  });
   /*
    * Run recalculation function when certain fields are updates
    */
   jQuery('#wpi_invoice_form, #wpi_predefined_services_div').keyup(
     jQuery.delegate({
-      '.item_quantity, .item_price, .item_price input': function() {wpi_recalc_totals();},
+      //'.item_quantity, .item_price, .item_price input': function() {wpi_recalc_totals();},
       '.line_tax_item, .item_charge_tax': function() {wpi_recalc_totals();jQuery("#wp_invoice_tax").val("");}
     })
   );
@@ -842,6 +873,25 @@ submitHandler: function(form) {
   // Prevent page reloading when list table is clicked
   jQuery("#wp-list-table th a").live("click", function(){
     return false;
+  });
+  
+  // DataTable check all checkbox
+  jQuery("input.check-all", "#wp-list-table").click(function(e){
+    if ( e.target.checked ) {
+      jQuery("#the-list td.cb input:checkbox").attr('checked', 'checked');
+    } else {
+      jQuery("#the-list td.cb input:checkbox").removeAttr('checked');
+    }
+  });
+  
+  //
+  jQuery("#wpi_use_global_tax", "#wpi_tab_basic").click(function(){
+    var li = jQuery(this).parents("ul.wpi_settings_list").find('.global_tax_value_holder');
+    if(jQuery(this).is(":checked")) {
+      li.show('fast');
+    } else {
+      li.hide('fast');
+    }
   });
 
 });

@@ -105,15 +105,20 @@ div.wpi_payment_form  .online_payment_form_wrapper li label {
     width: 140px;
 }
 
+div.wpi_payment_form  select,
 div.wpi_payment_form  .text-input {
-    border: 1px solid #363636;
-    color: #3E3E3E;
     margin: 3px 0;
     padding: 3px;
-    width: 230px;
 }
+
+div.wpi_payment_form  .paypal_button {
+  margin-top: 15px;
+}
+
+
+div.wpi_payment_form  .text-input.wpi_error,
 div.wpi_payment_form  .input_field.wpi_error {
-  border: 1px solid red;
+  border: 1px solid #AE1C1C;
 }
 
 div.wpi_payment_form  input.wpi_checkout_input_error{

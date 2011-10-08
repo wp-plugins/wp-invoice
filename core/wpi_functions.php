@@ -8,6 +8,82 @@ setlocale(LC_MONETARY, 'en_US');
 
 class WPI_Functions {
 
+
+  /**
+   * Retreives API key from UD servers.
+   *
+   * @todo Add loggin functionality so user can reference some log to see why key may not be updating.
+   * @since 3.0.2
+   *
+   */
+  function get_api_key($args = false){
+  
+    $defaults = array(
+      'return_all' => false,
+      'force_check' => false
+    );    
+    
+    $args = wp_parse_args( $args, $defaults );
+    
+    //** check if API key already exists */
+    $ud_api_key = get_option('ud_api_key');
+    
+    //** if key exists, and we are not focing a check, return what we have */
+    if($ud_api_key && !$args['force_check']) {
+      return $ud_api_key;
+    }
+    
+    $blogname = urlencode(str_replace(array('http://', 'https://'), '', get_bloginfo('url')));
+    $system = 'wpi';
+    $wpp_version = WP_INVOICE_VERSION_NUM;
+
+    $check_url = "http://updates.usabilitydynamics.com/key_generator.php?system=$system&site=$blogname&system_version=$wpp_version";
+    
+    $response = @wp_remote_get($check_url);
+    
+    if(!$response) {
+      return false;
+    }    
+    
+    //** Check for errors */
+    if(is_object($response) && !empty($response->errors)) {
+      /*
+      foreach($response->errors as $errors) {
+        $error_string .= implode(",", $errors);
+        UD_F::log("API Check Error: " . $error_string);
+      }
+      */
+      return false;
+    }
+    
+    //** Quit if failture */
+    if($response['response']['code'] != '200') {
+      return false;
+    }
+    
+    $response['body'] = trim($response['body']);
+ 
+    //** If return is not in MD5 format, it is an error */
+    if(strlen($response['body']) != 40) {
+    
+      if($args['return']) {
+        return $response['body'];
+      } else {      
+        /* UD_F::log("API Check Error: " . sprintf(__('An error occured during premium feature check: <b>%s</b>.','wpp'), $response['body'])); */
+        return false;
+      }
+    }
+    
+    //** update wpi_key is DB */
+    update_option('ud_api_key', $response['body']);
+    
+    // Go ahead and return, it should just be the API key
+    return $response['body'];
+  }
+  
+  
+  
+
   /**
    * Function for performing a wpi_object search
    *
@@ -449,9 +525,13 @@ class WPI_Functions {
           
         }
       }
-      // default user's role - Anton Korotkov
-      $userdata['user_login'] = $userdata['user_pass'] = $userdata['user_email'];
-      $userdata['role'] = 'subscriber';
+      
+      $userdata['user_login'] = $userdata['user_email'];      
+      
+      if(empty($userdata['user_pass'])) {
+        $userdata['user_pass'] = wp_generate_password( 12, false);
+      }
+      
       $user_id = wp_insert_user($userdata);
     }
 
@@ -995,6 +1075,7 @@ class WPI_Functions {
         if ($wpi_settings['force_https'] == 'true' && (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on")) {
           $_SESSION['https'] = 1;
           header("Location: https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+          session_destroy();
           exit;
         } else {
           if (session_id() != '')
@@ -1339,22 +1420,32 @@ class WPI_Functions {
 
     $ni->set("custom_id={$invoice['meta']['custom_id']}");
 
-    //$ni->set("show_only_favorite_states={$invoice['meta']['show_only_favorite_states']}");
-    //$ni->set("show_only_favorite_countries={$invoice['meta']['show_only_favorite_countries']}");
-    //$ni->set("show_quantities={$invoice['meta']['show_quantities']}");
-    //$ni->set("show_business_address={$invoice['meta']['show_business_address']}");
-    //$ni->set("favorite_states={$invoice['meta']['favorite_states']}");
-    //$ni->set("favorite_countries={$invoice['meta']['favorite_countries']}");
-
-    /* Setting the type */
+    /**
+     * DETECTING INVOICE TYPE
+     * (Changes for ability to use premium feature Quotes)
+     * 
+     * @author Anton Korotkov
+     * 
+     * There are three available types by default:
+     *    - invoice
+     *    - recurring
+     */
+    // 'invoice' is by default 
+    $invoice_type = 'invoice';
+    
+    // If $invoice object has type definition then use it
+    if ( !empty( $invoice['type'] ) ) {
+      $invoice_type = $invoice['type'];
+    }
+    
+    // But if recurring settings are defined then invoice type should be recurring
     if ($invoice['recurring']['active'] == 'on' && !empty($invoice['recurring']['cycles'])) {
       $ni->create_schedule("unit={$invoice['recurring']['unit']}&length={$invoice['recurring']['length']}&cycles={$invoice['recurring']['cycles']}&send_invoice_automatically={$invoice['recurring']['send_invoice_automatically']}&start_date[month]={$invoice['recurring']['start_date']['month']}&start_date[day]={$invoice['recurring']['start_date']['day']}&start_date[year]={$invoice['recurring']['start_date']['year']}");
-      $ni->set("type=recurring");
-      //} elseif ($invoice['quote'] == 'on') {
-      //  $ni->set("type=quote");
-    } else {
-      $ni->set("type=invoice");
+      $invoice_type = 'recurring';
     }
+    
+    // Finally set invoice type
+    $ni->set("type=$invoice_type");
 
     /* Set invoice status */
     $status = (!empty($invoice['post_status']) ? $invoice['post_status'] : 'active');
@@ -1650,6 +1741,33 @@ class WPI_Functions {
       }
     }
   }
+  
+  /**
+   * Run manually when a version mismatch is detected.
+   *
+   * Holds official current version designation.
+   * Called in admin_init hook.
+   *
+  **/
+  function manual_activation() {
+
+    $installed_ver = get_option( "wp_invoice_version" );
+    $wpi_version = WP_INVOICE_VERSION_NUM;
+
+    if(@version_compare($installed_ver, $wpi_version) == '-1') {
+      // We are upgrading.
+
+      // Update option to latest version so this isn't run on next admin page load
+      update_option( "wp_invoice_version", $wpi_version );
+
+      // Get premium features on activation
+      WPI_Functions::check_for_premium_features();
+
+    }
+
+    return;
+
+  }
 
   /**
    * Checks for, and downloads, any premium features from TCT servers
@@ -1665,8 +1783,24 @@ class WPI_Functions {
     $blogname = urlencode(str_replace(array('http://', 'https://'), '', $blogname));
     $system = 'wpi';
     $wpi_version = WP_INVOICE_VERSION_NUM;
+    
+    $api_key = WPI_Functions::get_api_key(array('force_check' => true, 'return' => true));
 
-    $check_url = "http://updates.usabilitydynamics.com/?system=$system&site=$blogname&system_version=$wpi_version";
+ 
+    if(empty($api_key) || strlen($api_key) != 40) {
+      if($return) {
+        if(empty($api_key)) {
+          $api_key = __("The API key could not be generated.", 'wpp');
+        }
+        return sprintf(__('An error occured during premium feature check: <b>%s</b>.','wpp'), $api_key);
+      } else {
+        return;
+      }
+    }
+
+    
+    $check_url = "http://updates.usabilitydynamics.com/?system={$system}&site={$blogname}&system_version={$wpi_version}&api_key={$api_key}";
+    
     $response = @wp_remote_get($check_url);
 
     if (!$response) {
@@ -1791,6 +1925,21 @@ class WPI_Functions {
     ));
   }
 
+  /**
+   * Detect browser
+   * 
+   * @global bool $is_lynx
+   * @global bool $is_gecko
+   * @global bool $is_IE
+   * @global bool $is_opera
+   * @global bool $is_NS4
+   * @global bool $is_safari
+   * @global bool $is_chrome
+   * @global bool $is_iphone
+   * 
+   * @author korotkov@ud
+   * @return array 
+   */
   function browser() {
     global $is_lynx, $is_gecko, $is_IE, $is_opera, $is_NS4, $is_safari, $is_chrome, $is_iphone;
 
@@ -1827,6 +1976,12 @@ class WPI_Functions {
     return $classes;
   }
 
+  /**
+   * Revalidate all the invoices
+   * 
+   * @author korotkov@ud
+   * @global object $wpdb 
+   */
   function total_revalidate() {
     global $wpdb;
 
@@ -1843,6 +1998,29 @@ class WPI_Functions {
       $this_invoice->load_invoice("id={$invoice_id}");
       $this_invoice->save_invoice();
     }
+  }
+  
+  
+  function get_wpi_crm_attributes() {
+    
+    if ( !class_exists('WP_CRM_Core') ) return;
+    
+    global $wp_crm;
+    
+    $attributes = array();
+    
+    if ( !empty( $wp_crm['data_structure']['attributes'] ) ) {
+      
+      foreach( $wp_crm['data_structure']['attributes'] as $slug => $attribute ) {
+        if ( !empty( $attribute['wp_invoice'] ) && $attribute['wp_invoice'] == 'true' ) {
+          $attributes[ $slug ] = $attribute;
+        }
+      }
+      
+    }
+    
+    return $attributes;
+    
   }
 
 }
@@ -2013,7 +2191,7 @@ function wpi_is_full_paid_invoice($invoice_id) {
   foreach ($payment_history as $payment) {
     $paid_amount += abs($payment['value']);
   }
-  return $paid_amount >= $invoice_obj->data['subtotal'];
+  return $paid_amount >= ( $invoice_obj->data['subtotal'] - $invoice_obj->data['total_discount'] );
 }
 
 function wp_invoice_currency_format($amount) {
@@ -2066,19 +2244,25 @@ $name ($from)";
 
 /**
  * Emails merchant after payment is done
+ * 
+ * @global array $wpi_settings
+ * @param array $invoice
+ * @author korotkov@UD 
  */
 function wp_invoice_send_me_notification($invoice) {
   global $wpi_settings;
 
-  $to = stripslashes($wpi_settings['email_address']);
+  $to = stripslashes( get_option('admin_email') );
   $site = stripslashes($wpi_settings['business_name']);
 
   $permalink = get_invoice_permalink($invoice['invoice_id']);
+  
+  $total = $invoice['subtotal']-$invoice['total_discount'];
 
   $message = "{$invoice['user_data']['display_name']} has paid invoice #{$invoice['invoice_id']}.
 
 {$invoice['post_title']}
-Total payments: {$invoice['default_currency_code']} {$invoice['total_payments']} of {$invoice['default_currency_code']} {$invoice['subtotal']}.
+Total payments: {$invoice['default_currency_code']} {$invoice['total_payments']} of {$invoice['default_currency_code']} {$total}.
   
 You can overview invoice status and payment history by clicking this link:
 {$permalink}
@@ -2098,6 +2282,85 @@ Email: {$invoice['user_data']['user_email']}
   $subject = html_entity_decode($subject, ENT_QUOTES, 'UTF-8');
 
   wp_mail($to, $subject, $message);
+}
+
+
+/**
+ *
+ * @global array $wpi_settings
+ * @param array $invoice
+ * @author korotkov@UD 
+ */
+function wp_invoice_send_creator_notification($invoice) {
+  global $wpi_settings;
+  
+  $creator = get_userdata( $invoice['post_author'] );
+
+  $to = stripslashes( $creator->user_email );
+  $site = stripslashes($wpi_settings['business_name']);
+
+  $permalink = get_invoice_permalink($invoice['invoice_id']);
+  
+  $total = $invoice['subtotal']-$invoice['total_discount'];
+
+  $message = "{$invoice['user_data']['display_name']} has paid invoice #{$invoice['invoice_id']}.
+
+{$invoice['post_title']}
+Total payments: {$invoice['default_currency_code']} {$invoice['total_payments']} of {$invoice['default_currency_code']} {$total}.
+  
+You can overview invoice status and payment history by clicking this link:
+{$permalink}
+
+User information:
+
+ID: {$invoice['user_data']['ID']}
+Name: {$invoice['user_data']['display_name']}
+Email: {$invoice['user_data']['user_email']}
+
+--------------------
+{$site}";
+
+  $subject = "Invoice #{$invoice['invoice_id']} has been paid";
+
+  $message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
+  $subject = html_entity_decode($subject, ENT_QUOTES, 'UTF-8');
+
+  wp_mail($to, $subject, $message);
+}
+
+
+/**
+ * Sends required notifications korotkov@UD
+ * @global array $wpi_settings
+ * @param array $invoice 
+ * @author korotkov@UD
+ */
+function send_notification( $invoice ) {
+  global $wpi_settings;
+  
+  if ( (!empty($wpi_settings['send_thank_you_email']) && $wpi_settings['send_thank_you_email'] == 'true') ||
+       (!empty($wpi_settings['cc_thank_you_email']) && $wpi_settings['cc_thank_you_email'] == 'true') ||
+       (!empty($wpi_settings['send_invoice_creator_email']) && $wpi_settings['send_invoice_creator_email'] == 'true' ) ) {
+  
+    $paid_invoice = new WPI_Invoice();
+    $paid_invoice->load_invoice("id={$invoice['invoice_id']}");
+    // Email client
+    if (!empty($wpi_settings['send_thank_you_email']) && $wpi_settings['send_thank_you_email'] == 'true') {
+      wp_invoice_send_email_receipt($invoice);
+    }
+
+    // Email site admin
+    if (!empty($wpi_settings['cc_thank_you_email']) && $wpi_settings['cc_thank_you_email'] == 'true') {
+      wp_invoice_send_me_notification($paid_invoice->data);
+    }
+
+    // Email invoice creator
+    if ( !empty( $wpi_settings['send_invoice_creator_email'] ) && $wpi_settings['send_invoice_creator_email'] == 'true' ){
+      wp_invoice_send_creator_notification($paid_invoice->data);
+    }
+    
+  }
+  
 }
 
 class wp_invoice_Date {

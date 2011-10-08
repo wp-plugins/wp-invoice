@@ -1,18 +1,18 @@
-.wpi_class_pre {
-    background: none repeat scroll 0 0 #F4F9BC;
-    border: 2px solid #D6D9C1;
-    color: black;
-    font-size: 12px;
-    height: 600px;
-    margin-top: 17px;
-    overflow: scroll;
-    width: 100%;
-}
-
-div.wpi_settings_block {
-    background: none repeat scroll 0 0 #F7F7F7;
-    border: 1px solid #E7E7E7;
-    margin-bottom: 10px;
-    overflow: auto;
-    padding: 10px;
-}
+.wpi_class_pre {
+    background: none repeat scroll 0 0 #F4F9BC;
+    border: 2px solid #D6D9C1;
+    color: black;
+    font-size: 12px;
+    height: 600px;
+    margin-top: 17px;
+    overflow: scroll;
+    width: 100%;
+}
+
+div.wpi_settings_block {
+    background: none repeat scroll 0 0 #F7F7F7;
+    border: 1px solid #E7E7E7;
+    margin-bottom: 10px;
+    overflow: auto;
+    padding: 10px;
+}

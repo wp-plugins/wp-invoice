@@ -15,7 +15,7 @@ class WPI_UI {
   function admin_menu() {
     global $wpi_settings, $submenu;
 
-    unset($submenu['edit.php?post_type=wpi_object'][10]);
+    //unset($submenu['edit.php?post_type=wpi_object'][10]);
 
     /* Get capability required for this plugin's menu to be displayed to the user */
     $capability = self::get_capability_by_level($wpi_settings['user_level']);
@@ -480,7 +480,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         wp_enqueue_script('postbox');
         wp_enqueue_script('jquery.formatCurrency');
         wp_enqueue_script('jquery-data-tables');
-        wp_enqueue_style('jquery-data-tables');
+        wp_enqueue_style('wpi-jquery-data-tables');
       break;
 
 
@@ -652,7 +652,11 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
 
     add_meta_box('postbox_payment_methods', __('Payment Settings',WP_INVOICE_TRANS_DOMAIN), 'postbox_payment_methods', $screen_id, 'normal', 'high');
     //  add_meta_box('postbox_settings',  __('Settings',WP_INVOICE_TRANS_DOMAIN), 'postbox_settings', 'admin_page_wpi_invoice_edit', 'side', 'low');
-    add_meta_box('postbox_publish', __('Publish',WP_INVOICE_TRANS_DOMAIN), 'postbox_publish', $screen_id, 'side', 'high');
+    if ( $this_invoice->data['type'] == 'single_payment' ) {
+      add_meta_box('postbox_overview', __('Overview',WP_INVOICE_TRANS_DOMAIN), 'postbox_overview', $screen_id, 'side', 'high');
+    } else {
+      add_meta_box('postbox_publish', __('Publish',WP_INVOICE_TRANS_DOMAIN), 'postbox_publish', $screen_id, 'side', 'high');
+    }
     //add_meta_box('recurring_billing_box', __('Publish',WP_INVOICE_TRANS_DOMAIN), 'recurring_billing_box', 'admin_page_wpi_invoice_edit', 'middle', 'low');
     add_meta_box('postbox_user_existing', __('User Information',WP_INVOICE_TRANS_DOMAIN), 'postbox_user_existing', $screen_id, 'side', 'low');
   }
@@ -730,38 +734,60 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
           case $wpi_settings['pages']['edit']:
 
             $return = "<h5>Creating New Invoice</h5>";
-            $return .= '<div class="metabox-prefs">';
-            $return .= "Begin typing the recipient's email into the input box, or double-click to view list of possible options.  For new prospects, type in a new email address.";
-            $return .= '</div>';
+          $return .= '<div class="metabox-prefs">';
+          $return .= "Begin typing the recipient's email into the input box, or double-click to view list of possible options.  For new prospects, type in a new email address.";
+          $return .= '</div>';
+          return $return;
 
-            return $return;
+        break;
 
-          break;
+        case $wpi_settings['pages']['main']:
 
-          // Reports
-          case $wpi_settings['pages']['reports']:
-            //$return  = __('This page lists all the payments you have received using the Single Page Checkout function. ');
-          break;
-        
-          // Main
-        
-          case $wpi_settings['pages']['main']:
-            
-            $help[] = "<h5>".__('Support')."</h5>";
-            $help[] = "<p>".__('Please visit <a href="http://usabilitydynamics.com/products/wp-invoice/forum/">WP-Invoice Support Forum</a> to ask questions regarding the plugin.')."</p>";
-            $help[] = "<p>".__('To suggest ideas please visit the <a href="http://feedback.twincitiestech.com/forums/9692-wp-invoice">WP-Invoice Feedback site</a>.')."</p>";
-            
-            $help[] = "<h5>".__('Data Revalidation')."</h5>";
-            $help[] = "<p>".__('If you see some incorrect values click <a id="wpi_revalidate" href="#">Revalidate</a>. <img id="revalidate-loading" alt="" style="visibility:hidden;" src="'.WPI_URL.'/core/css/images/ajax-loader-blue.gif" />')."</p>";
-            
-            $return = implode('', $help);
-          break;
+          $help[] = "<h5>".__('Support')."</h5>";
+          $help[] = "<p>".__('Please visit <a href="http://usabilitydynamics.com/products/wp-invoice/forum/">WP-Invoice Support Forum</a> to ask questions regarding the plugin.')."</p>";
+          $help[] = "<p>".__('To suggest ideas please visit the <a href="http://feedback.twincitiestech.com/forums/9692-wp-invoice">WP-Invoice Feedback site</a>.')."</p>";
 
-          default: break;
+          $help[] = "<h5>".__('Data Revalidation')."</h5>";
+          $help[] = "<p>".__('If you see some incorrect values click <a id="wpi_revalidate" href="#">Revalidate</a>. <img id="revalidate-loading" alt="" style="visibility:hidden;" src="'.WPI_URL.'/core/css/images/ajax-loader-blue.gif" />')."</p>";
 
-        }
+          $return = implode('', $help);
+        break;
 
-        return $return;
+        case $wpi_settings['pages']['settings']:
+
+          $help[] = "<h5>".__('E-Mail Templates')."</h5>";
+          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page. The following variables can be used within the Subject or the Content of the e-mail templates:')."</p>";
+
+          $email_vars['invoice_id'] = __('Invoice ID');
+          $email_vars['link'] = __('URL of invoice');
+          $email_vars['recipient'] = __('Name or business name of receipient');
+          $email_vars['amount'] = __('Due BalanceID');
+          $email_vars['subject'] = __('Invoice title');
+          $email_vars['description'] = __('Description of Invoice');
+          $email_vars['business_name'] = __('Business Name');
+          $email_vars['business_email'] = __('Business Email Address');
+
+          $email_vars = apply_filters('wpi_email_template_vars', $email_vars);
+
+          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page..')."</p>";
+
+          if(is_array($email_vars)) {
+            $help[] = '<ul>';
+            foreach($email_vars as $var => $title) {
+              $help[] =  '<li><b>%' . $var . '%</b> - ' . $title . '</li>';
+            }
+            $help[] = '</ul>';
+          }
+
+          $return = implode('', $help);
+
+        break;
+
+        default: break;
+
+      }
+
+      return $return;
 
     }
 
@@ -1062,11 +1088,15 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         }
         $output = "<select id='" . ($id ? $id : $class_from_name) . "' name='" . ($group ? $group . "[" . $name . "]" : $name) . "' class='$class_from_name " . ($group ? "group_$group" : '') . "'>";
         
-        foreach ($values_array as $key => $value) {
-            $output .= "<option value='$key'";
-            if ($key == $current_value)
-                $output .= " selected";
-            $output .= ">$value</option>";
+        if ( !empty( $values_array ) ) {
+          foreach ($values_array as $key => $value) {
+              $output .= "<option value='$key'";
+              if ($key == $current_value)
+                  $output .= " selected";
+              $output .= ">$value</option>";
+          }
+        } else {
+          $output .= "<option>Values are empty</option>";
         }
         $output .= "</select>";
         return $output;
@@ -1086,6 +1116,70 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         echo '<div class="wpi_crm_link"><a target="_blank" href="'.admin_url('plugin-install.php?tab=search&type=term&s=WP-CRM').'">Get our WP-CRM plugin to better manage your customers</a></div>';
         
       }
+      
+    }
+    
+    
+    function wp_crm_data_structure_attributes( $args ) {
+      
+      if ( !class_exists('WP_CRM_Core') ) return;
+      
+      global $wp_crm;
+      
+      $default = array(
+          'slug'     => '',
+          'data'     => array(),
+          'row_hash' => ''
+      );
+      
+      extract( wp_parse_args( $args, $default ), EXTR_SKIP );
+      
+      if ( !empty( $slug ) && !empty( $data ) && !empty( $row_hash ) ) {
+        
+        ?>
+          <li class="wp_crm_advanced_configuration">
+            <input id="<?php echo $row_hash; ?>_no_edit" value='true' type="checkbox"  <?php checked($wp_crm['data_structure']['attributes'][$slug]['wp_invoice'], 'true'); ?> name="wp_crm[data_structure][attributes][<?php echo $slug; ?>][wp_invoice]" />
+            <label for="<?php echo $row_hash; ?>_no_edit" ><?php _e('Use for WP-Invoice', WP_INVOICE_TRANS_DOMAIN); ?></label>
+          </li>
+        <?php
+        
+      }
+      
+    }
+    
+    
+    function wp_crm_gateway_fields() {
+      
+      if ( !class_exists('WP_CRM_Core') ) return;
+      
+      $wp_crm_fields = WPI_Functions::get_wpi_crm_attributes();
+      
+      if ( empty( $wp_crm_fields ) ) return;
+      
+      ?>
+      <fieldset>
+        <ol>
+          <ul>
+      <?php
+      
+      foreach( $wp_crm_fields as $slug => $field ) {
+        $random = rand(100, 10000);
+
+      ?>
+            <li>
+              <label for="<?php echo $slug.'_'.$random; ?>"><?php _e($field['title'], WP_INVOICE_TRANS_DOMAIN); ?></label>
+              <input type="text" id="<?php echo $slug.'_'.$random; ?>" name="<?php echo $slug; ?>" class="text-input" />
+            </li>
+       
+      <?php
+      
+      }
+      
+      ?>     
+          </ul>
+        </ol>
+      </fieldset>
+      <?php
       
     }
 

@@ -159,9 +159,9 @@ class WPI_Object_List_Table extends WPI_List_Table {
         case 'post_modified':
           if ( !empty( $post->post_status ) ) {
             if ( $post->post_status == 'paid' ) {
-              $r .= get_post_status_object($post->post_status)->label.' on '.date(get_option('date_format')." \a\\t H:i:s", strtotime($post->post_modified));
+              $r .= get_post_status_object($post->post_status)->label.' '.human_time_diff(strtotime($post->post_modified)).' ago';
             } else {
-              $r .= date(get_option('date_format'), strtotime($post->post_date));
+              $r .= human_time_diff(strtotime($post->post_modified)).' ago';
             }
           } else {
             $r .= date(get_option('date_format'), strtotime($post->post_date));
@@ -205,7 +205,7 @@ class WPI_Object_List_Table extends WPI_List_Table {
             if ( $post->type != 'single_payment' ) {
               $r .= (!empty($wpi_settings['currency']['symbol'][$post->default_currency_code])?$wpi_settings['currency']['symbol'][$post->default_currency_code]:'$') . wp_invoice_currency_format( !empty( $post->total_payments )?$post->total_payments:0 )
                     ." <span style='color:#aaaaaa;'>of ".
-                    (!empty($wpi_settings['currency']['symbol'][$post->default_currency_code])?$wpi_settings['currency']['symbol'][$post->default_currency_code]:'$') . wp_invoice_currency_format($post->subtotal-(!empty($post->total_discount)?$post->total_discount:0))
+                    (!empty($wpi_settings['currency']['symbol'][$post->default_currency_code])?$wpi_settings['currency']['symbol'][$post->default_currency_code]:'$') . wp_invoice_currency_format($post->subtotal-(!empty($post->total_discount)?$post->total_discount:0)+(!empty($post->total_tax)?$post->total_tax:0))
                     ."</span>";
             } else {
               $r .= (!empty($wpi_settings['currency']['symbol'][$post->default_currency_code])?$wpi_settings['currency']['symbol'][$post->default_currency_code]:'$') . wp_invoice_currency_format( !empty( $post->total_payments )?$post->total_payments:0 );

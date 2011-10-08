@@ -1,11 +1,6 @@
 <?php 
 global $wpi_settings;
 
-//WPI_Functions::qc($wpi_settings);
-//WPI_Functions::qc($_REQUEST['wpi_settings']['globals']);
-//WPI_Functions::qc($wpi_settings[pdf]);
-//WPI_Functions::qc($wpi_settings[globals][favorite_countries]);
-
 $wpi_settings_tabs = array(
   'basic' => array(
     'label' => __('Basic'),
@@ -36,8 +31,6 @@ $wpi_settings_tabs = array(
     'callback' => array('WPI_Settings_page','help')
   )
 );
-  
- 
 
 // Allow third-party plugins and premium features to insert and remove tabs via API
 $wpi_settings_tabs = apply_filters('wpi_settings_tabs', $wpi_settings_tabs);
@@ -101,12 +94,9 @@ jQuery(document).ready( function() {
   </form>
 </div><?php /* end: .wrap */ ?>
  
+<?php
  
- 
- 
- <?php
- 
- class WPI_Settings_page {
+class WPI_Settings_page {
  
  
   function basic($wpi_settings) { 
@@ -127,6 +117,24 @@ jQuery(document).ready( function() {
             <th width="200"><?php _e("Business Phone", WP_INVOICE_TRANS_DOMAIN) ?></th>
             <td><?php echo WPI_UI::input("name=business_phone&group=wpi_settings&value={$wpi_settings['business_phone']}")?> </td>
           </tr>
+          
+          <tr>
+            <th width="200">
+              <a class="wp_invoice_tooltip" title="This will make all new invoices have default Tax value which can be changed for different invoice">
+                <?php _e("Tax Settings", WP_INVOICE_TRANS_DOMAIN) ?>
+              </a>
+            </th>
+            <td>
+              <ul class="wpi_settings_list">
+                <li>
+                  <?php echo WPI_UI::checkbox("name=use_global_tax&group=wpi_settings&value=true&label=Use global tax.",$wpi_settings['use_global_tax'])?>
+                </li>
+                <li class="global_tax_value_holder" <?php echo $wpi_settings['use_global_tax']=='true'?'':'style="display:none;"'; ?>>
+                  Tax value: <?php echo WPI_UI::input("style=width:50px;&name=global_tax&group=wpi_settings&value={$wpi_settings['global_tax']}")?>%
+                </li>
+              </ul>
+            </td>
+          </tr>
 
           <tr>
             <th width="200"><?php _e("Email Address", WP_INVOICE_TRANS_DOMAIN) ?></th>
@@ -143,10 +151,13 @@ jQuery(document).ready( function() {
           </tr>          
           <tr>
             <th><?php _e("After a customer pays", WP_INVOICE_TRANS_DOMAIN) ?></th>
-            <td><ul class="wpi_settings_list">
-                <li><?php echo WPI_UI::checkbox("name=send_thank_you_email&group=wpi_settings&value=true&label= Email a payment confirmation to the client.", $wpi_settings['send_thank_you_email']); ?></li>
-                <li><?php echo WPI_UI::checkbox("name=cc_thank_you_email&group=wpi_settings&value=true&label= Email me a payment notification.",$wpi_settings['cc_thank_you_email']); ?></li>
-              </ul></td>
+            <td>
+              <ul class="wpi_settings_list">
+                <li><?php echo WPI_UI::checkbox("name=send_thank_you_email&group=wpi_settings&value=true&label=Email a confirmation to client after invoice had been paid.", $wpi_settings['send_thank_you_email']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=cc_thank_you_email&group=wpi_settings&value=true&label=Email <u>".get_option('admin_email')."</u> any time an invoice is paid.",$wpi_settings['cc_thank_you_email']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=send_invoice_creator_email&group=wpi_settings&value=true&label=Email invoice creator when an invoice is paid.",$wpi_settings['send_invoice_creator_email']); ?></li>
+              </ul>
+            </td>
           </tr>
           <tr>
             <th><?php _e("When viewing an invoice", WP_INVOICE_TRANS_DOMAIN) ?></th>
@@ -166,10 +177,9 @@ jQuery(document).ready( function() {
             echo "</select>";?>
                    page. </label>
                 </li>
-         
-        <li><?php echo WPI_UI::checkbox("name=replace_page_title_with_subject&group=wpi_settings&value=true&label=Replace page title with invoice subject when viewing invoice.", $wpi_settings['replace_page_title_with_subject']); ?></li>
-        <li><?php echo WPI_UI::checkbox("name=replace_page_heading_with_subject&group=wpi_settings&value=true&label=Replace page heading with invoice subject when viewing invoice.", $wpi_settings['replace_page_heading_with_subject']); ?></li>
-        <li><?php echo WPI_UI::checkbox("name=hide_page_title&group=wpi_settings&value=true&label=Hide page title completely.", $wpi_settings['hide_page_title']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=replace_page_title_with_subject&group=wpi_settings&value=true&label=Replace page title with invoice subject when viewing invoice.", $wpi_settings['replace_page_title_with_subject']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=replace_page_heading_with_subject&group=wpi_settings&value=true&label=Replace page heading with invoice subject when viewing invoice.", $wpi_settings['replace_page_heading_with_subject']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=hide_page_title&group=wpi_settings&value=true&label=Hide page title completely.", $wpi_settings['hide_page_title']); ?></li>
                 <li><?php echo WPI_UI::checkbox("name=force_https&group=wpi_settings&value=true&label= Enforce HTTPS.", $wpi_settings['force_https']); ?> </li>
                 <li><?php echo WPI_UI::checkbox("name=show_business_address&group=wpi_settings|globals&value=true&label= Show my business name and address.", $wpi_settings['globals']['show_business_address']);?> </li>
                 <li><?php echo WPI_UI::checkbox("name=show_quantities&group=wpi_settings|globals&value=true&label= Show quantity breakdowns in the itemized list.", $wpi_settings['globals']['show_quantities']);?> </li>
@@ -379,19 +389,7 @@ jQuery(document).ready( function() {
       </tr>
     </tfoot>
     </table>
-    
-    <div class="wpi_yellow_notification" style="margin-top:10px;">
-    <p><b>Available Variables:</b><br />
-    %invoice_id% - Invoice ID<br />
-    %link% - URL of invoice<br />
-    %recipient% - Name or business name of receipient<br />
-    %amount% - Due Balance<br />
-    %subject% - Invoice title<br />
-    %description% - Description of Invoice<br />
-    %business_name% - Business Name<br />
-    %business_email% - Business Email Address<br />
-    Variables may be used in subject or the body of the notification email.</p>
-    </div>
+
     <?php
   }
   

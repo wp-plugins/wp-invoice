@@ -89,7 +89,6 @@ function show_itemized_table($args = '') {
     $currency_symbol = (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$");
      
     ob_start();
-
         if( !empty($invoice['deposit_amount']) && $invoice['deposit_amount']>0 ) {
           ?>
             <script type="text/javascript">
@@ -106,14 +105,12 @@ function show_itemized_table($args = '') {
                   if ( isNaN( amount ) ) return balance;
                   return amount;
                 }
-                
                 var set_pay_button_value = function() {
                   if(jQuery("#pay_button_value").length > 0){
                     var pa = jQuery("#payment_amount").val();
                     jQuery("#pay_button_value").html(pa);
                   }
                 }
-                
                 // Find fields
                 var payment_amount        = jQuery("#payment_amount");
                 var my_amount             = jQuery("#my_amount");
@@ -121,9 +118,7 @@ function show_itemized_table($args = '') {
                 var custom_amount_option  = jQuery("#wpi_custom_amount_option");
                 var minimum_amount_option = jQuery("#wpi_minimum_amount_option");
                 var full_amount_option    = jQuery("#wpi_full_amount_option");
-                
                 var custom_amount_field = jQuery("#wpi_custom_amount_option_field_wrapper");
-                
                 my_amount.live("focus", function(){
                   custom_amount_option.attr("checked", "checked");
                 });
@@ -174,7 +169,6 @@ function show_itemized_table($args = '') {
             </script>
           <?php
         }
-
         if($wpi_settings['use_custom_templates'] != 'yes' || !file_exists(TEMPLATEPATH.'/wpi/table.php')): ?>
         <table id="wp_invoice_itemized_table" class="wp_invoice_itemized_table">
           <thead>
@@ -206,7 +200,6 @@ function show_itemized_table($args = '') {
             </tr>
             <?php endforeach; ?>
           <?php endif; ?>
-          
           <?php if ( isset($invoice['itemized_charges']) && is_array($invoice['itemized_charges']) ): ?>
             <tr>
               <th class='title_column'><?php _e('Charges') ?></th>
@@ -603,8 +596,8 @@ function invoice_id($args = '') {
     
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
     
-    if(!empty($invoice['meta']['custom_id']) && !isset($force_original)) {
-        $result = $invoice['meta']['custom_id'];
+    if( !empty( $invoice['custom_id'] ) && !$force_original ) {
+        $result = $invoice['custom_id'];
     } else {
         $result = wpi_post_id_to_invoice_id($invoice['ID']);
     }

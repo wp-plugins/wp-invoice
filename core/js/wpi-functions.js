@@ -995,8 +995,19 @@ function wpi_recalc_totals() {
   // Services itemized list
   jQuery(".wp_invoice_itemized_list_row").each(function (i) {
     var row_price    = parseFloat(jQuery(".row_price input", this).val());
+        row_price    = row_price < 0 || isNaN( row_price ) ? '' : row_price;
     var row_quantity = parseFloat(jQuery(".row_quantity input", this).val());
+        row_quantity = row_quantity < 0 || isNaN( row_quantity ) ? '' : row_quantity;
     var row_tax      = parseInt(jQuery(".row_tax input", this).val());
+        row_tax      = row_tax < 0 || isNaN( row_tax ) ? '' : row_tax;
+    
+    // Update fields with valid data
+    if ( !isNaN( row_price ) )
+      jQuery(".row_price input", this).val(row_price);
+    if ( !isNaN( row_quantity ) )
+      jQuery(".row_quantity input", this).val(row_quantity);
+    if ( !isNaN( row_tax ) )
+      jQuery(".row_tax input", this).val(row_tax);
     
     row_price = !isNaN( row_price ) ? row_price : 0 ;
     row_quantity = !isNaN( row_quantity ) ? row_quantity : 0 ;
@@ -1062,16 +1073,33 @@ function wpi_recalc_totals() {
 
   // Calculate Discounts if there are any
   jQuery(".wp_invoice_discount_row:visible").each(function (i) {
-    var discount_row_type = jQuery(".item_type select", this).val();
-    var discount_row_value = jQuery(".item_price input", this).val();
+    var name   = jQuery(".item_name", this);
+    var type = jQuery(".item_type select", this);
+    var value  = jQuery(".item_price input", this);
+    var discount_row_type  = type.val();
+    var discount_row_value = value.val();
     // Calculate total discount percent (by adding) or discoutn value (also by adding)
     if(!empty(discount_row_value)){
-      discount_row_value = parseInt(discount_row_value);
+      discount_row_value = parseFloat(discount_row_value);
+      discount_row_value = discount_row_value < 0 || isNaN( discount_row_value ) ? '' : discount_row_value;
+      if ( !isNaN( discount_row_value ) )
+        value.val(discount_row_value);
+      if ( !empty(value.val()) && !name.val().length ) {
+        name.css({'border-color':'red'});
+      } else if ( empty(value.val()) && name.val().length ) {
+        value.css({'border-color':'red'});
+      } else {
+        name.css({'border-color':''});
+        value.css({'border-color':''});
+      }
+
       if(discount_row_type == 'percent') {
         total_discount = subtotal * (discount_row_value / 100);
       } else {
-        total_discount = total_discount + discount_row_value;
+        total_discount += discount_row_value;
       }
+    } else {
+      name.css({'border-color':''});
     }
   });
 
@@ -1099,6 +1127,14 @@ function wpi_recalc_totals() {
   }
 
   total = subtotal - total_discount + total_tax;
+  
+  if ( total_discount >= ( subtotal + total_tax ) && total_discount > 0 ) {
+    jQuery(".wp_invoice_discount_row:visible").each(function (i) {
+      jQuery(".item_price input", this).val('');
+    });
+    wpi_recalc_totals();
+    return;
+  }
 
   if(typeof is_recurring == 'undefined') {
     is_recurring = false;

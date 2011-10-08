@@ -1,6 +1,6 @@
 jQuery(document).ready(function() {
   
-  jQuery('.wpi_filter_section_title').click(function(){ 
+  jQuery('.wpi_filter_section_title').click(function(){
     var parent = jQuery(this).parents('.wpi_overview_filters');
     jQuery(' .wpi_checkbox_filter', parent).slideToggle('fast', function(){
       if(jQuery(this).css('display') == 'none') {

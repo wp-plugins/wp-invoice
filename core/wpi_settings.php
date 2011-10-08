@@ -73,6 +73,7 @@ class WPI_Settings {
         $this->options['increment_invoice_id'] = 'false';
         $this->options['do_not_load_theme_specific_css'] = 'false';
         $this->options['cc_thank_you_email']  = 'false';
+        $this->options['send_invoice_creator_email']  = 'false';
         $this->options['replace_page_heading_with_subject']  = 'false';
         $this->options['hide_page_title']  = 'false';
         $this->options['terms_acceptance_required'] = 'false';
@@ -81,6 +82,7 @@ class WPI_Settings {
         $this->options['force_https'] = 'false';
         $this->options['send_thank_you_email'] = 'no';
         $this->options['show_recurring_billing'] = 'true';
+        $this->options['global_tax'] = '0';
         
         $this->options['user_meta']['required']['first_name'] = 'First Name';
         $this->options['user_meta']['required']['last_name'] = 'Last Name';
@@ -438,7 +440,7 @@ class WPI_Settings {
             if(!isset($new_settings['billing'][$key]['allow'])) unset($this->options['billing'][$key]['allow']);
         }
         
-        $checkbox_array = array('increment_invoice_id', 'send_thank_you_email', 'cc_thank_you_email', 'force_https', 'show_recurring_billing');
+        $checkbox_array = array('increment_invoice_id', 'send_thank_you_email', 'cc_thank_you_email', 'force_https', 'show_recurring_billing', 'send_invoice_creator_email');
         foreach($checkbox_array as $checkbox_name) {
             if(!isset($new_settings[$checkbox_name])) unset($this->options[$checkbox_name]);
         }

@@ -1,5 +1,5 @@
-=== WP-Invoice - Web Invoice and Billing ===
-Contributors: Usability Dynamics Inc.,andypotanin,jbrw
+=== WP-Invoice - Web Invoice and Billing === 
+Contributors: usability_dynamics, anton-korotkoff, andypotanin, jbrw
 Donate link: http://usabilitydynamics.com/products/wp-invoice/
 Tags: web invoice, bill, paypal, invoice, pay, online payment, send invoice, bill clients, authorize.net, credit cards, recurring billing, ARB
 Requires at least: 3.1
@@ -24,6 +24,8 @@ Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, 
 
 = New Features =
 
+* Automatically import invoices from Web Invoice plugin.
+* WP-CRM Integration
 * Brand new user interface for much improved invoicing filtering and searching
 * Minimum and Split / Partial Payments
 * Invoices can be reassigned to a different recipient
@@ -86,6 +88,22 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 * Complete rewrite. Old invoice data is not deleted, please notify us if you have any upgrading issues.
 
 == Change Log ==
+
+= Version 3.03.0 =
+* Automatic import of Web Invoice plugin invoices.
+* Invoice logs display the user that created the invoice.
+* Dynamic column toggling improvements for the overview page.
+* Improvements to invoice editing page for better UI.
+* Fix to incorrect invoice total calculation when using a combination of discounts and taxes.
+* Added option to send invoice payment notification to invoice creator, as well as site admin.
+* Improved time formatting.
+* Added option to set global tax. 
+* Fix to negative balance if price quantity is negative.
+* Fix to tax amount not being displayed in line items on overview page.
+* Fix to discount field not working if discount name is blank.
+* Fix to discount field only allowing integers.
+* EOL fixes that were causing parse errors on some hosts.
+* WP-CRM integration.
 
 = Version 3.02 =
 * Minor fixes.

@@ -1,10 +1,10 @@
 <?php
 /**
 Plugin Name: Web Invoicing and Billing
-Plugin URI: http://twincitiestech.com/services/wp-invoice/
+Plugin URI: http://usabilitydynamics.com/products/wp-invoice/
 Description: Send itemized web-invoices directly to your clients.  Credit card payments may be accepted via Authorize.net, MerchantPlus NaviGate, or PayPal account. Recurring billing is also available via Authorize.net's ARB. Visit <a href="admin.php?page=wpi_page_settings">WP-Invoice Settings Page</a> to setup.
 Author: UsabilityDynamics.com
-Version: 3.02
+Version: 3.03.0
 Author URI: http://UsabilityDynamics.com/
 
 Copyright 2011  Usability Dynamics, Inc.   (email : andy.potanin@UsabilityDynamics.com)
@@ -37,7 +37,7 @@ define('WPI_Path', WP_PLUGIN_DIR . '/wp-invoice');
 /** Path for front-end links */
 define('WPI_URL', WP_PLUGIN_URL . '/wp-invoice');
 
-define("WP_INVOICE_VERSION_NUM", "3.02");
+define("WP_INVOICE_VERSION_NUM", "3.03.0");
 define("WP_INVOICE_TRANS_DOMAIN", "wp-invoice");
  
 /** Directory paths */
@@ -160,6 +160,8 @@ if (!class_exists('WPI_Core')) {
       $this->Functions->load_premium();
       
       add_action('admin_head', array($this, 'admin_head'));
+      /* Generate and display WP-Invoice notices on admin panel */
+      add_action('admin_notices', array($this, 'admin_notices'));
       
       do_action('wpi_premium_loaded');
       
@@ -209,8 +211,12 @@ if (!class_exists('WPI_Core')) {
       add_action('wp_ajax_nopriv_wpi_gateway_server_callback', array('WPI_Gateway_Base', 'server_callback'));
       add_action('wp_ajax_wpi_gateway_server_callback', array('WPI_Gateway_Base', 'server_callback'));
 
-      //add_action('admin_print_styles', array('WPI_UI', 'admin_print_styles'));
+      /** WP-CRM integration */
       add_action('wpi_integrate_crm_user_panel', array('WPI_UI', 'crm_user_panel'));
+      
+      // Do not remove these lines korotkov@ud
+      //add_action('wp_crm_data_structure_attributes', array('WPI_UI', 'wp_crm_data_structure_attributes'));
+      //add_action('wpi_custom_gateway_fields', array('WPI_UI', 'wp_crm_gateway_fields'));
 
       /** If we are in debug mode, lets add these actions */
       if($wpi_settings['debug']){
@@ -287,7 +293,7 @@ if (!class_exists('WPI_Core')) {
       wp_register_script('jsapi', 'https://www.google.com/jsapi');
       wp_register_script('jquery-data-tables', WPI_URL . "/third-party/dataTables/jquery.dataTables.min.js", array('jquery'));
       
-      wp_register_style('jquery-data-tables', WPI_URL . "/core/css/wpi-data-tables.css");
+      wp_register_style('wpi-jquery-data-tables', WPI_URL . "/core/css/wpi-data-tables.css");
       
       //** Masure dependancies are identified in case this script is included in other pages */      
       wp_register_script('wp-invoice-events', WPI_URL . "/core/js/wpi-events.js", array(
@@ -329,12 +335,46 @@ if (!class_exists('WPI_Core')) {
       
       do_action("wpi_pre_header_{$current_screen->id}", $current_screen->id);
       //do_action("wpi_print_styles");
-
+      
       // Load contextual help for all pages
       add_filter('contextual_help', array('WPI_UI', 'contextual_help'));
-
+      
     }
-
+    
+    /*
+     * Render WPI Admin notices
+     * 
+     * - WPI Notice should be added through 'prepare_admin_notices' filter.
+     * - Notice Params:
+     * - @param string type. Required. 'updated' or 'error'.
+     * - @param string message. Required. Text of notice.
+     * - @param string screen_id. Optional. Where the notice should be shown.
+     * 
+     * @author Maxim Peshkov
+     * @since 3.02
+     */
+    function admin_notices() {
+      global $current_screen;
+      
+      //* Notice will be shown only on WPI admin pages */
+      if($current_screen->parent_base == "wpi_main"){
+        $notices = array();
+        
+        $notices = apply_filters('prepare_admin_notices', $notices);
+        
+        foreach($notices as $notice) {
+          /* Determine if notice should be shown on specific WPI page */
+          if(!empty($notice['screen_id']) && $current_screen->id != $notice['screen_id']) {
+            continue;
+          }
+          
+          if(!empty($notice['message'])) {
+            echo "<div class=\"{$notice['type']}\">{$notice['message']}</div>";
+          }
+        }
+      }
+    }
+    
     /**
      * Perform back-end administrative functions
      *
@@ -357,6 +397,10 @@ if (!class_exists('WPI_Core')) {
       if(isset($wpi_settings['pages']) && is_array($wpi_settings['pages'])) {
         $this->add_metaboxes($wpi_settings['pages']);
       }
+      
+      /** Check for updates */
+      WPI_Functions::manual_activation();
+      
     }
     
     /*
@@ -507,4 +551,3 @@ register_deactivation_hook(__FILE__, array("WPI_Functions", 'Deactivate'));
 
 // Load plugin after_setup_theme
 add_action("after_setup_theme", array('WPI_Core', 'getInstance'));
-

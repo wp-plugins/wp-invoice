@@ -42,19 +42,19 @@ class WPI_List_Table extends WP_List_Table  {
     }
     
     //* Returns columns, hidden, sortable */
-    list( $columns, $hidden ) = $this->get_column_info();
+    list( $columns, $hidden, $sortable ) = $this->get_column_info();
     
     //** Build aoColumns for ajax return */
     $column_count = 0;
     foreach($columns as $column_slug => $column_title) {
       
-      if(in_array( $column_slug, $hidden )) {
-        $column_visible = 'false';
+      if ( key_exists( $column_slug, $sortable ) ) {
+        $column_sortable = 'true';
       } else {
-        $column_visible = 'true';
+        $column_sortable = 'false';
       }
       
-      $this->aoColumns[] = "{ 'sClass': '{$column_slug} column-{$column_slug}', 'bVisible': {$column_visible}}";
+      $this->aoColumns[] = "{ 'sClass': '{$column_slug} column-{$column_slug}', 'bSortable':{$column_sortable} }";
       $this->aoColumnDefs[] = "{ 'sName': '{$column_slug}', 'aTargets': [{$column_count}]}";
       $this->column_ids[$column_count] = $column_slug;
       $column_count++;
@@ -362,6 +362,76 @@ class WPI_List_Table extends WP_List_Table  {
     </table>
     <?php
   }
+  
+  
+  /**
+	 * Print column headers, accounting for hidden and sortable columns.
+	 *
+	 * @since 3.1.0
+	 * @access protected
+	 *
+	 * @param bool $with_id Whether to set the id attribute or not
+	 */
+	function print_column_headers( $with_id = true ) {
+		$screen = get_current_screen();
+
+		list( $columns, $hidden, $sortable ) = $this->get_column_info();
+
+		$current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$current_url = remove_query_arg( 'paged', $current_url );
+
+		if ( isset( $_GET['orderby'] ) )
+			$current_orderby = $_GET['orderby'];
+		else
+			$current_orderby = '';
+
+		if ( isset( $_GET['order'] ) && 'desc' == $_GET['order'] )
+			$current_order = 'desc';
+		else
+			$current_order = 'asc';
+
+		foreach ( $columns as $column_key => $column_display_name ) {
+			$class = array( 'manage-column', "column-$column_key" );
+
+			$style = '';
+			if ( in_array( $column_key, $hidden ) )
+				$style = 'display:none;';
+
+			$style = ' style="' . $style . '"';
+
+			if ( 'cb' == $column_key )
+				$class[] = 'check-column';
+			elseif ( in_array( $column_key, array( 'posts', 'comments', 'links' ) ) )
+				$class[] = 'num';
+
+			if ( isset( $sortable[$column_key] ) ) {
+				list( $orderby, $desc_first ) = $sortable[$column_key];
+
+				if ( $current_orderby == $orderby ) {
+					$order = 'asc' == $current_order ? 'desc' : 'asc';
+					$class[] = 'sorted';
+					$class[] = $current_order;
+				} else {
+					$order = $desc_first ? 'desc' : 'asc';
+					$class[] = 'sortable';
+					$class[] = $desc_first ? 'asc' : 'desc';
+				}
+
+				$column_display_name = '<a href="' . esc_url( add_query_arg( compact( 'orderby', 'order' ), $current_url ) ) . '"><span>' . $column_display_name . '</span><span class="sorting-indicator"></span></a>';
+        
+      }
+
+			$id = $with_id ? "id='$column_key'" : '';
+
+			if ( !empty( $class ) )
+				$class = "class='" . join( ' ', $class ) . "'";
+      
+      if ( 'cb' == $column_key )
+        $column_display_name = '<input type="checkbox" class="check-all" />';
+
+			echo "<th scope='col' $id $class $style>$column_display_name</th>";
+		}
+	}
 
 
   function no_items() {

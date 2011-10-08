@@ -27,7 +27,7 @@
 
     <li>
     <label class="inputLabel" for="phonenumber"><?php _e('Phone Number', WP_INVOICE_TRANS_DOMAIN); ?></label>
-    <input type="text" class="text-input"  name="cc_data[phonenumber]" class="input_field"  type="text" id="phonenumber" size="40" maxlength="50" value="<?php echo !empty($invoice['user_data']['phonenumber'])?$invoice['user_data']['phonenumber']:''; ?>" />
+    <input type="text" class="text-input"  name="cc_data[phonenumber]" class="input_field"  type="text" id="phonenumber" maxlength="50" value="<?php echo !empty($invoice['user_data']['phonenumber'])?$invoice['user_data']['phonenumber']:''; ?>" />
     </li>
 
     <li>

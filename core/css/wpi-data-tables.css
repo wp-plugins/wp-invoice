@@ -1,11 +1,11 @@
-.row-actions {
+.toplevel_page_wpi_main .row-actions {
   overflow: auto;
   margin-bottom: 7px;
   padding: 2px 0;
   clear: both;
 }
 
-.wp-list-table  {
+.toplevel_page_wpi_main .wp-list-table  {
   margin-bottom: 15px;
 }
 
@@ -13,16 +13,16 @@
   margin-top:0px;
 }
 
-td.wp_crm_user_card  div.user_avatar {
+.toplevel_page_wpi_main td.wp_crm_user_card  div.user_avatar {
   float: left;
 }
 
-td.wp_crm_user_card  ul.user_card_data {
+.toplevel_page_wpi_main td.wp_crm_user_card  ul.user_card_data {
   float: left;
   margin-left: 10px;
 }
 
-td.wp_crm_user_card  ul li.primary {
+.toplevel_page_wpi_main td.wp_crm_user_card  ul li.primary {
   font-size: 1.2em;
   font-weight: bold;
 }
@@ -31,7 +31,7 @@ td.wp_crm_user_card  ul li.primary {
  * DataTables features
  */
 
-.dataTables_wrapper {
+.toplevel_page_wpi_main .dataTables_wrapper {
 	position: relative;
 	min-height: 302px;
 	clear: both;
@@ -40,7 +40,7 @@ td.wp_crm_user_card  ul li.primary {
 	margin-bottom: 50px;
 }
 
-.dataTables_processing {
+.toplevel_page_wpi_main .dataTables_processing {
 	position: absolute;
 	top: 200px;
 	left: 50%;
@@ -239,21 +239,21 @@ tr.even {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Misc
  */
-.dataTables_scroll {
+.toplevel_page_wpi_main  .dataTables_scroll {
 	clear: both;
 }
 
-.dataTables_scrollBody {
+.toplevel_page_wpi_main  .dataTables_scrollBody {
 	*margin-top: -1px;
 }
 
-.top, .bottom {
+.toplevel_page_wpi_main .top, .toplevel_page_wpi_main  .bottom {
 	padding: 15px;
 	background-color: #F5F5F5;
 	border: 1px solid #CCCCCC;
 }
 
-.toplevel_page_wpi_main .top.tablenav {
+.toplevel_page_wpi_main  .top.tablenav {
   background: none repeat scroll 0 0 transparent;
   border: 0 none;
   margin: 0;
@@ -262,14 +262,7 @@ tr.even {
   z-index: 100;
 }
 
-background: none repeat scroll 0 0 transparent;
-    border: 0 none;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    z-index: 100;
-
-.top .dataTables_info {
+.toplevel_page_wpi_main  .top .dataTables_info {
 	float: none;
 }
 

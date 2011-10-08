@@ -66,14 +66,51 @@ function message_meta_box($this_invoice) {
   <?php
 }
 
+function postbox_overview($this_invoice) {
+  
+  ?>
+  <table class="form-table">
+    <tr>
+      <th>
+        <?php _e('Invoice ID', WP_INVOICE_TRANS_DOMAIN) ?>
+      </th>
+      <td>
+        <?php echo $this_invoice['invoice_id']; ?>
+      </td>
+    </tr>
+    <?php
+    if ( !empty($this_invoice['customer_information']) )
+      foreach ( $this_invoice['customer_information'] as $key => $value ) {
+        $title = str_replace('_', ' ', $key);
+        $title = ucwords($title);
+    ?>
+      <tr>
+        <th>
+          <?php _e($title, WP_INVOICE_TRANS_DOMAIN) ?>
+        </th>
+        <td>
+          <?php echo $value; ?>
+        </td>
+      </tr> 
+    <?php
+      }
+    ?>
+  </table>
+  <?php
+
+}
+
 function postbox_publish($this_invoice) {
 
   global $wpi_settings;
   $invoice_id = $this_invoice['invoice_id'];
 
   $status_names = apply_filters('wpi_invoice_statuses', $wpi_settings['invoice_statuses']);
-  if (!empty($this_invoice['status']))
+  
+  if (!empty($this_invoice['status'])) {
     $status_label = ( $status_names[$this_invoice['status']] ? $status_names[$this_invoice['status']] : $this_invoice['status']);
+  }
+  
   ?>
   <div id="submitpost" class="submitbox">
     <div id="minor-publishing">
@@ -139,58 +176,60 @@ function postbox_publish($this_invoice) {
         <?php } ?>
       </ul>
       <table class="form-table">
-        <?php /**
-          <tr class="column-publish-invoice-date">
-          <th>Invoice Date</th>
-          <td><div class="timestampdiv"  style="display:block;">
-          <?php echo WPI_UI::select("name=wpi_invoice[meta][invoice_date][month]&values=months&current_value={$this_invoice['meta']['invoice_date']['month']}"); ?>
-          <?php echo WPI_UI::input("class=jj&name=wpi_invoice[meta][invoice_date][day]&value={$this_invoice['meta']['invoice_date']['day']}&special=size='2' maxlength='2' autocomplete='off'") ?>
-          <?php echo WPI_UI::input("class=aa&name=wpi_invoice[meta][invoice_date][year]&value={$this_invoice['meta']['invoice_date']['year']}&special=size='2' maxlength='4' autocomplete='off'") ?> </div>
-          </tr> */ ?>
-        <tr class="column-publish-due-date wpi_not_for_recurring wpi_not_for_quote">
-          <th>Due Date</th>
-          <td><div class="timestampdiv" style="display:block;">
-              <?php echo WPI_UI::select("id=due_date_mm&name=wpi_invoice[due_date_month]&values=months&current_value=" . (!empty($this_invoice['due_date_month']) ? $this_invoice['due_date_month'] : '')); ?>
-              <?php echo WPI_UI::input("id=due_date_jj&name=wpi_invoice[due_date_day]&value=" . (!empty($this_invoice['due_date_day']) ? $this_invoice['due_date_day'] : '') . "&special=size='2' maxlength='2' autocomplete='off'") ?>
-              <?php echo WPI_UI::input("id=due_date_aa&name=wpi_invoice[due_date_year]&value=" . (!empty($this_invoice['due_date_year']) ? $this_invoice['due_date_year'] : '') . "&special=size='2' maxlength='4' autocomplete='off'") ?><br />
-              <span onclick="wp_invoice_add_time('due_date', 7);" class="wp_invoice_click_me">In One Week</span> | <span onclick="wp_invoice_add_time('due_date', 30);" class="wp_invoice_click_me">In 30 Days</span> | <span onclick="wp_invoice_add_time('due_date','clear');" class="wp_invoice_click_me">Clear</span> </div></td>
-        </tr>
-        <tr class="invoice_main column-publish-invoice_id">
-          <th>Invoice ID </th>
-          <td><?php
-            $custom_invoice_id = !empty($this_invoice['custom_id']) ? $this_invoice['custom_id'] : '';
-            if (!$custom_invoice_id && $wpi_settings['increment_invoice_id'] == 'true') {
-              $highest_custom_id = WPI_Functions::get_highest_custom_id();
-              $custom_invoice_id = ($highest_custom_id ? ($highest_custom_id + 1) : $this_invoice['invoice_id']);
-              echo WPI_UI::input("name=wpi_invoice[meta][custom_id]&value=$custom_invoice_id");
-            } else {
-                ?>
-              <input style="width: 80px;" class="input_field wp_invoice_custom_invoice_id<?php
-          if (empty($this_invoice['custom_id'])) {
-            echo " wp_invoice_hidden";
-          }
-          ?>" name="wpi_invoice[meta][custom_id]" value="<?php echo!empty($this_invoice['custom_id']) ? $this_invoice['custom_id'] : ''; ?>">
-              <span class="wp_invoice_custom_invoice_id"><?php echo $this_invoice['invoice_id']; ?></span> <a onClick='jQuery(".wp_invoice_custom_invoice_id").toggle(); return false;' class="wp_invoice_click_me <?php
-                                                                                                          if (!empty($this_invoice['custom_id'])) {
-                                                                                                            echo " wp_invoice_hidden";
-                                                                                                          }
-                                                                                                          ?>" href="#">Custom Invoice ID</a>
-  <?php } ?>
-          </td>
-        </tr>
-        <tr class="invoice_main column-publish-global_tax">
-          <th>Global Tax</th>
-          <td>
-  <?php echo WPI_UI::input("id=wp_invoice_tax&name=wpi_invoice[meta][tax]&value=" . (!empty($this_invoice['tax']) ? $this_invoice['tax'] : '')) ?>
-          </td>
-        </tr>
-        <tr class="invoice_main column-publish-global_tax">
-          <th>Tax Method</th>
-          <td>
-  <?php $tax_method = !empty($this_invoice['tax_method']) ? $this_invoice['tax_method'] : (isset($wpi_settings['tax_method']) ? $wpi_settings['tax_method'] : ''); ?>
-  <?php echo WPI_UI::select("id=wpi_tax_method&name=wpi_invoice[tax_method]&values=" . serialize(array('before_discount' => __('Before Discount'), 'after_discount' => __('After Discount'))) . "&current_value={$tax_method}"); ?>
-          </td>
-        </tr>
+        <thead>
+          <th colspan="2">
+            <span id="wpi_button_show_advanced" class="wpi_link"><?php _e('Toggle Advanced', WP_INVOICE_TRANS_DOMAIN); ?></span>
+          </th>
+        </thead>
+        <tbody>
+          <tr class="column-publish-due-date wpi_not_for_recurring wpi_not_for_quote">
+            <th>Due Date</th>
+            <td>
+              <div class="timestampdiv" style="display:block;">
+                <?php echo WPI_UI::select("id=due_date_mm&name=wpi_invoice[due_date_month]&values=months&current_value=" . (!empty($this_invoice['due_date_month']) ? $this_invoice['due_date_month'] : '')); ?>
+                <?php echo WPI_UI::input("id=due_date_jj&name=wpi_invoice[due_date_day]&value=" . (!empty($this_invoice['due_date_day']) ? $this_invoice['due_date_day'] : '') . "&special=size='2' maxlength='2' autocomplete='off'") ?>
+                <?php echo WPI_UI::input("id=due_date_aa&name=wpi_invoice[due_date_year]&value=" . (!empty($this_invoice['due_date_year']) ? $this_invoice['due_date_year'] : '') . "&special=size='2' maxlength='4' autocomplete='off'") ?><br />
+                <span onclick="wp_invoice_add_time('due_date', 7);" class="wp_invoice_click_me">In One Week</span> | <span onclick="wp_invoice_add_time('due_date', 30);" class="wp_invoice_click_me">In 30 Days</span> | <span onclick="wp_invoice_add_time('due_date','clear');" class="wp_invoice_click_me">Clear</span> 
+              </div>
+            </td>
+          </tr>
+          <tr class="invoice_main column-publish-invoice_id">
+            <th>Invoice ID </th>
+            <td><?php
+              $custom_invoice_id = !empty($this_invoice['custom_id']) ? $this_invoice['custom_id'] : '';
+              if (!$custom_invoice_id && $wpi_settings['increment_invoice_id'] == 'true') {
+                $highest_custom_id = WPI_Functions::get_highest_custom_id();
+                $custom_invoice_id = ($highest_custom_id ? ($highest_custom_id + 1) : $this_invoice['invoice_id']);
+                echo WPI_UI::input("name=wpi_invoice[meta][custom_id]&value=$custom_invoice_id");
+              } else {
+                  ?>
+                <input style="width: 80px;" class="input_field wp_invoice_custom_invoice_id<?php
+            if (empty($this_invoice['custom_id'])) {
+              echo " wp_invoice_hidden";
+            }
+            ?>" name="wpi_invoice[meta][custom_id]" value="<?php echo!empty($this_invoice['custom_id']) ? $this_invoice['custom_id'] : ''; ?>">
+                <span class="wp_invoice_custom_invoice_id"><?php echo $this_invoice['invoice_id']; ?></span> <a onClick='jQuery(".wp_invoice_custom_invoice_id").toggle(); return false;' class="wp_invoice_click_me <?php
+                                                                                                            if (!empty($this_invoice['custom_id'])) {
+                                                                                                              echo " wp_invoice_hidden";
+                                                                                                            }
+                                                                                                            ?>" href="#">Custom Invoice ID</a>
+    <?php } ?>
+            </td>
+          </tr>
+          <tr class="invoice_main column-publish-global_tax">
+            <th>Global Tax</th>
+            <td>
+              <?php echo WPI_UI::input("id=wp_invoice_tax&name=wpi_invoice[meta][tax]&value=" . (!empty($this_invoice['tax']) ? $this_invoice['tax'] : '')) ?>
+            </td>
+          </tr>
+          <tr class="invoice_main column-publish-global_tax">
+            <th>Tax Method</th>
+            <td>
+    <?php $tax_method = !empty($this_invoice['tax_method']) ? $this_invoice['tax_method'] : (isset($wpi_settings['tax_method']) ? $wpi_settings['tax_method'] : ''); ?>
+    <?php echo WPI_UI::select("id=wpi_tax_method&name=wpi_invoice[tax_method]&values=" . serialize(array('before_discount' => __('Before Discount'), 'after_discount' => __('After Discount'))) . "&current_value={$tax_method}"); ?>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
     <div id="major-publishing-actions" class="clearfix">

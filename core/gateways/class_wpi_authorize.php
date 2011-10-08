@@ -55,7 +55,7 @@ class wpi_authorize extends wpi_gateway_base {
           ),
           'gateway_delim_char' => array(
               'label' => "Delimiter Character",
-              'value' => "",
+              'value' => ",",
               'description' => "Get this from your credit card processor. If the transactions are not going through, this character is most likely wrong."
           ),
           'gateway_encap_char' => array(
@@ -220,16 +220,8 @@ class wpi_authorize extends wpi_gateway_base {
       $invoice_obj->save_invoice();
       //Mark invoice as paid
       wp_invoice_mark_as_paid($invoice_id, $check = true);
-
-      if (!empty($wpi_settings['send_thank_you_email']) && $wpi_settings['send_thank_you_email'] == 'true') {
-        wp_invoice_send_email_receipt($invoice);
-      }
-
-      if (!empty($wpi_settings['cc_thank_you_email']) && $wpi_settings['cc_thank_you_email'] == 'true') {
-        $paid_invoice = new WPI_Invoice();
-        $paid_invoice->load_invoice("id={$invoice['invoice_id']}");
-        wp_invoice_send_me_notification($paid_invoice->data);
-      }
+      
+      send_notification( $invoice );
 
       $data['messages'][] = $payment->getResponseText();
       $response['success'] = true;

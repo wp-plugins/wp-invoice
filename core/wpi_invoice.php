@@ -100,6 +100,12 @@ class WPI_Invoice {
   function create_new_invoice($args = '') {
     global $wpi_settings;
     $this->data['new_invoice'] = true;
+    
+    // Include global tax if option turned on
+    if ( !empty( $wpi_settings['use_global_tax'] ) && $wpi_settings['use_global_tax'] == 'true' && !empty( $wpi_settings['global_tax'] ) ) {
+      $this->data['tax'] = (int)$wpi_settings['global_tax'];
+    }
+    
     $defaults = array (
       'invoice_id' => '',
       'custom_id' => '',
@@ -686,8 +692,15 @@ NEEDS WORK
     
     // WP figures out if we're saving or updating
     if(empty($data['ID'])) {
+      $creator = '';
+      if ( !empty( $this->data['created_by'] ) ) {
+        $creator = "Created from {$this->data['created_by']}";
+      } else {
+        $current_user = wp_get_current_user();
+        $creator = "Created by {$current_user->display_name}";
+      }
       $this->data['ID'] = wp_insert_post($data);
-      $this->add_entry("type=create&note=Created.");
+      $this->add_entry("type=create&note=".$creator);
     } else {
       $this->data['ID'] = wp_update_post($data);
       if (!empty($this->is_recurring) && $this->is_recurring) {
@@ -695,7 +708,11 @@ NEEDS WORK
       } else if (!empty($this->is_quote) && $this->is_quote) {
         $this->add_entry("attribute=quote&type=update&note=Quote updated.");
       } else {
-        $this->add_entry("type=update&note=Updated.");
+        if ( $this->data['type'] == 'single_payment' ) {
+          
+        } else {
+          $this->add_entry("type=update&note=Updated.");
+        }
       }
     }
 

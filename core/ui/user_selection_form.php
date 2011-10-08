@@ -12,10 +12,10 @@
         <?php echo WPI_UI::input("name=wpi[new_invoice][invoice_id]&value=".rand(10000000, 90000000)."&type=hidden"); ?>
         <table class="form-table" id="get_user_info">
           <tr class="invoice_main">
-            <th><label for="wp_invoice_userlookup"><?php _e('Create New Invoice For:'); ?></label></th>
+            <th><label for="wp_invoice_userlookup"><?php _e('E-mail Address:'); ?></label></th>
             <td>
               <?php WPI_UI::draw_user_auto_complete_field(); ?>
-              <input type="submit" class="button" id="wp_invoice_create_new_invoice" value="Create New Invoice">
+              <input type="submit" class="button" id="wp_invoice_create_new_invoice" value="<?php _e('Create New', 'wpi'); ?>">
               <?php if($wpi_settings['total_invoice_count']) { ?>
                 <span id="wp_invoice_copy_invoice" class="wp_invoice_click_me">copy from another</span><br />
                 <div class="wp_invoice_copy_invoice">
