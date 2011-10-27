@@ -893,7 +893,7 @@ jQuery.delegate = function(rules) {
 
 function add_itemized_list_row(where) {
   var lastRow = jQuery('#'+where+' .wp_invoice_itemized_list_row:last').clone();
-  var id = parseInt(jQuery('.id', lastRow).html()) + 1;;
+  var id = parseInt(jQuery('.id', lastRow).html()) + 1;
    jQuery('.id', lastRow).html(id);
   if(where == 'invoice_list') {
     // Update items if this is an itemized list
@@ -939,7 +939,7 @@ function add_itemized_list_row_discount() {
   } else {
     // clone last row
     var lastRow = jQuery('#invoice_list .wp_invoice_discount_row:last').clone();
-    var id = parseInt(jQuery('.id', lastRow).html()) + 1;;
+    var id = parseInt(jQuery('.id', lastRow).html()) + 1;
     jQuery('.id', lastRow).html(id);
     // Update items if this is an itemized list
     jQuery('.item_name', lastRow).attr('name', 'wpi_invoice[meta][discount][' + id + '][name]');
@@ -998,7 +998,7 @@ function wpi_recalc_totals() {
         row_price    = row_price < 0 || isNaN( row_price ) ? '' : row_price;
     var row_quantity = parseFloat(jQuery(".row_quantity input", this).val());
         row_quantity = row_quantity < 0 || isNaN( row_quantity ) ? '' : row_quantity;
-    var row_tax      = parseInt(jQuery(".row_tax input", this).val());
+    var row_tax      = parseFloat(jQuery(".row_tax input", this).val());
         row_tax      = row_tax < 0 || isNaN( row_tax ) ? '' : row_tax;
     
     // Update fields with valid data
@@ -1013,7 +1013,7 @@ function wpi_recalc_totals() {
     row_quantity = !isNaN( row_quantity ) ? row_quantity : 0 ;
     row_tax = !isNaN( row_tax ) ? row_tax : 0 ;
 
-    if ( row_tax > 0 ) {
+    if ( row_tax > 0 && row_price > 0 && row_quantity > 0 ) {
       taxable_subtotal += row_price * row_quantity;
       tax_percents.push(row_tax);
       var row_total = (row_price * row_quantity + row_price * row_quantity * row_tax / 100);
@@ -1033,7 +1033,7 @@ function wpi_recalc_totals() {
   // Services itemized list
   jQuery(".wp_invoice_itemized_charge_row").each(function (i) {
     var row_amount     = parseFloat(jQuery(".row_amount input", this).val());
-    var row_charge_tax = parseInt(jQuery(".row_charge_tax input", this).val());
+    var row_charge_tax = parseFloat(jQuery(".row_charge_tax input", this).val());
     
     row_amount     = !isNaN( row_amount ) ? row_amount : 0 ;
     row_charge_tax = !isNaN( row_charge_tax ) ? row_charge_tax : 0 ;

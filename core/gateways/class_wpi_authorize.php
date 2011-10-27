@@ -1,7 +1,7 @@
 <?php
 
 /**
-  Name: WP-Invoice Authorize.net Compatible Gateways
+  Name: MerchantPlus.com and other Authorize.net Gateways
   Class: wpi_authorize
   Internal Slug: wpi_authorize
   JS Slug: wpi_authorize
@@ -10,6 +10,15 @@
  */
 class wpi_authorize extends wpi_gateway_base {
 
+  /**
+   * Input types
+   */
+  const TEXT_INPUT_TYPE   = 'text';
+  const SELECT_INPUT_TYPE = 'select';
+  
+  /**
+   * Opations array for settings page
+   */
   var $options = array(
       'name' => 'Credit Card',
       'public_name' => 'Credit Card',
@@ -102,16 +111,202 @@ class wpi_authorize extends wpi_gateway_base {
           )
       )
   );
+  
+  /**
+   * Fields list for frontend
+   */
+  var $front_end_fields = array(
+      
+    'customer_information' => array(
+        
+      'first_name'  => array(
+        'type'  => 'text',
+        'class' => 'text-input',
+        'name'  => 'cc_data[first_name]',
+        'label' => 'First Name'
+      ),
+      
+      'last_name'   => array(
+        'type'  => 'text',
+        'class' => 'text-input',
+        'name'  => 'cc_data[last_name]',
+        'label' => 'Last Name'
+      ),
+      
+      'user_email'  => array(
+        'type'  => 'text',
+        'class' => 'text-input',
+        'name'  => 'cc_data[user_email]',
+        'label' => 'User Email'
+      ),
+      
+      'phonenumber' => array(
+        'type'  => 'text',
+        'class' => 'text-input',
+        'name'  => 'cc_data[phonenumber]',
+        'label' => 'Phone Number'
+      ),
+      
+      'streetaddress'     => array(
+        'type'  => 'text',
+        'class' => 'text-input',
+        'name'  => 'cc_data[streetaddress]',
+        'label' => 'Address'
+      ),
+      
+      'city'        => array(
+        'type'  => 'text',
+        'class' => 'text-input',
+        'name'  => 'cc_data[city]',
+        'label' => 'City'
+      ),
+      
+      'state'       => array(
+        'type'   => 'select',
+        'class'  => 'select-input',
+        'name'   => 'cc_data[state]',
+        'label'  => 'State',
+        'values' => 'us_states'
+      ),
+      
+      'zip'         => array(
+        'type'  => 'text',
+        'class' => 'text-input',
+        'name'  => 'cc_data[zip]',
+        'label' => 'Zip'
+      ),
+      
+      'country'     => array(
+        'type'   => 'select',
+        'class'  => 'select-input',
+        'name'   => 'cc_data[country]',
+        'label'  => 'County',
+        'values' => 'countries'
+      )
+        
+    ),
+      
+    'billing_information' => array(
+      
+      'card_num'    => array(
+        'type'   => 'text',
+        'class'  => 'credit_card_number input_field text-input',
+        'name'   => 'cc_data[card_num]',
+        'label'  => 'Credit Card Number'
+      ),
+      
+      'exp_month'   => array(
+        'type'   => 'select',
+        'class'  => 'select-input exp_month small',
+        'name'   => 'cc_data[exp_month]',
+        'label'  => 'Expiration Month',
+        'values' => 'months'
+      ),
+      
+      'exp_year'    => array(
+        'type'   => 'select',
+        'class'  => 'select-input exp_year small',
+        'name'   => 'cc_data[exp_year]',
+        'label'  => 'Expiration Year',
+        'values' => 'years'
+      ),
+      
+      'card_code'   => array(
+        'type'   => 'text',
+        'class'  => 'text-input small',
+        'name'   => 'cc_data[card_code]',
+        'label'  => 'Card Code'
+      )
+        
+    )
+  
+  );
 
+  /**
+   * Construct
+   */
   function __construct() {
     parent::__construct();
     $this->options['settings']['silent_post_url']['value'] = urlencode(get_bloginfo('url') . '/wp-admin/admin-ajax.php?action=wpi_gateway_server_callback&type=wpi_authorize');
+    
+    add_action( 'wpi_payment_fields', array( $this, 'wpi_payment_fields' ) );
+    add_action( 'wpi_authorize_user_meta_updated', array( $this, 'user_meta_updated' ) );
+    
+  }
+  
+  /**
+   * Render fields
+   * 
+   * @param array $invoice 
+   */
+  function wpi_payment_fields( $invoice ) {
+    
+    $this->front_end_fields = apply_filters( 'wpi_crm_custom_fields', $this->front_end_fields, 'cc_data' );
+    
+    if ( !empty( $this->front_end_fields ) ) {
+      // For each section
+      foreach( $this->front_end_fields as $key => $value ) {
+        // If section is not empty
+        if ( !empty( $this->front_end_fields[ $key ] ) ) {
+          // For each field
+          foreach( $value as $field_slug => $field_data ) {
+
+            $html = '';
+
+            switch ( $field_data['type'] ) {
+              case self::TEXT_INPUT_TYPE:
+
+                ob_start();
+
+                ?>
+
+                <li>
+                  <label for="<?php echo esc_attr( $field_slug ); ?>"><?php _e($field_data['label'], WP_INVOICE_TRANS_DOMAIN); ?></label>
+                  <input type="<?php echo esc_attr( $field_data['type'] ); ?>" class="<?php echo esc_attr( $field_data['class'] ); ?>"  name="<?php echo esc_attr( $field_data['name'] ); ?>" value="<?php echo !empty($invoice['user_data'][$field_slug])?$invoice['user_data'][$field_slug]:'';?>" />
+                </li>
+
+                <?
+
+                $html = ob_get_contents();
+                ob_end_clean();
+
+                break;
+
+              case self::SELECT_INPUT_TYPE:
+
+                ob_start();
+
+                ?>
+
+                <li>
+                  <label for="<?php echo esc_attr( $field_slug ); ?>"><?php _e($field_data['label'], WP_INVOICE_TRANS_DOMAIN); ?></label>
+                  <?php echo WPI_UI::select("name={$field_data['name']}&values={$field_data['values']}&id={$field_slug}&class={$field_data['class']}"); ?>
+                </li>
+
+                <?php
+
+                $html = ob_get_contents();
+                ob_clean();
+
+                break;
+
+              default:
+                break;
+            }
+
+            echo $html;
+
+          }
+        }
+      }
+      
+    }
+    
   }
 
-  function silent_post_url() {
-    return "1";
-  }
-
+  /**
+   * Do payment
+   */
   function process_payment($data=null) {
     global $invoice, $wpi_settings;
 
@@ -177,13 +372,13 @@ class wpi_authorize extends wpi_gateway_base {
     // Customer Info
     $payment->setParameter("x_first_name", $cc_data['first_name']);
     $payment->setParameter("x_last_name", $cc_data['last_name']);
-    $payment->setParameter("x_address", $cc_data['address']);
+    $payment->setParameter("x_address", $cc_data['streetaddress']);
     $payment->setParameter("x_city", $cc_data['city']);
     $payment->setParameter("x_state", $cc_data['state']);
     $payment->setParameter("x_country", $cc_data['country']);
     $payment->setParameter("x_zip", $cc_data['zip']);
     $payment->setParameter("x_phone", $cc_data['phonenumber']);
-    $payment->setParameter("x_email", $cc_data['email_address']);
+    $payment->setParameter("x_email", $cc_data['user_email']);
     $payment->setParameter("x_cust_id", "WP User - " . $wp_users_id);
     $payment->setParameter("x_customer_ip ", $_SERVER['REMOTE_ADDR']);
 
@@ -198,9 +393,11 @@ class wpi_authorize extends wpi_gateway_base {
       update_user_meta($wp_users_id, 'city', $cc_data['city']);
       update_user_meta($wp_users_id, 'state', $cc_data['state']);
       update_user_meta($wp_users_id, 'zip', $cc_data['zip']);
-      update_user_meta($wp_users_id, 'streetaddress', $cc_data['address']);
+      update_user_meta($wp_users_id, 'streetaddress', $cc_data['streetaddress']);
       update_user_meta($wp_users_id, 'phonenumber', $cc_data['phonenumber']);
       update_user_meta($wp_users_id, 'country', $cc_data['country']);
+      
+      do_action( 'wpi_authorize_user_meta_updated', $cc_data );
 
       // Add payment amount
       $event_note = WPI_Functions::currency_format($amount, $invoice['invoice_id']) . " paid via Authorize.net";
@@ -214,7 +411,7 @@ class wpi_authorize extends wpi_gateway_base {
       $success = "Successfully processed by {$_SERVER['REMOTE_ADDR']}";
       $invoice_obj->add_entry("attribute=invoice&note=$success&type=update");
       // Log payer email
-      $payer_email = "Authorize.net Payer email: {$cc_data['email_address']}";
+      $payer_email = "Authorize.net Payer email: {$cc_data['user_email']}";
       $invoice_obj->add_entry("attribute=invoice&note=$payer_email&type=update");
 
       $invoice_obj->save_invoice();
@@ -233,12 +430,12 @@ class wpi_authorize extends wpi_gateway_base {
         $arb->setParameter('customerId', "WP User - " . $invoice['user_data']['ID']);
         $arb->setParameter('firstName', $cc_data['first_name']);
         $arb->setParameter('lastName', $cc_data['last_name']);
-        $arb->setParameter('address', $cc_data['address']);
+        $arb->setParameter('address', $cc_data['streetaddress']);
         $arb->setParameter('city', $cc_data['city']);
         $arb->setParameter('state', $cc_data['state']);
         $arb->setParameter('zip', $cc_data['zip']);
         $arb->setParameter('country', $cc_data['country']);
-        $arb->setParameter('customerEmail', $cc_data['email_address']);
+        $arb->setParameter('customerEmail', $cc_data['user_email']);
         $arb->setParameter('customerPhoneNumber', $cc_data['phonenumber']);
 
         // Billing Info
@@ -305,7 +502,28 @@ class wpi_authorize extends wpi_gateway_base {
 
     die(json_encode($response));
   }
+  
+  function user_meta_updated( $data ) {
+    global $invoice;
+    // CRM data updating
+    if ( !class_exists('WP_CRM_Core') ) return;
+    
+    $crm_attributes = WPI_Functions::get_wpi_crm_attributes();
+    if ( empty( $crm_attributes ) ) return;
+    
+    $wp_users_id = $invoice['user_data']['ID'];
+    
+    foreach ( $data as $key => $value ) {
+      if ( key_exists( $key, $crm_attributes ) ) {
+        update_user_meta($wp_users_id, $key, $value);
+      }
+    }
+    
+  }
 
+  /**
+   * Handler for Silent Post Url
+   */
   function server_callback() {
     $arb = false;
     $fields = array();
@@ -343,6 +561,7 @@ class wpi_authorize extends wpi_gateway_base {
 
       $invoice_obj->save_invoice();
     }
+  
   }
 
 }

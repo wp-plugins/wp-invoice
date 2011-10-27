@@ -778,6 +778,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
             }
             $help[] = '</ul>';
           }
+          $help = apply_filters( 'wpi_contextual_help', $help );
 
           $return = implode('', $help);
 
@@ -1103,26 +1104,39 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
     }
     
     /**
+     * Add link to user profile in CRM for user data block
      * 
+     * @param int $user_id 
+     * @author korotkov@ud
      */
     function crm_user_panel( $user_id ) {
+    
+      if(!$user_id) {
+        return;
+      }
+      
+      
       // Determine if WP CRM is installed
       if ( class_exists( 'WP_CRM_Core' ) ) {
         
-        echo '<div class="wpi_crm_link"><a target="_blank" href="'.admin_url('admin.php?page=wp_crm_add_new&user_id='.$user_id).'">Go to user\'s WP-CRM Profile</a></div>';
+        echo '<div class="wpi_crm_link"><a  class="button" target="_blank" href="'.admin_url('admin.php?page=wp_crm_add_new&user_id='.$user_id).'">Go to user\'s profile</a></div>';
         
       } else {
         
-        echo '<div class="wpi_crm_link"><a target="_blank" href="'.admin_url('plugin-install.php?tab=search&type=term&s=WP-CRM').'">Get our WP-CRM plugin to better manage your customers</a></div>';
+        echo '<div class="wpi_crm_link"><a target="_blank" href="'.admin_url('plugin-install.php?tab=search&type=term&s=WP-CRM').'">Get WP-CRM plugin to enhance user management.</a></div>';
         
       }
       
     }
     
-    
+    /**
+     * Add additional WPI attribute option for CRM
+     * 
+     * @global object $wp_crm
+     * @param array $args 
+     * @author korotkov@ud
+     */
     function wp_crm_data_structure_attributes( $args ) {
-      
-      if ( !class_exists('WP_CRM_Core') ) return;
       
       global $wp_crm;
       
@@ -1138,8 +1152,8 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         
         ?>
           <li class="wp_crm_advanced_configuration">
-            <input id="<?php echo $row_hash; ?>_no_edit" value='true' type="checkbox"  <?php checked($wp_crm['data_structure']['attributes'][$slug]['wp_invoice'], 'true'); ?> name="wp_crm[data_structure][attributes][<?php echo $slug; ?>][wp_invoice]" />
-            <label for="<?php echo $row_hash; ?>_no_edit" ><?php _e('Use for WP-Invoice', WP_INVOICE_TRANS_DOMAIN); ?></label>
+            <input id="<?php echo $row_hash; ?>_no_edit_wpi" value='true' type="checkbox"  <?php checked($wp_crm['data_structure']['attributes'][$slug]['wp_invoice'], 'true'); ?> name="wp_crm[data_structure][attributes][<?php echo $slug; ?>][wp_invoice]" />
+            <label for="<?php echo $row_hash; ?>_no_edit_wpi" ><?php _e('WP-Invoice custom field', WP_INVOICE_TRANS_DOMAIN); ?></label>
           </li>
         <?php
         
@@ -1147,40 +1161,20 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
       
     }
     
-    
-    function wp_crm_gateway_fields() {
+    /**
+     * Add contextual help data when WPI and CRM installed
+     * 
+     * @param type $data
+     * @return array 
+     * @author korotkov@ud
+     */
+    function wp_crm_contextual_help( $data ) {
       
-      if ( !class_exists('WP_CRM_Core') ) return;
+      $data['content'][] = __('<h3>WP-Invoice</h3>', WP_INVOICE_TRANS_DOMAIN);
+      $data['content'][] = __('<p>Advanced option <b>WP-Invoice custom field</b> may be used for adding custom user data fields for payments forms.</p>', WP_INVOICE_TRANS_DOMAIN);
+      $data['content'][] = __('<p>Works for Authorize.net payment method only for now.</p>', WP_INVOICE_TRANS_DOMAIN);
       
-      $wp_crm_fields = WPI_Functions::get_wpi_crm_attributes();
-      
-      if ( empty( $wp_crm_fields ) ) return;
-      
-      ?>
-      <fieldset>
-        <ol>
-          <ul>
-      <?php
-      
-      foreach( $wp_crm_fields as $slug => $field ) {
-        $random = rand(100, 10000);
-
-      ?>
-            <li>
-              <label for="<?php echo $slug.'_'.$random; ?>"><?php _e($field['title'], WP_INVOICE_TRANS_DOMAIN); ?></label>
-              <input type="text" id="<?php echo $slug.'_'.$random; ?>" name="<?php echo $slug; ?>" class="text-input" />
-            </li>
-       
-      <?php
-      
-      }
-      
-      ?>     
-          </ul>
-        </ol>
-      </fieldset>
-      <?php
-      
+      return $data;
     }
 
 }

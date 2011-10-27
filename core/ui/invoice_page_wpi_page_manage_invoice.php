@@ -25,7 +25,9 @@
   });
 
   jQuery(window).load(function(){
-    jQuery('#wp_invoice_tax').trigger('keyup');
+    if ( jQuery('#wp_invoice_tax').val() ) {
+      jQuery('#wp_invoice_tax').trigger('keyup');
+    }
   });
 
 </script>

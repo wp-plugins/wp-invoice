@@ -311,7 +311,7 @@ jQuery('#wpi_revalidate').live('click', function(){
   }));
   
   
-  jQuery('.item_name, .item_quantity, .item_price, .item_price input, .item_amount').live("blur", function() {
+  jQuery('.item_name, .item_quantity, .item_price, .item_price input, .item_amount, .line_tax_item, .item_charge_tax').live("blur", function() {
     wpi_recalc_totals();
     var name  = jQuery(this).parents('.wp_invoice_itemized_list_row').find('.item_name');
     var price = jQuery(this).parents('.wp_invoice_itemized_list_row').find('.item_price');
@@ -328,7 +328,7 @@ jQuery('#wpi_revalidate').live('click', function(){
   jQuery('#wpi_invoice_form, #wpi_predefined_services_div').keyup(
     jQuery.delegate({
       //'.item_quantity, .item_price, .item_price input': function() {wpi_recalc_totals();},
-      '.line_tax_item, .item_charge_tax': function() {wpi_recalc_totals();jQuery("#wp_invoice_tax").val("");}
+      '.line_tax_item, .item_charge_tax': function() {jQuery("#wp_invoice_tax").val("");}
     })
   );
   

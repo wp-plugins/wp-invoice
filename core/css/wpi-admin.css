@@ -728,7 +728,7 @@ width:100%;
 #merchant_table   .wp_invoice_special_price { color: #2555b9;}
 
 
-.wpi-payment-setting label{float: left; margin-right: 15px;}
+
 .wpi-payment-setting .wpi_notice { margin-left: 10px; padding: 0 5px 0 5px; float:left; }
 .wpi-payment-setting .wpi_notice span {cursor: pointer;}
 
@@ -783,7 +783,7 @@ width:100%;
 
 #wp_invoice_settings_page .ui-widget {font-size: 1em;}
 .wpi_settings_list  {padding-top: 5px;}
-.wpi_settings_list li {font-size: 11px;}
+
 
 .itemized_list .wp_invoice_discount_row  {
   margin-bottom: 0px; padding-bottom: 10px; padding-top: 10px; border-bottom: 1px solid #F1F1F1;

@@ -1075,17 +1075,17 @@ class WPI_Functions {
         if ($wpi_settings['force_https'] == 'true' && (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on")) {
           $_SESSION['https'] = 1;
           header("Location: https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
-          session_destroy();
+          @session_destroy();
           exit;
         } else {
           if (session_id() != '')
-            session_destroy();
+            @session_destroy();
         }
       }
       //Added to see how the invoice looks once it is created...
       if ($wpi_settings['force_https'] == 'false') {
         if (session_id() != '')
-          session_destroy();
+          @session_destroy();
         // Nothing should be done here, this function is simply for validating.
         // If we got this far, means invoice_id and page are validated, and HTTPS is NOT enforced
         return true;
@@ -1720,10 +1720,10 @@ class WPI_Functions {
           $wpi_settings['installed_features'][$plugin_slug]['name'] = $plugin_data['Name'];
           $wpi_settings['installed_features'][$plugin_slug]['version'] = $plugin_data['Version'];
           $wpi_settings['installed_features'][$plugin_slug]['description'] = $plugin_data['Description'];
-
+          
           // Check if the plugin is disabled
           if (empty($wpi_settings['installed_features'][$plugin_slug]['disabled'])) {
-            $wpi_settings['installed_features'][$plugin_slug]['disabled'] = false;
+            $wpi_settings['installed_features'][$plugin_slug]['disabled'] = 'false';
           }
           if ($wpi_settings['installed_features'][$plugin_slug]['disabled'] != 'true') {
 
@@ -1733,7 +1733,7 @@ class WPI_Functions {
             if (!class_exists($plugin_slug))
               unset($wpi_settings['installed_features'][$plugin_slug]);
             else
-              $wpi_settings['installed_features'][$plugin_slug]['disabled'] = false;
+              $wpi_settings['installed_features'][$plugin_slug]['disabled'] = 'false';
           } else {
             // Feature not loaded because it is disabled
           }
@@ -1902,6 +1902,35 @@ class WPI_Functions {
       return __('Update ran successfully.', 'wpi');
     }
   }
+  
+  /**
+   * Check if premium feature is installed or not
+   * @param string $slug. Slug of premium feature
+   * @return boolean.
+   */
+  function check_premium($slug) {
+    global $wpi_settings;
+
+    if(empty($wpi_settings['installed_features'][$slug]['version'])) {
+      return false;
+    }
+
+    $file = WPI_Premium . "/" . $slug . ".php";
+
+    $default_headers = array(
+      'Name' => __('Name','wpp'),
+      'Version' => __('Version','wpp'),
+      'Description' => __('Description','wpp')
+    );
+
+    $plugin_data = @get_file_data( $file , $default_headers, 'plugin' );
+
+    if(!is_array($plugin_data) || empty($plugin_data['Version'])) {
+      return false;
+    }
+
+    return true;
+  }
 
   /**
    * Logs an action
@@ -2021,6 +2050,27 @@ class WPI_Functions {
     
     return $attributes;
     
+  }
+  
+  
+  function wpi_crm_custom_fields( $current_fields, $name ) {
+    
+    $attributes = self::get_wpi_crm_attributes();
+    
+    if ( empty( $attributes ) ) return $current_fields;
+    
+    foreach( $attributes as $attr_key => $attr_value ) {
+        
+        $current_fields['customer_information'][ $attr_key ] = array(
+          'type'  => 'text',
+          'class' => 'text-input',
+          'name'  => $name.'['.$attr_key.']',
+          'label' => __( $attr_value['title'], WP_INVOICE_TRANS_DOMAIN )
+        );
+      
+    }
+    
+    return $current_fields;
   }
 
 }

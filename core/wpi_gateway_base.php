@@ -14,6 +14,7 @@ abstract class wpi_gateway_base {
   function __construct() {
     /** Set the class name */
     $this->type = get_class($this);
+    add_filter( 'sync_billing_update', array( 'wpi_gateway_base', 'sync_billing_filter' ), 10, 3 );
   }
   
   /**
@@ -29,7 +30,9 @@ abstract class wpi_gateway_base {
         extract(wp_parse_args($args, $defaults), EXTR_SKIP);
     /** Include the template file required */
     include('gateways/templates/payment_header.tpl.php');
-    eval("include('gateways/templates/".$this->type."-frontend.tpl.php');");
+    /** Why eval here? korotkov@ud */
+    //eval("include('gateways/templates/".$this->type."-frontend.tpl.php');");
+    include('gateways/templates/'.$this->type.'-frontend.tpl.php');
     include('gateways/templates/payment_footer.tpl.php');
   }
   
@@ -103,7 +106,7 @@ abstract class wpi_gateway_base {
                   $g[$slug][$option_key][$k] = $v;
                 } else {
                   if(is_array($v)) {
-                    $g[$slug][$option_key][$k] = wp_parse_args($wpi_settings['billing'][$slug][$option_key][$k], $v);
+                    $g[$slug][$option_key][$k] = apply_filters( 'sync_billing_update', $k, $v, wp_parse_args($wpi_settings['billing'][$slug][$option_key][$k], $v) );
                   } else {
                     $g[$slug][$option_key][$k] = !empty($wpi_settings['billing'][$slug][$option_key][$k]) ? $wpi_settings['billing'][$slug][$option_key][$k] : $v;
                   }
@@ -135,6 +138,16 @@ abstract class wpi_gateway_base {
       $wpi_settings['billing'][$slug] = $g[$slug];
       
     }
+    
+  }
+  
+  public function sync_billing_filter( $setting_slug, $new_setting_array, $def_setting_array ) {
+    
+    if ( $setting_slug == 'ipn' || $setting_slug == 'silent_post_url' ) {
+      return $new_setting_array;
+    }
+    
+    return $def_setting_array;
     
   }
 }

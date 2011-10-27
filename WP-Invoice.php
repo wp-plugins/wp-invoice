@@ -213,10 +213,11 @@ if (!class_exists('WPI_Core')) {
 
       /** WP-CRM integration */
       add_action('wpi_integrate_crm_user_panel', array('WPI_UI', 'crm_user_panel'));
-      
-      // Do not remove these lines korotkov@ud
-      //add_action('wp_crm_data_structure_attributes', array('WPI_UI', 'wp_crm_data_structure_attributes'));
-      //add_action('wpi_custom_gateway_fields', array('WPI_UI', 'wp_crm_gateway_fields'));
+      if ( class_exists('WP_CRM_Core') ) {
+        add_action('wp_crm_data_structure_attributes', array('WPI_UI', 'wp_crm_data_structure_attributes'));
+        add_filter('wpi_crm_custom_fields', array('WPI_Functions', 'wpi_crm_custom_fields'), 10, 2);
+        add_filter('wp_crm_contextual_help', array('WPI_UI', 'wp_crm_contextual_help'));
+      }
 
       /** If we are in debug mode, lets add these actions */
       if($wpi_settings['debug']){

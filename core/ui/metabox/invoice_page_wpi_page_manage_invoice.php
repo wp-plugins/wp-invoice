@@ -373,7 +373,7 @@ function postbox_user_existing($this_invoice) {
       <?php
       endif;
       ?>
-  <?php foreach ($user_emails as $user_email) { ?>
+  <?php foreach ($user_emails as $user_email) { if(empty($user_email)) {continue;} ?>
         <option <?php selected($user_email, $this_invoice['user_data']['user_email']); ?>value="<?php echo esc_attr($user_email); ?>"><?php echo esc_attr($user_email); ?></option>
   <?php } ?>
     </select>

@@ -104,25 +104,25 @@ class WPI_Payment_Api {
                              ? $args['payer_email']
                              : '';
           $this->method['x_description']= !empty( $args['description'] )
-                             ? $args['description']
+                             ? stripslashes($args['description'])
                              : '';
           $this->method['x_first_name'] = !empty( $args['payer_first_name'] )
-                             ? $args['payer_first_name']
+                             ? stripslashes($args['payer_first_name'])
                              : '';
           $this->method['x_last_name']  = !empty( $args['payer_last_name'] )
-                             ? $args['payer_last_name']
+                             ? stripslashes($args['payer_last_name'])
                              : '';
           $this->method['x_amount']     = !empty( $args['amount'] )
                              ? $args['amount']
                              : '0';
           $this->method['x_company']    = !empty( $args['company'] )
-                             ? $args['company']
+                             ? stripslashes($args['company'])
                              : '';
           $this->method['x_address']    = !empty( $args['address'] )
-                             ? $args['address']
+                             ? stripslashes($args['address'])
                              : '';
           $this->method['x_city']       = !empty( $args['city'] )
-                             ? $args['city']
+                             ? stripslashes($args['city'])
                              : '';
           $this->method['x_state']      = !empty( $args['state'] )
                              ? $args['state']
@@ -131,7 +131,7 @@ class WPI_Payment_Api {
                              ? $args['zip']
                              : '';
           $this->method['x_country']    = !empty( $args['country'] )
-                             ? $args['country']
+                             ? stripslashes($args['country'])
                              : '';
           $this->method['x_phone']      = !empty( $args['phone'] )
                              ? $args['phone']

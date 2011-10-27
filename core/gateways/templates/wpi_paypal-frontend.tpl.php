@@ -20,33 +20,32 @@
   <ol>
     <li>
       <label for="first_name"><?php _e('First Name', WP_INVOICE_TRANS_DOMAIN); ?></label>
-      <input name="first_name" value="<?php echo !empty($invoice['user_data']['first_name'])?$invoice['user_data']['first_name']:'';?>" />
+      <input type="text" class="text-input" name="first_name" value="<?php echo !empty($invoice['user_data']['first_name'])?$invoice['user_data']['first_name']:'';?>" />
     </li>
     <li>
       <label for="last_name"><?php _e('Last Name', WP_INVOICE_TRANS_DOMAIN); ?></label>
-      <input name="last_name" value="<?php echo !empty($invoice['user_data']['last_name'])?$invoice['user_data']['last_name']:'';?>" />
+      <input type="text" class="text-input" name="last_name" value="<?php echo !empty($invoice['user_data']['last_name'])?$invoice['user_data']['last_name']:'';?>" />
     </li>
     <li>
       <label for="email"><?php _e('Email Address', WP_INVOICE_TRANS_DOMAIN); ?></label>
-      <input name="email_address" value="<?php echo !empty($invoice['user_data']['user_email'])?$invoice['user_data']['user_email']:'';?>" />
+      <input type="text" class="text-input" name="email_address" value="<?php echo !empty($invoice['user_data']['user_email'])?$invoice['user_data']['user_email']:'';?>" />
     </li>
-    <!-- Is this required? - A.K. -->
     <?php $phonenumber = !empty($invoice['user_data']['phonenumber']) ? $invoice['user_data']['phonenumber'] : "---"; ?>
     <?php list($night_phone_a, $night_phone_b, $night_phone_c) = split('[/.-]', $phonenumber); ?>
     <li>
       <label for="night_phone_a"><?php _e('Phone Number', WP_INVOICE_TRANS_DOMAIN); ?></label>
-      <input name="night_phone_a" value="<?php echo $night_phone_a;?>" style="width:30px;" size="4" maxlength="3" />
-      <input name="night_phone_b" value="<?php echo $night_phone_b;?>" style="width:30px;" size="4" maxlength="3" />
-      <input name="night_phone_c" value="<?php echo $night_phone_c;?>" style="width:35px;" size="4" maxlength="4" />
+      <input type="text" class="text-input small" name="night_phone_a" value="<?php echo $night_phone_a;?>" style="width:47px;" size="4" maxlength="3" />
+      <input type="text" class="text-input small" name="night_phone_b" value="<?php echo $night_phone_b;?>" style="width:47px;" size="4" maxlength="3" />
+      <input type="text" class="text-input small" name="night_phone_c" value="<?php echo $night_phone_c;?>" style="width:47px;" size="4" maxlength="4" />
     </li>
 
     <li>
       <label for="address"><?php _e('Address', WP_INVOICE_TRANS_DOMAIN); ?></label>
-      <input name="address1" value="<?php echo !empty($invoice['user_data']['streetaddress'])?$invoice['user_data']['streetaddress']:'';?>" />
+      <input type="text" class="text-input" name="address1" value="<?php echo !empty($invoice['user_data']['streetaddress'])?$invoice['user_data']['streetaddress']:'';?>" />
     </li>
     <li>
       <label for="city"><?php _e('City', WP_INVOICE_TRANS_DOMAIN); ?></label>
-      <input name="city" value="<?php echo !empty($invoice['user_data']['city'])?$invoice['user_data']['city']:'';?>" />
+      <input type="text" class="text-input" name="city" value="<?php echo !empty($invoice['user_data']['city'])?$invoice['user_data']['city']:'';?>" />
      </li>
     <?php 
     switch ( strtolower( $wpi_settings['state_selection'] ) ) {
@@ -66,7 +65,7 @@
     ?>
     <li>
       <label for="zip"><?php _e('Zip Code', WP_INVOICE_TRANS_DOMAIN); ?></label>
-      <input name="zip" value="<?php echo !empty($invoice['user_data']['zip'])?$invoice['user_data']['zip']:'';?>" />
+      <input type="text" class="text-input" name="zip" value="<?php echo !empty($invoice['user_data']['zip'])?$invoice['user_data']['zip']:'';?>" />
     </li>
     <li>
       <label for="country"><?php _e('Country', WP_INVOICE_TRANS_DOMAIN); ?></label>

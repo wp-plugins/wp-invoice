@@ -89,6 +89,13 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 == Change Log ==
 
+= Version 3.04.0 =
+* WP-CRM Integration updates. Integrate you WP-Invoice with WP-CRM to control payment user data.
+* Ability to connect new premium feature SPC (Single Page Checkout).
+* Fix to tax may be non integer.
+* Fix to allow IPN URL to be changed.
+* Minor tweaks and improvements to Settings Page UI.
+
 = Version 3.03.0 =
 * Automatic import of Web Invoice plugin invoices.
 * Invoice logs display the user that created the invoice.

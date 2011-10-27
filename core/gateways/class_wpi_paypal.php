@@ -1,6 +1,6 @@
 <?php
 /**
-Name: WP-Invoice PayPal Gateway
+Name: PayPal
 Class: wpi_paypal
 Internal Slug: wpi_paypal
 JS Slug: wpi_paypal
@@ -48,7 +48,7 @@ class wpi_paypal extends wpi_gateway_base {
   
   /**
    * Handler for PayPal IPN queries
-   * @author Anton Korotkov
+   * @author korotkov@ud
    * Full callback URL: http://domain/wp-admin/admin-ajax.php?action=wpi_gateway_server_callback&type=wpi_paypal
    */
   function server_callback(){
@@ -97,7 +97,7 @@ class wpi_paypal extends wpi_gateway_base {
   
   /**
    * Verify IPN and returns TRUE or FALSE
-   * @author Anton Korotkov
+   * @author korotkov@ud
    **/
   private function _ipn_verified( $invoice ) {
 

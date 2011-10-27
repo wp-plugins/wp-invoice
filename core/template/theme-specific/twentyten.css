@@ -75,3 +75,30 @@
     margin: 14px 8px 9px 132px;
     padding: 5px 16px;
 }
+
+#online_payment_form_wrapper select {
+    background: none repeat scroll 0 0 #F9F9F9;
+    border: 1px solid #CCCCCC;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1) inset;
+    font-family: Georgia;
+    font-size: 16px;
+    padding: 2px;
+    width: 204px;
+}
+
+#online_payment_form_wrapper .text-input {
+  width: 196px;
+}
+
+input.small {
+  width: 57px !important;
+}
+
+select.small {
+  width: 65px !important;
+}
+
+.wpi_left_col,
+.wpi_right_col {
+  width: 500px !important;  
+}

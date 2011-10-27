@@ -72,3 +72,27 @@ div.wpi_payment_form div.partial_payments {
     margin: 14px 8px 9px 132px;
     padding: 5px 16px;
 }
+
+#wp_invoice_select_payment_method_selector {
+  width: 174px;
+}
+
+div.wpi_billing_overview select {
+  background: none repeat scroll 0 0 #FAFAFA;
+  border: 1px solid #DDDDDD;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
+  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
+  -o-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
+  -khtml-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
+  -ms-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
+  color: #888888;
+  width: 174px;
+}
+div.wpi_billing_overview select.small {
+  padding: 4px;
+  width: 68px;
+}
+div.wpi_billing_overview input.small {
+  width: 60px;
+}
