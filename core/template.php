@@ -48,14 +48,14 @@ function get_invoice($args) {
                 if($this_invoice->save_invoice())
                     $counter++;
             }
-            return __("$counter  invoice(s) archived.", WP_INVOICE_TRANS_DOMAIN);
+            return __("$counter  invoice(s) archived.", WPI);
         } else {
             $this_invoice = new WPI_Invoice();
             $this_invoice->load_invoice("id=$invoice_id");
             $this_invoice->set("status=archive");
             $this_invoice->add_entry("Archived.");
             if($this_invoice->save_invoice())
-                return __('Successfully archived.', WP_INVOICE_TRANS_DOMAIN);
+                return __('Successfully archived.', WPI);
         }
     }
  

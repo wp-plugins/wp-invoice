@@ -35,9 +35,9 @@ class WPI_Invoice {
     global $wpdb;
     $ID = $this->data['ID'];
 
-    // If ID isn't set, try to get ID from invoice_id
-    if(empty($ID))
+    if(empty($ID)) {
       $ID = wpi_invoice_id_to_post_id($this->data['invoice_id']);
+    }
 
     if(!$ID)
       return false;
@@ -75,22 +75,87 @@ class WPI_Invoice {
 
   /**
    * Load user information from DB into invoice class
+   *
+   * Fixed to conditionally check for most appropriate name to display and override the 'display_name'
+   *
    */
   function load_user($args = '') {
-    $defaults = array ('email' => '');
-    extract(wp_parse_args($args, $defaults), EXTR_SKIP);
+    global $wpi_settings;
 
-    if($email && empty($user_id)) {
-      $user_id = email_exists($email);
+    extract(wp_parse_args($args, array (
+      'email' => false,
+      'user_id' => false
+    )), EXTR_SKIP);
+
+    $email = trim($email);
+
+    //** If e-mail exists, but no user_id is passed we get ID from email */
+
+    if($user_id = get_user_by('ID', $user_id)->data->ID) {
+      WPI_Functions::console_log('Loaded user from passed ID.');
+      $new_user = false;
+
+    } elseif (!empty($email) && $user_id = get_user_by('email', $email)->data->ID) {
+      WPI_Functions::console_log('Loaded user from e-mail.');
+      $new_user = false;
+    } else {
+      WPI_Functions::console_log('User info not, found - assuming new user.');
+      $new_user = true;
     }
 
-    if(empty($user_id)) {
+    //** If new user, we create user_data array, and bail */
+    if($new_user) {
       $this->data['user_data'] = array();
       return;
     }
 
-    $user_data = get_userdata($user_id);
-    $this->data['user_data'] = (array)$user_data;
+    //** Get basic user data */
+    $this->data['user_data'] = (array) get_userdata($user_id)->data;
+
+    //** Get required user fields */
+    $required_fields = (array) $wpi_settings['user_meta']['required'];
+
+    //** Get non essential user information */
+    $custom_fields =  (array) apply_filters('wpi_user_information', $wpi_settings['user_meta']['custom']);
+
+    //** Merge required and non-required user fields */
+    $user_information = array_merge($required_fields, $custom_fields);
+
+    //** Load all user information, if it exists, into invoice object */
+    foreach($user_information as $meta_key => $meta_label) {
+      if($meta_value = trim(get_user_meta($user_id, $meta_key, true))) {
+        $this->data['user_data'][$meta_key] = $meta_value;
+      }
+    }
+
+    //** Determine if display_name is custom */
+    if(!empty($display_name) && $display_name != $user_email) {
+      $recipient = $display_name;
+    }
+
+    //** If either first or last name exist, use them */
+    if(empty($recipient)) {
+      if(!empty($this->data['user_data']['first_name']) || !empty($this->data['user_data']['last_name'])) {
+        $recipient = trim(trim($this->data['user_data']['first_name']) . ' ' . trim($this->data['user_data']['last_name']));
+      }
+    }
+
+    //** Check if company name is set (i.e. corporate client) */
+    if(empty($recipient) && !empty($this->data['user_data']['company_name'])) {
+      $recipient = $this->data['user_data']['company_name'];
+    }
+
+    //** If still empty, just default to email */
+    if(empty($recipient)) {
+      $recipient = $user_email;
+    }
+
+    //** Select Display Name */
+    $this->data['user_data']['display_name'] = $recipient;
+
+    //** For quick access (not sure if this is used, but just in case */
+    $this->data['user_email'] = $email;
+
   }
 
   /**
@@ -100,12 +165,12 @@ class WPI_Invoice {
   function create_new_invoice($args = '') {
     global $wpi_settings;
     $this->data['new_invoice'] = true;
-    
+
     // Include global tax if option turned on
     if ( !empty( $wpi_settings['use_global_tax'] ) && $wpi_settings['use_global_tax'] == 'true' && !empty( $wpi_settings['global_tax'] ) ) {
       $this->data['tax'] = (int)$wpi_settings['global_tax'];
     }
-    
+
     $defaults = array (
       'invoice_id' => '',
       'custom_id' => '',
@@ -132,11 +197,13 @@ class WPI_Invoice {
     // Default Currency
     $this->data['default_currency_code'] = $wpi_settings['currency']['default_currency_code'];
     // Default payment method
+		$dpm = '';
     foreach ( $wpi_settings['billing'] as $key => $value) {
-      if ( WPI_Functions::is_true( $value['allow'] ) ) {
-        $this->data['default_payment_method'] = $value['default_option'] == 'true' ? $key : '';
+      if ( WPI_Functions::is_true( $value['allow'] ) && $value['default_option'] == 'true' ) {
+        $dpm = $key;
       }
     }
+		$this->data['default_payment_method'] = $dpm;
     // Default Billings
     // Merge billings to get available billings - A.K.
     WPI_Functions::merge_billings( $wpi_settings['billing'], &$this->data['billing'] );
@@ -155,7 +222,7 @@ class WPI_Invoice {
       extract(wp_parse_args($args, $defaults), EXTR_SKIP);
 
       $this->load_invoice("id=".$id);
-      
+
       $this->data['invoice_id'] = (!empty($invoice_id) ? $invoice_id : rand(10000000, 99999999));
       $this->data['post_status'] = 'active';
       $this->data['adjustments'] = 0;
@@ -168,28 +235,32 @@ class WPI_Invoice {
    * Overwrites globals
    */
   function load_invoice($args = '') {
-    global $wpdb, $wpi_settings;
+    global $wpdb, $wpi_settings, $blog_id;
 
-    $defaults = array (
+    extract(wp_parse_args($args, array(
       'id' => '',
       'return' => false
-    );
-
-    extract(wp_parse_args($args, $defaults), EXTR_SKIP);
+    )), EXTR_SKIP);
 
     if(strlen($id) == 8) {
       $id = wpi_invoice_id_to_post_id($id);
     }
 
+    $new_invoice = is_numeric($id) ? false : true;
+
     $invoice_data = $wpdb->get_row("SELECT * FROM {$wpdb->posts} WHERE ID = '$id'", ARRAY_A);
 
-    if(count($invoice_data) < 1) {
+    if($new_invoice || count($invoice_data) < 1) {
       $this->error = true;
-      return false;
+      $this->new_invoice = true;
+      WPI_Functions::console_log('WPI_Invoice::load_invoice() function executed, no invoice ID found, assuming new invoice.');
+      return;
     }
 
-    // Load meta
+    WPI_Functions::console_log('WPI_Invoice::load_invoice() function executed, invoice_id: ' . $id);
+
     $object_meta = get_post_custom($id);
+
 
     if(is_array($object_meta)) {
       foreach($object_meta as $meta_key => $meta_value) {
@@ -206,15 +277,16 @@ class WPI_Invoice {
       }
     }
 
-    // Set correct default payment method
-    WPI_Functions::set_default_payment_method( $invoice_data['billing'], &$invoice_data );
-
-    // Merge Invoice Billing with default Billing data ( $wpi_settings['billing'] )
     WPI_Functions::merge_billings( $wpi_settings['billing'], &$invoice_data['billing'] );
 
-    // Get log
-    $object_log = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}wpi_object_log WHERE object_id = '{$id}'", ARRAY_A);
-    //print_r( $object_log );
+    //** Add support for MS and for old invoice histories which will have a blog_id of 0 after upgrade */
+    if($blog_id == 1) {
+      $ms_blog_query = " AND ( blog_id = {$blog_id} OR blog_id = 0) ";
+    } else {
+      $ms_blog_query = " AND blog_id = {$blog_id} ";
+    }
+
+    $object_log = $wpdb->get_results("SELECT * FROM {$wpdb->base_prefix}wpi_object_log WHERE object_id = '{$id}' $ms_blog_query", ARRAY_A);
 
     if(!empty($object_log)) {
       $invoice_data['log'] = $object_log;
@@ -226,16 +298,15 @@ class WPI_Invoice {
       $this->load_user("email={$invoice_data['user_email']}");
     }
 
-    //die(print_r(debug_backtrace()));
+    if(empty($this->data['user_data'])) {
+      WPI_Functions::console_log('Warning: no user information loaded for this invoice.');
+    }
 
     if(!is_array($this->data)) {
      $this->data = array();
     }
 
-
     $this->data = array_merge($invoice_data, $this->data);
-
-    //WPI_Functions::qc( $this->data );
 
     if( $return ) {
       return $this->data;
@@ -322,17 +393,16 @@ class WPI_Invoice {
       return false;
     }
 
-    $defaults = array (
+    extract(wp_parse_args($args, array(
       'type' => 'update',
       'attribute' => 'invoice',
       'amount' => '',
       'note' => '',
       'time' => time()
-    );
+    )), EXTR_SKIP);
 
-    extract(wp_parse_args($args, $defaults), EXTR_SKIP);
+    return WPI_Functions::log_event($ID, $attribute, $type, $amount, $note, $time);
 
-    WPI_Functions::log_event($ID, $attribute, $type, $amount, $note, $time);
   }
 
     /**
@@ -340,85 +410,93 @@ class WPI_Invoice {
     */
     function line_item($args = '') {
 
-        $defaults = array (
-            'name' => '',
-            'description' => '',
-            'quantity' => 1,
-            'price' => '',
-            'tax_rate' => ''
-        );
-        extract(wp_parse_args($args, $defaults), EXTR_SKIP);
-        if (empty ($name) || empty ($price))
-            return false;
-        
-        $tax_rate = (!empty( $tax_rate ) && $tax_rate > 0) ? $tax_rate : 0 ;
+      extract(wp_parse_args($args, array(
+          'name' => '',
+          'description' => '',
+          'quantity' => 1,
+          'price' => '',
+          'tax_rate' => ''
+      )), EXTR_SKIP);
 
-        if ( !empty( $this->data['itemized_list'] ) ) {
-          $items_in_list = count($this->data['itemized_list']) + 1;
-        } else {
-          $items_in_list = 1;
-        }
-        // Counted number of items in itemized list, and added another one
-        $this->data['itemized_list'][$items_in_list]['name'] = $name;
-        $this->data['itemized_list'][$items_in_list]['description'] = $description;
-        $this->data['itemized_list'][$items_in_list]['quantity'] = $quantity;
-        $this->data['itemized_list'][$items_in_list]['price'] = $price;
-        $this->data['itemized_list'][$items_in_list]['tax_rate'] = $tax_rate;
-        // Calculate line totals
-        $this->data['itemized_list'][$items_in_list]['line_total_tax'] = $quantity * $price * ($tax_rate / 100);
-        $this->data['itemized_list'][$items_in_list]['line_total_before_tax'] = $quantity * $price;
-        $this->data['itemized_list'][$items_in_list]['line_total_after_tax'] = $quantity * $price * (1 + ($tax_rate / 100));
+
+      if (empty ($name) || empty ($price))
+          return false;
+
+      $tax_rate = (!empty( $tax_rate ) && $tax_rate > 0) ? $tax_rate : 0 ;
+
+      if ( !empty( $this->data['itemized_list'] ) ) {
+        $items_in_list = count($this->data['itemized_list']) + 1;
+      } else {
+        $items_in_list = 1;
+      }
+      // Counted number of items in itemized list, and added another one
+      $this->data['itemized_list'][$items_in_list]['name'] = $name;
+      $this->data['itemized_list'][$items_in_list]['description'] = $description;
+      $this->data['itemized_list'][$items_in_list]['quantity'] = $quantity;
+      $this->data['itemized_list'][$items_in_list]['price'] = $price;
+      $this->data['itemized_list'][$items_in_list]['tax_rate'] = $tax_rate;
+
+      // Calculate line totals
+      $this->data['itemized_list'][$items_in_list]['line_total_tax'] = $quantity * $price * ($tax_rate / 100);
+      $this->data['itemized_list'][$items_in_list]['line_total_before_tax'] = $quantity * $price;
+      $this->data['itemized_list'][$items_in_list]['line_total_after_tax'] = $quantity * $price * (1 + ($tax_rate / 100));
 
     }
-    
+
+
     /**
     Adds line charges to an invoice
     */
     function line_charge($args = '') {
 
-        $defaults = array (
-            'name' => '',
-            'amount' => '',
-            'tax' => 0
-        );
-        
-        extract(wp_parse_args($args, $defaults), EXTR_SKIP);
-        if (empty ($name) || empty ($amount))
-          return false;
+      $defaults = array (
+          'name' => '',
+          'amount' => '',
+          'tax' => 0
+      );
 
-        $items_in_list = count( empty( $this->data['itemized_charges'] ) ? null : $this->data['itemized_charges'] ) + 1;
-        // Counted number of items in itemized list, and added another one
-        $this->data['itemized_charges'][$items_in_list]['name'] = $name;
-        $this->data['itemized_charges'][$items_in_list]['amount'] = $amount;
-        $this->data['itemized_charges'][$items_in_list]['tax'] = $tax;
-        // Calculate line totals
-        $this->data['itemized_charges'][$items_in_list]['tax_amount'] = $amount / 100 * $tax;
-        $this->data['itemized_charges'][$items_in_list]['after_tax'] = $amount + ( $amount / 100 * $tax );
-        $this->data['itemized_charges'][$items_in_list]['before_tax'] = $amount;
+      extract(wp_parse_args($args, $defaults), EXTR_SKIP);
+      if (empty ($name) || empty ($amount))
+        return false;
+
+      $items_in_list = count( empty( $this->data['itemized_charges'] ) ? null : $this->data['itemized_charges'] ) + 1;
+      // Counted number of items in itemized list, and added another one
+      $this->data['itemized_charges'][$items_in_list]['name'] = $name;
+      $this->data['itemized_charges'][$items_in_list]['amount'] = $amount;
+      $this->data['itemized_charges'][$items_in_list]['tax'] = $tax;
+      // Calculate line totals
+      $this->data['itemized_charges'][$items_in_list]['tax_amount'] = $amount / 100 * $tax;
+      $this->data['itemized_charges'][$items_in_list]['after_tax'] = $amount + ( $amount / 100 * $tax );
+      $this->data['itemized_charges'][$items_in_list]['before_tax'] = $amount;
 
     }
+
+
     /**
     Adds discounts to an invoice
     */
     function add_discount($args = '') {
-        $defaults = array (
-            'name' => '',
-            'description' => '',
-            'amount' => '',
-            'type' => ''
-        );
-        extract(wp_parse_args($args, $defaults), EXTR_SKIP);
-        if(!isset($this->data['discount'])) {
-          $this->data['discount'] = array();
-        }
-        $items_in_list = count($this->data['discount']) + 1;
-        $this->data['discount'][$items_in_list]['name'] = $name;
-        $this->data['discount'][$items_in_list]['amount'] = $amount;
-        $this->data['discount'][$items_in_list]['type'] = $type;
-     }
+
+      $defaults = array (
+          'name' => '',
+          'description' => '',
+          'amount' => '',
+          'type' => ''
+      );
+      extract(wp_parse_args($args, $defaults), EXTR_SKIP);
+      if(!isset($this->data['discount'])) {
+        $this->data['discount'] = array();
+      }
+      $items_in_list = count($this->data['discount']) + 1;
+      $this->data['discount'][$items_in_list]['name'] = $name;
+      $this->data['discount'][$items_in_list]['amount'] = $amount;
+      $this->data['discount'][$items_in_list]['type'] = $type;
+
+    }
+
 /**
-    Creates an invoice schedule.
-    There can only be one, so deletes any other schedule.
+Creates an invoice schedule.
+There can only be one, so deletes any other schedule.
 */
     function create_schedule($args = '') {
 
@@ -442,7 +520,7 @@ class WPI_Invoice {
       $this->data['recurring']['unit'] = in_array( $unit, $units ) ? $unit : 'months';
       $this->data['recurring']['length'] = (int)$length;
       $this->data['recurring']['cycles'] = (int)$cycles;
-      $this->data['recurring']['send_invoice_automatically'] = 
+      $this->data['recurring']['send_invoice_automatically'] =
         ( $send_invoice_automatically != 'on' && $send_invoice_automatically != 'off' )
         ? 'on'
         : $send_invoice_automatically;
@@ -455,8 +533,8 @@ class WPI_Invoice {
     May need to be udpated.
     */
     function calculate_totals() {
-      global $wpdb;
-      
+      global $wpdb, $blog_id;
+
       // Empty all sums
       $taxable_subtotal             = 0;
       $non_taxable_subtotal         = 0;
@@ -466,25 +544,33 @@ class WPI_Invoice {
       $this->data['subtotal']       = 0;
       $this->data['total_tax']      = 0;
       $this->data['total_discount'] = 0;
-      
+
       // Services itemized list
       if(isset($this->data['itemized_list']) && is_array($this->data['itemized_list'])) {
         foreach ($this->data['itemized_list'] as $key => $value) {
           if ( $value['line_total_tax'] > 0 ) {
             $taxable_subtotal     += $value['line_total_before_tax'];
-            $tax_percents[]       =  $value['tax_rate'];
+            $tax_percents[]       =  array(
+								'tax' => $value['tax_rate'],
+								'qty' => $value['quantity'],
+								'prc' => $value['price']
+						);
           } else {
             $non_taxable_subtotal += $value['line_total_before_tax'];
           }
         }
       }
-      
+
       // The same is for Charges itemized list
       if(!empty($this->data['itemized_charges']) && is_array($this->data['itemized_charges'])) {
         foreach ($this->data['itemized_charges'] as $key => $value) {
           if ( !empty($value['tax_amount']) && $value['tax_amount'] > 0 ) {
             $taxable_subtotal     += $value['amount'];
-            $tax_percents[]       =  $value['tax'];
+            $tax_percents[]       =  array(
+								'tax' => $value['tax'],
+								'qty' => 1,
+								'prc' => $value['amount']
+						);
             $total_charges        += $value['amount'];
           } else {
             $non_taxable_subtotal += $value['amount'];
@@ -492,18 +578,16 @@ class WPI_Invoice {
         }
       }
       $avg_tax = 0;
+			$sum = 0;
       if ( !empty( $tax_percents ) ) {
-        $avg_tax = array_sum( $tax_percents ) / count( $tax_percents );
+				foreach( $tax_percents as $tax_item ) {
+					$sum += $tax_item['tax'];
+				}
+        $avg_tax = $sum / count( $tax_percents );
       }
-     
-      // Debug Average tax value
-      // echo $avg_tax;
-      
+
       $this->data['subtotal'] = $taxable_subtotal + $non_taxable_subtotal;
-      
-      // Debug subtotal value
-      // echo $this->data['subtotal'];
-      
+
       // Get discount
       if (!empty($this->data['discount']) && is_array($this->data['discount'])) {
         $highest_percent = 0;
@@ -524,16 +608,17 @@ class WPI_Invoice {
           $this->data['total_discount'] = $this->data['subtotal'] * ($highest_percent / 100);
         }
       }
-      
-      // Debug Discount
-      // echo $this->data['total_discount'];
-      
+
       // Handle Tax Method
       if ( !empty( $this->data['tax_method'] ) ) {
         switch ( $this->data['tax_method'] ) {
 
           case 'before_discount':
-            $this->data['total_tax'] = $taxable_subtotal * $avg_tax / 100;
+
+						foreach( $tax_percents as $tax_item ) {
+							$this->data['total_tax'] += $tax_item['prc'] / 100 * $tax_item['tax'] * $tax_item['qty'];
+						}
+
             break;
 
           case 'after_discount':
@@ -549,23 +634,33 @@ class WPI_Invoice {
             break;
 
           default:
+						foreach( $tax_percents as $tax_item ) {
+							$this->data['total_tax'] += $tax_item['prc'] / 100 * $tax_item['tax'] * $tax_item['qty'];
+						}
             break;
         }
+      } else {
+        $this->data['tax_method'] = 'before_discount';
+				foreach( $tax_percents as $tax_item ) {
+					$this->data['total_tax'] += $tax_item['prc'] / 100 * $tax_item['tax'] * $tax_item['qty'];
+				}
       }
-      
-      // Debug $tax value
-      // echo $this->data['total_tax'];
-      
+
       $total = $this->data['subtotal'] - $this->data['total_discount'] + $this->data['total_tax'];
-      
-      // Debug $total value
-      // echo $total;
-      
+
       $total_payments = 0;
       $total_admin_adjustment = 0;
 
       $invoice_id = $this->data['invoice_id'];
-      $this->data['log'] = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}wpi_object_log WHERE object_id = '".wpi_invoice_id_to_post_id($invoice_id)."'", ARRAY_A);
+
+      //** Add support for MS and for old invoice histories which will have a blog_id of 0 after upgrade */
+      if($blog_id == 1) {
+        $ms_blog_query = " AND ( blog_id = {$blog_id} OR blog_id = 0 ) ";
+      } else {
+        $ms_blog_query = " AND blog_id = {$blog_id} ";
+      }
+
+      $this->data['log'] = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}wpi_object_log WHERE object_id = '".wpi_invoice_id_to_post_id($invoice_id)."' {$ms_blog_query}  ", ARRAY_A);
 
       // Calculate adjustments
       if(is_array($this->data['log'])) {
@@ -578,43 +673,20 @@ class WPI_Invoice {
           }
         }
       }
+
       $this->data['total_payments'] = $total_payments;
       $this->data['adjustments']    = - ($total_payments + $total_admin_adjustment);
 
-      // Balance
       $this->data['net'] = $total + $this->data['adjustments'];
-      // echo $total.' + '.$this->data['adjustments'].' = '.$this->data['net'];
-      // Fixes calculations for recurring invoices - should be last to overwrite incorrect values.
 
+      // Fixes calculations for recurring invoices - should be last to overwrite incorrect values.
       if( $this->data['type'] == 'recurring' ) {
         $this->data['total_tax'] = $this->data['subtotal'] * $avg_tax / 100;
         $this->data['net'] = $this->data['subtotal'] - $this->data['total_discount'] + $this->data['total_tax'];
         unset($this->data['adjustments']);
       }
     }
-/**
-Send use notification
-*/
-    function send_to_user() {
-    }
-/**
-Attach a file to an invoice
-NEEDS WORK
-*/
-    function attach_file() {
-    }
-    /**
-    General invoice email
-    NEEDS WORK
-    */
-    function get_invoice_email($type) {
-        switch ($type = 'notification') {
-            case 'notification' :
-                break;
-            case 'template' :
-                break;
-        }
-    }
+
 
   /**
    * Saves invoice to DB.
@@ -628,18 +700,9 @@ NEEDS WORK
    */
   function save_invoice() {
     global $wpdb;
-    
-    /* User should not to edit 'Paid' Invoice */
-    /** 
-     * @todo not sure if this is required
-    if(!empty($this->data['post_status']) && $this->data['post_status'] == 'paid') {
-      wpi_log_event("Paid Invoice can not be modified. You should create new invoice.");
-      return false;
-    }
-    */
-    
+
     $this->calculate_totals();
-    
+
     $non_meta_values = array(
       'ID',
       'subject',
@@ -660,19 +723,19 @@ NEEDS WORK
         $data['ID'] = $object_id;
       }
     }
-    
+
     $this->data['post_content'] = !empty($this->data['post_content'])?$this->data['post_content']:'';
     $data['post_title'] = !empty( $this->data['subject'] )?$this->data['subject']:$this->data['post_title'];
     $data['post_content'] = !empty( $this->data['description'] )?$this->data['description']:$this->data['post_content'];
     $data['post_type'] = 'wpi_object';
-    
-    /* 
-     * Determine if Amount to pay (subtotal) is not 0 and Balance (net) <= 0, 
-     * We set status as 'Paid'. 
-     * 
+
+    /*
+     * Determine if Amount to pay (subtotal) is not 0 and Balance (net) <= 0,
+     * We set status as 'Paid'.
+     *
      */
-    if (isset($this->data['net']) && 
-        isset($this->data['subtotal']) && 
+    if (isset($this->data['net']) &&
+        isset($this->data['subtotal']) &&
         $this->data['subtotal'] > 0 &&
         $this->data['net'] <= 0) {
           $data['post_status'] = 'paid';
@@ -680,16 +743,16 @@ NEEDS WORK
     } else {
       $data['post_status'] = (!empty($this->data['post_status']) ? $this->data['post_status'] : 'active');
     }
-    
+
     if( !empty( $this->data['post_date'] ) ) {
       $data['post_date'] = $this->data['post_date'];
     }
-    
+
     if(empty($data['post_title'])) {
       wpi_log_event("Error saving invoice. Subject (Title) can not be empty.");
       return false;
     }
-    
+
     // WP figures out if we're saving or updating
     if(empty($data['ID'])) {
       $creator = '';
@@ -709,7 +772,7 @@ NEEDS WORK
         $this->add_entry("attribute=quote&type=update&note=Quote updated.");
       } else {
         if ( $this->data['type'] == 'single_payment' ) {
-          
+
         } else {
           $this->add_entry("type=update&note=Updated.");
         }
@@ -720,9 +783,9 @@ NEEDS WORK
       wpi_log_event("Error saving invoice. Query used: {$wpdb->last_query}");
       return false;
     }
-    
-    /* 
-     * We need to determine hash to avoid confusing with invoice URL in future 
+
+    /*
+     * We need to determine hash to avoid confusing with invoice URL in future
      * It's need for debug in the most cases.
      * The general reason is three (3) different invoice IDs which we use:
      * ID (post)
@@ -731,7 +794,7 @@ NEEDS WORK
      * But we always need only invoice_id
      */
     $this->data['hash'] = md5($this->data['invoice_id']);
-    
+
     $meta_keys = array();
     // now add the rest of the array
     foreach($this->data as $meta_key => $meta_value) {
@@ -803,7 +866,7 @@ NEEDS WORK
     }
     return false;
   }
-  
+
   /**
    * Set Archive Status
    *
@@ -827,7 +890,7 @@ NEEDS WORK
     }
     return false;
   }
-  
+
   /**
    * Un-Archive Invoice
    * Set Active Status

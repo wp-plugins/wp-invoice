@@ -22,20 +22,20 @@
     <div>
         <table class="form-table">
             <tr class="gateway_info">
-                <th width="300"><?php _e('Merchant Email', WP_INVOICE_TRANS_DOMAIN); ?></th>
+                <th width="300"><?php _e('Merchant Email', WPI); ?></th>
                 <td><?php echo WPI_UI::draw_inputfield('wp_invoice_gateway_merchant_email', get_option('wp_invoice_gateway_merchant_email')); ?></td>
             </tr>
             <tr class="gateway_info payment_info">
-                <th width="300"><a class="wp_invoice_tooltip" title="<?php _e('Your credit card processor will provide you with a gateway username.', WP_INVOICE_TRANS_DOMAIN); ?>"><?php _e('Gateway Username', WP_INVOICE_TRANS_DOMAIN); ?></a></th>
+                <th width="300"><a class="wp_invoice_tooltip" title="<?php _e('Your credit card processor will provide you with a gateway username.', WPI); ?>"><?php _e('Gateway Username', WPI); ?></a></th>
                 <td><?php echo WPI_UI::draw_inputfield('wp_invoice_gateway_username', get_option('wp_invoice_gateway_username'), ' AUTOCOMPLETE="off"  '); ?>
                 </td>
             </tr>
             <tr class="gateway_info payment_info">
-                <th width="300"><a class="wp_invoice_tooltip" title="<?php _e("You will be able to generate this in your credit card processor's control panel.", WP_INVOICE_TRANS_DOMAIN); ?>"><?php _e('Gateway Transaction Key', WP_INVOICE_TRANS_DOMAIN); ?></a></th>
+                <th width="300"><a class="wp_invoice_tooltip" title="<?php _e("You will be able to generate this in your credit card processor's control panel.", WPI); ?>"><?php _e('Gateway Transaction Key', WPI); ?></a></th>
                 <td><?php echo WPI_UI::draw_inputfield('wp_invoice_gateway_tran_key', get_option('wp_invoice_gateway_tran_key'), ' AUTOCOMPLETE="off"  '); ?></td>
             </tr>
             <tr class="gateway_info payment_info">
-                <th width="300"><a class="wp_invoice_tooltip"  title="<?php _e('This is the URL provided to you by your credit card processing company.', WP_INVOICE_TRANS_DOMAIN); ?>"><?php _e('Gateway URL', WP_INVOICE_TRANS_DOMAIN); ?></a></th>
+                <th width="300"><a class="wp_invoice_tooltip"  title="<?php _e('This is the URL provided to you by your credit card processing company.', WPI); ?>"><?php _e('Gateway URL', WPI); ?></a></th>
                 <td><?php echo WPI_UI::draw_inputfield('wp_invoice_gateway_url', get_option('wp_invoice_gateway_url')); ?><br />
                     <span class="wp_invoice_click_me" onclick="jQuery('#wp_invoice_gateway_url').val('https://gateway.merchantplus.com/cgi-bin/PAWebClient.cgi');">MerchantPlus</span> |
                     <span class="wp_invoice_click_me" onclick="jQuery('#wp_invoice_gateway_url').val('https://secure.authorize.net/gateway/transact.dll');">Authorize.Net</span> |
@@ -43,7 +43,7 @@
                 </td>
             </tr>
             <tr class="gateway_info payment_info">
-                <th width="300"><a class="wp_invoice_tooltip"  title="<?php _e('Recurring billing gateway URL is most likely different from the Gateway URL, and will almost always be with Authorize.net. Be advised - test credit card numbers will be declined even when in test mode.', WP_INVOICE_TRANS_DOMAIN); ?>"><?php _e('Recurring Billing Gateway URL', WP_INVOICE_TRANS_DOMAIN); ?></a></th>
+                <th width="300"><a class="wp_invoice_tooltip"  title="<?php _e('Recurring billing gateway URL is most likely different from the Gateway URL, and will almost always be with Authorize.net. Be advised - test credit card numbers will be declined even when in test mode.', WPI); ?>"><?php _e('Recurring Billing Gateway URL', WPI); ?></a></th>
                 <td><?php echo WPI_UI::draw_inputfield('wp_invoice_recurring_gateway_url', get_option('wp_invoice_recurring_gateway_url')); ?><br />
                     <span class="wp_invoice_click_me" onclick="jQuery('#wp_invoice_recurring_gateway_url').val('https://api.authorize.net/xml/v1/request.api');">Authorize.net ARB</span> |
                     <span class="wp_invoice_click_me" onclick="jQuery('#wp_invoice_recurring_gateway_url').val('https://apitest.authorize.net/xml/v1/request.api');">Authorize.Net ARB Testing</span>

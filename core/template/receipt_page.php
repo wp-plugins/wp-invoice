@@ -2,7 +2,6 @@
   <div class="wpi_left_col">
     <b class="wpi_greeting">Payment Receipt</b>
 
-
     <div class="invoice_description">
       <div class="invoice_top_message">
 

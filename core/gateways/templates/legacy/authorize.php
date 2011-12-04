@@ -18,7 +18,7 @@
 
   <li>
 
-    <label for="first_name"><?php _e('First Name', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label for="first_name"><?php _e('First Name', WPI); ?></label>
 
     <input name="cc_data[first_name]" value="<?php echo $invoice[user_data][first_name];?>" />
 
@@ -28,7 +28,7 @@
 
     <li>
 
-    <label for="last_name"><?php _e('Last Name', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label for="last_name"><?php _e('Last Name', WPI); ?></label>
 
     <input name="cc_data[last_name]" value="<?php echo $invoice[user_data][last_name];?>" />
 
@@ -40,7 +40,7 @@
 
     <li>
 
-    <label for="email"><?php _e('Email Address', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label for="email"><?php _e('Email Address', WPI); ?></label>
 
     <input name="cc_data[email_address]" value="<?php echo $invoice[user_data][email_address];?>" />
 
@@ -50,7 +50,7 @@
 
     <li>
 
-    <label class="inputLabel" for="phonenumber"><?php _e('Phone Number', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label class="inputLabel" for="phonenumber"><?php _e('Phone Number', WPI); ?></label>
 
     <input name="cc_data[phonenumber]" class="input_field"  type="text" id="phonenumber" size="40" maxlength="50" value="<?php print $invoice['user_data']['phonenumber']; ?>" />
 
@@ -60,7 +60,7 @@
 
     <li>
 
-    <label for="address"><?php _e('Address', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label for="address"><?php _e('Address', WPI); ?></label>
 
     <input name="cc_data[address]" value="<?php echo $invoice[user_data][streetaddress];?>" />
 
@@ -70,7 +70,7 @@
 
     <li>
 
-    <label for="city"><?php _e('City', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label for="city"><?php _e('City', WPI); ?></label>
 
     <input name="cc_data[city]" value="<?php echo $invoice[user_data][city];?>" />
 
@@ -124,7 +124,7 @@
 
     <li>
 
-    <label for="zip"><?php _e('Zip Code', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label for="zip"><?php _e('Zip Code', WPI); ?></label>
 
     <input name="cc_data[zip]" value="<?php echo $invoice[user_data][zip];?>" />
 
@@ -134,7 +134,7 @@
 
     <li>
 
-    <label for="country"><?php _e('Country', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label for="country"><?php _e('Country', WPI); ?></label>
 
       <?php echo WPI_UI::select("name=cc_data[country]&current_value={$invoice[user_data][country]}&values=countries"); ?>
 
@@ -144,7 +144,7 @@
 
     <li class="hide_after_success">
 
-    <label class="inputLabel" for="cc_data[card_num]"><?php _e('Credit Card Number', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label class="inputLabel" for="cc_data[card_num]"><?php _e('Credit Card Number', WPI); ?></label>
 
     <input name="cc_data[card_num]" autocomplete="off" onkeyup="cc_card_pick();"  id="cc_data[card_num]" class="credit_card_number input_field"  type="text"  size="22"  maxlength="22" />
 
@@ -160,11 +160,11 @@
 
     <li class="hide_after_success">
 
-    <label class="inputLabel" for="exp_month"><?php _e('Expiration Date', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label class="inputLabel" for="exp_month"><?php _e('Expiration Date', WPI); ?></label>
 
-    <?php _e('Month', WP_INVOICE_TRANS_DOMAIN); ?> <?php echo WPI_UI::select("name=cc_data[exp_year]&values=months"); ?>
+    <?php _e('Month', WPI); ?> <?php echo WPI_UI::select("name=cc_data[exp_year]&values=months"); ?>
 
-    <?php _e('Year', WP_INVOICE_TRANS_DOMAIN); ?> <?php echo WPI_UI::select("name=cc_data[exp_year]&values=years"); ?>
+    <?php _e('Year', WPI); ?> <?php echo WPI_UI::select("name=cc_data[exp_year]&values=years"); ?>
 
 
 
@@ -174,7 +174,7 @@
 
     <li class="hide_after_success">
 
-    <label class="inputLabel" for="card_code"><?php _e('Security Code', WP_INVOICE_TRANS_DOMAIN); ?></label>
+    <label class="inputLabel" for="card_code"><?php _e('Security Code', WPI); ?></label>
 
     <input id="card_code" autocomplete="off"  name="cc_data[card_code]" class="input_field"  style="width: 70px;" type="text" size="4" maxlength="4" />
 

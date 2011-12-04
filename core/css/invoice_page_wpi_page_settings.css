@@ -38,12 +38,11 @@ td.wpi_premium_feature_intro .header {
 }
 
 #wpi_premium_feature_table thead td {
-    padding: 10px;
+    padding: 10px 0;
 }
 
 td.wpi_premium_feature_intro {
     border-bottom: 1px solid #CCCCCC;
-    font-size: 1.3em;
     padding-top: 30px;
 }
 

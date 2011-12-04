@@ -81,20 +81,23 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 
 == Upgrade Notice ==
-=Version 3.01=
+
+= Version 3.04.0 =
+* Core plugin filename changed, plugin may require manual re-activation after upgrade. 
+
+= Version 3.01 =
 * Major fixes. 
 
-=Version 3.00=
+= Version 3.00 =
 * Complete rewrite. Old invoice data is not deleted, please notify us if you have any upgrading issues.
 
 == Change Log ==
 
 = Version 3.04.0 =
-* WP-CRM Integration updates. Integrate you WP-Invoice with WP-CRM to control payment user data.
-* Ability to connect new premium feature SPC (Single Page Checkout).
-* Fix to tax may be non integer.
+* WordPress Multi Site (MS) compatibility.
+* WP-CRM integration improvements. 
 * Fix to allow IPN URL to be changed.
-* Minor tweaks and improvements to Settings Page UI.
+* General improvements to Settings Page and Invoice Editor UI.
 
 = Version 3.03.0 =
 * Automatic import of Web Invoice plugin invoices.

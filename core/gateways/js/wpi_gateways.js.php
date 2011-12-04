@@ -40,6 +40,7 @@ jQuery(document).ready(function(){
 // This function calls reattachs our validation rules
 function wpi_init_form(){
   var type = jQuery("#wpi_form_type").val();
+  if ( typeof type == 'undefined' ) return false;
   var type_messages = eval(type + '_messages');
   var type_rules = eval(type + '_rules');
   jQuery(".online_payment_form").validate({

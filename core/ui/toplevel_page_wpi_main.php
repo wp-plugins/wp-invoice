@@ -16,6 +16,7 @@
 
 
 <div class="wp_wpi_overview_wrapper wrap">
+    <?php do_action( 'wpi_before_overview' ); ?>
     <?php screen_icon(); ?>
     <h2><?php _e('Overview'); ?> <a href="<?php echo admin_url('admin.php?page=wpi_page_manage_invoice'); ?>" class="button add-new-h2"><?php _e('Add New'); ?></a></h2>
     <?php WPI_Functions::print_messages(); ?>

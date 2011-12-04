@@ -4,7 +4,18 @@
   Some events that are very short (2-4 lines) may not have functions.
 */
 jQuery.noConflict();
+
 jQuery(document).ready(function(){
+  
+  /* Cycle through all advanced UI options and toggle them */
+  jQuery(".wpi_show_advanced").each(function() {
+    wpi_toggle_advanced_options(this);
+  });
+
+  /* Enable monitoring of toggling of advanced UI options */
+  jQuery(".wpi_show_advanced").live("click", function() {
+    wpi_toggle_advanced_options(this);
+  });
   
   //* Hide WPI legacy import nag */
   jQuery('.wpi_hide_import_nag').live('click', function() {
@@ -119,6 +130,12 @@ jQuery(document).ready(function(){
   else if (jQuery("#wpi_wpi_invoice_meta_recurring_active_").is(":checked")) {
     wpi_enable_recurring();
   }
+  // If Quote is allowed for the current invoice, we show/hide quote option
+  else if (jQuery("#wpi_wpi_invoice_quote_").is(":checked")) {
+    wpi_enable_quote();
+    wpi_hide_deposit_option();
+    wpi_hide_recurring_option();
+  }
   
   /*
    * Toggle invoice deposit options
@@ -154,6 +171,12 @@ jQuery(document).ready(function(){
     } else {
       // Singular invoice or quote. Clear out all values.
       wpi_disable_recurring();
+      
+      /* 
+       * This functions was moved from wpi_disable_recurring() (wpi-functions.js)  
+       */
+      wpi_show_deposit_option();
+      wpi_show_quote_option(); 
     }
   });
     /*
@@ -395,7 +418,7 @@ jQuery('#wpi_revalidate').live('click', function(){
     if(jQuery('.wpi_client_change_payment_method').is(":not(:checked)"))
       wpi_disable_all_payment_methods();
     wpi_select_payment_method(jQuery('option:selected', this).val(), true);
-     wpi_can_client_change_payment_method()
+    wpi_can_client_change_payment_method();
   });
 /*
   Called when user changes wheather the client can change payment method, or must use the default
@@ -407,7 +430,13 @@ jQuery('#wpi_revalidate').live('click', function(){
 /*
   Displays specified payment method box
 */
-   jQuery('.wpi_billing_section_show').live('click', function(event) {
+  jQuery('.wpi_billing_section_show').live('click', function(event) {
+		// if it is set as default, we can't turn it off
+		if ( jQuery('#wp_invoice_payment_method option[value="'+jQuery(this).attr('id')+'"]').is(':selected') ) {
+			if ( !jQuery(this).is(':checked') ) {
+				return false;
+			}
+		}
     wpi_select_payment_method(jQuery(this).attr('id'));
   });
   
@@ -883,15 +912,6 @@ submitHandler: function(form) {
       jQuery("#the-list td.cb input:checkbox").removeAttr('checked');
     }
   });
-  
-  //
-  jQuery("#wpi_use_global_tax", "#wpi_tab_basic").click(function(){
-    var li = jQuery(this).parents("ul.wpi_settings_list").find('.global_tax_value_holder');
-    if(jQuery(this).is(":checked")) {
-      li.show('fast');
-    } else {
-      li.hide('fast');
-    }
-  });
+ 
 
 });

@@ -72,6 +72,7 @@ var wpi_authorize_messages = {
 
 /* This function happens when the form is initialized */
 var wpi_authorize_init_form = function() {
+  jQuery("#online_payment_form_wrapper").trigger('formLoaded');
   /* Do our masks */
   //jQuery("#phonenumber").mask("999-999-9999");
   //jQuery("#zip").mask("99999");

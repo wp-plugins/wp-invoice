@@ -150,4 +150,29 @@ abstract class wpi_gateway_base {
     return $def_setting_array;
     
   }
+	
+	/**
+	 * CRM user_meta updating on payment done
+	 * 
+	 * @global type $invoice
+	 * @param type $data
+	 * @return type 
+	 */
+  function user_meta_updated( $data ) {
+    global $invoice;
+    // CRM data updating
+    if ( !class_exists('WP_CRM_Core') ) return;
+    
+    $crm_attributes = WPI_Functions::get_wpi_crm_attributes();
+    if ( empty( $crm_attributes ) ) return;
+    
+    $wp_users_id = $invoice['user_data']['ID'];
+    
+    foreach ( $data as $key => $value ) {
+      if ( key_exists( $key, $crm_attributes ) ) {
+        update_user_meta($wp_users_id, $key, $value);
+      }
+    }
+    
+  }
 }

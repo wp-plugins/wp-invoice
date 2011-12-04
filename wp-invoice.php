@@ -1,18 +1,13 @@
 <?php
 /**
-Plugin Name: Web Invoicing and Billing
-Plugin URI: http://usabilitydynamics.com/products/wp-invoice/
-Description: Send itemized web-invoices directly to your clients.  Credit card payments may be accepted via Authorize.net, MerchantPlus NaviGate, or PayPal account. Recurring billing is also available via Authorize.net's ARB. Visit <a href="admin.php?page=wpi_page_settings">WP-Invoice Settings Page</a> to setup.
-Author: UsabilityDynamics.com
-Version: 3.03.0
-Author URI: http://UsabilityDynamics.com/
+  Plugin Name: Web Invoicing and Billing
+  Plugin URI: http://usabilitydynamics.com/products/wp-invoice/
+  Description: Send itemized web-invoices directly to your clients.  Credit card payments may be accepted via Authorize.net, MerchantPlus NaviGate, or PayPal account. Recurring billing is also available via Authorize.net's ARB. Visit <a href="admin.php?page=wpi_page_settings">WP-Invoice Settings Page</a> to setup.
+  Author: UsabilityDynamics.com
+  Version: 3.04.0
+  Author URI: http://UsabilityDynamics.com/
+  Copyright 2011  Usability Dynamics, Inc.   (email : andy.potanin@UsabilityDynamics.com)
 
-Copyright 2011  Usability Dynamics, Inc.   (email : andy.potanin@UsabilityDynamics.com)
-
-*/
-
-
-/**
   Created by UsabilityDynamics.com
   (website: UsabilityDynamics.com       email : support@UsabilityDynamics.com)
 
@@ -37,15 +32,15 @@ define('WPI_Path', WP_PLUGIN_DIR . '/wp-invoice');
 /** Path for front-end links */
 define('WPI_URL', WP_PLUGIN_URL . '/wp-invoice');
 
-define("WP_INVOICE_VERSION_NUM", "3.03.0");
-define("WP_INVOICE_TRANS_DOMAIN", "wp-invoice");
+define("WP_INVOICE_VERSION_NUM", "3.04.0");
+define("WPI", "wp-invoice");
  
 /** Directory paths */
 define('WPI_Premium', WP_PLUGIN_DIR . '/wp-invoice/core/premium');
 define('WPI_Gateways_Path', WP_PLUGIN_DIR . '/wp-invoice/core/gateways');
 define('WPI_Gateways_URL', WPI_URL."/core/gateways");
 
-// Always include everything below here
+//** Always include everything below here */
 require_once("wpi_legacy.php");
 require_once("core/wpi_functions.php");
 require_once("core/wpi_settings.php");
@@ -58,11 +53,11 @@ require_once("core/wpi_widgets.php");
 require_once("core/template.php");
 require_once("core/wpi_payment_api.php");
 
- /** Loads all the metaboxes for the crm page */
+//** Loads all the metaboxes for the crm page */
 include_once WPI_Path . '/core/ui/wpi_metaboxes.php';
 
-// Set to true to display debugging messages throughout the UI
-$wp_invoice_debug = true;
+//**  Set to true to display debugging messages throughout the UI */
+$wp_invoice_debug = false;
 
 if (!class_exists('WPI_Core')) {
   class WPI_Core {
@@ -109,7 +104,6 @@ if (!class_exists('WPI_Core')) {
       
       // Load settings into global variable
       $wpi_settings = $this->options;
-      
       // Load other classes
       $this->UI = new WPI_UI($this);
       $this->Functions = new WPI_Functions($this);
@@ -123,9 +117,7 @@ if (!class_exists('WPI_Core')) {
       $this->uri = WP_PLUGIN_URL . "/" . $this->directory;
       $this->the_path = WP_PLUGIN_URL . "/" . basename(dirname(__FILE__));
       $this->frontend_path = ($wpi_settings['force_https'] == 'true' ? str_replace('http://', 'https://', $this->the_path) : $this->the_path);
-      
-      //require_once('../'.$this->path.'/mailpress/MailPress.php');
-      // Path to template files.  By default all UI files are in wp-invoice\core\ui.
+
       // This checks if there is a "wp-invoice" folder in the template directory
       $this->ui_path = ($this->options['use_custom_templates'] == "true" && is_dir(STYLESHEETPATH . "/wp-invoice") ? STYLESHEETPATH . "/wp-invoice" : $this->path . "/core/ui/");
       
@@ -180,6 +172,7 @@ if (!class_exists('WPI_Core')) {
       add_action('show_user_profile', array($this->UI, 'display_user_profile_fields'));
       
       add_action('admin_menu', array('WPI_UI', 'admin_menu'));
+      
       add_action('admin_init', array($this, 'admin_init'));
       
       add_action('wp_ajax_wpi_list_table', create_function('', ' die(WPI_Ajax::wpi_list_table());'));
@@ -247,10 +240,10 @@ if (!class_exists('WPI_Core')) {
       $this->user_preferences['main'] = get_user_meta($user_ID, 'wp_invoice_ui_main');
 
       if (version_compare($wp_version, '2.6', '<')) { // Using old WordPress
-        load_plugin_textdomain(WP_INVOICE_TRANS_DOMAIN, PLUGINDIR . '/' . dirname(plugin_basename(__FILE__)) . '/languages');
+        load_plugin_textdomain(WPI, PLUGINDIR . '/' . dirname(plugin_basename(__FILE__)) . '/languages');
       }
       else {
-        load_plugin_textdomain(WP_INVOICE_TRANS_DOMAIN, PLUGINDIR . '/' . dirname(plugin_basename(__FILE__)) . '/languages', dirname(plugin_basename(__FILE__)) . '/languages');
+        load_plugin_textdomain(WPI, PLUGINDIR . '/' . dirname(plugin_basename(__FILE__)) . '/languages', dirname(plugin_basename(__FILE__)) . '/languages');
       }
 
       if (!get_user_option("screen_layout_admin_page_wpi_invoice_edit")) {
@@ -286,7 +279,8 @@ if (!class_exists('WPI_Core')) {
       wp_register_script('jquery.validate', 'https://ajax.aspnetcdn.com/ajax/jquery.validate/1.8.1/jquery.validate.min.js', array('jquery'));
       wp_register_script('jquery.cookie', WPI_URL . "/core/js/jquery.cookie.js", array('jquery'));
       wp_register_script('jquery.formatCurrency', WPI_URL . "/core/js/jquery.formatCurrency.js", array('jquery'));
-      wp_register_script('jquery.impromptu', WPI_URL . "/core/js/jquery-impromptu.1.7.js", array('jquery'));
+      wp_register_script('jquery.number.format', WPI_URL . "/core/js/jquery.number.format.js", array('jquery'));
+			wp_register_script('jquery.impromptu', WPI_URL . "/core/js/jquery-impromptu.1.7.js", array('jquery'));
       wp_register_script('jquery.delegate', WPI_URL . "/core/js/jquery.delegate-1.1.min.js", array('jquery'));
       wp_register_script('jquery.field', WPI_URL . "/core/js/jquery.field.min.js", array('jquery'));
       wp_register_script('wpi-gateways', WPI_Gateways_URL . '/js/wpi_gateways.js.php', array('jquery'));
@@ -390,6 +384,7 @@ if (!class_exists('WPI_Core')) {
       
       if ( !empty( $_REQUEST['wpi_settings'] ) && is_array($_REQUEST['wpi_settings']) ) {
         $this->Settings->SaveSettings($_REQUEST['wpi_settings']);
+        WPI_Functions::settings_action();
       }
       
       add_filter("manage_{$wpi_settings['pages']['main']}_columns", array( 'WPI_UI', 'overview_columns' ), 10, 3 );

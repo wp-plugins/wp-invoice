@@ -162,11 +162,10 @@ class wpi_authorize extends wpi_gateway_base {
       ),
       
       'state'       => array(
-        'type'   => 'select',
-        'class'  => 'select-input',
+        'type'   => 'text',
+        'class'  => 'text-input',
         'name'   => 'cc_data[state]',
-        'label'  => 'State',
-        'values' => 'us_states'
+        'label'  => 'State'
       ),
       
       'zip'         => array(
@@ -177,11 +176,10 @@ class wpi_authorize extends wpi_gateway_base {
       ),
       
       'country'     => array(
-        'type'   => 'select',
-        'class'  => 'select-input',
+        'type'   => 'text',
+        'class'  => 'text-input',
         'name'   => 'cc_data[country]',
-        'label'  => 'County',
-        'values' => 'countries'
+        'label'  => 'County'
       )
         
     ),
@@ -192,28 +190,26 @@ class wpi_authorize extends wpi_gateway_base {
         'type'   => 'text',
         'class'  => 'credit_card_number input_field text-input',
         'name'   => 'cc_data[card_num]',
-        'label'  => 'Credit Card Number'
+        'label'  => 'Card Number'
       ),
       
       'exp_month'   => array(
-        'type'   => 'select',
-        'class'  => 'select-input exp_month small',
+        'type'   => 'text',
+        'class'  => 'text-input exp_month',
         'name'   => 'cc_data[exp_month]',
-        'label'  => 'Expiration Month',
-        'values' => 'months'
+        'label'  => 'Expiration Month'
       ),
       
       'exp_year'    => array(
-        'type'   => 'select',
-        'class'  => 'select-input exp_year small',
+        'type'   => 'text',
+        'class'  => 'text-input exp_year',
         'name'   => 'cc_data[exp_year]',
-        'label'  => 'Expiration Year',
-        'values' => 'years'
+        'label'  => 'Expiration Year'
       ),
       
       'card_code'   => array(
         'type'   => 'text',
-        'class'  => 'text-input small',
+        'class'  => 'text-input',
         'name'   => 'cc_data[card_code]',
         'label'  => 'Card Code'
       )
@@ -229,9 +225,8 @@ class wpi_authorize extends wpi_gateway_base {
     parent::__construct();
     $this->options['settings']['silent_post_url']['value'] = urlencode(get_bloginfo('url') . '/wp-admin/admin-ajax.php?action=wpi_gateway_server_callback&type=wpi_authorize');
     
-    add_action( 'wpi_payment_fields', array( $this, 'wpi_payment_fields' ) );
+    add_action( 'wpi_payment_fields_authorize', array( $this, 'wpi_payment_fields' ) );
     add_action( 'wpi_authorize_user_meta_updated', array( $this, 'user_meta_updated' ) );
-    
   }
   
   /**
@@ -240,7 +235,7 @@ class wpi_authorize extends wpi_gateway_base {
    * @param array $invoice 
    */
   function wpi_payment_fields( $invoice ) {
-    
+
     $this->front_end_fields = apply_filters( 'wpi_crm_custom_fields', $this->front_end_fields, 'cc_data' );
     
     if ( !empty( $this->front_end_fields ) ) {
@@ -248,6 +243,16 @@ class wpi_authorize extends wpi_gateway_base {
       foreach( $this->front_end_fields as $key => $value ) {
         // If section is not empty
         if ( !empty( $this->front_end_fields[ $key ] ) ) {
+					$html = '';
+					ob_start();
+					
+					?>
+					<ul class="wpi_checkout_block">
+						<li class="section_title"><?php _e( ucwords( str_replace('_', ' ', $key) ), WPI); ?></li>
+					<?php
+					$html = ob_get_contents();
+					ob_end_clean();
+					echo $html;
           // For each field
           foreach( $value as $field_slug => $field_data ) {
 
@@ -260,8 +265,8 @@ class wpi_authorize extends wpi_gateway_base {
 
                 ?>
 
-                <li>
-                  <label for="<?php echo esc_attr( $field_slug ); ?>"><?php _e($field_data['label'], WP_INVOICE_TRANS_DOMAIN); ?></label>
+                <li class="wpi_checkout_row">
+                  <label for="<?php echo esc_attr( $field_slug ); ?>"><?php _e($field_data['label'], WPI); ?></label>
                   <input type="<?php echo esc_attr( $field_data['type'] ); ?>" class="<?php echo esc_attr( $field_data['class'] ); ?>"  name="<?php echo esc_attr( $field_data['name'] ); ?>" value="<?php echo !empty($invoice['user_data'][$field_slug])?$invoice['user_data'][$field_slug]:'';?>" />
                 </li>
 
@@ -278,8 +283,8 @@ class wpi_authorize extends wpi_gateway_base {
 
                 ?>
 
-                <li>
-                  <label for="<?php echo esc_attr( $field_slug ); ?>"><?php _e($field_data['label'], WP_INVOICE_TRANS_DOMAIN); ?></label>
+                <li class="wpi_checkout_row">
+                  <label for="<?php echo esc_attr( $field_slug ); ?>"><?php _e($field_data['label'], WPI); ?></label>
                   <?php echo WPI_UI::select("name={$field_data['name']}&values={$field_data['values']}&id={$field_slug}&class={$field_data['class']}"); ?>
                 </li>
 
@@ -297,6 +302,7 @@ class wpi_authorize extends wpi_gateway_base {
             echo $html;
 
           }
+					echo '</ul>';
         }
       }
       
@@ -305,8 +311,12 @@ class wpi_authorize extends wpi_gateway_base {
   }
 
   /**
-   * Do payment
-   */
+	 * Overrided process payment for Authorize.net
+	 * 
+	 * @global object $invoice
+	 * @global array $wpi_settings
+	 * @param array $data 
+	 */
   function process_payment($data=null) {
     global $invoice, $wpi_settings;
 
@@ -387,7 +397,6 @@ class wpi_authorize extends wpi_gateway_base {
 
     // Process results
     if ($payment->isApproved()) {
-      update_user_meta($wp_users_id, 'last_name', $cc_data['last_name']);
       update_user_meta($wp_users_id, 'last_name', $cc_data['last_name']);
       update_user_meta($wp_users_id, 'first_name', $cc_data['first_name']);
       update_user_meta($wp_users_id, 'city', $cc_data['city']);
@@ -501,24 +510,6 @@ class wpi_authorize extends wpi_gateway_base {
     //echo $payment->getAuthCode();
 
     die(json_encode($response));
-  }
-  
-  function user_meta_updated( $data ) {
-    global $invoice;
-    // CRM data updating
-    if ( !class_exists('WP_CRM_Core') ) return;
-    
-    $crm_attributes = WPI_Functions::get_wpi_crm_attributes();
-    if ( empty( $crm_attributes ) ) return;
-    
-    $wp_users_id = $invoice['user_data']['ID'];
-    
-    foreach ( $data as $key => $value ) {
-      if ( key_exists( $key, $crm_attributes ) ) {
-        update_user_meta($wp_users_id, $key, $value);
-      }
-    }
-    
   }
 
   /**

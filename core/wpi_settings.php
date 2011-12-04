@@ -14,10 +14,6 @@ class WPI_Settings {
   function WPI_Settings(&$Core) {
     $this->Core = $Core;
     $this->LoadOptions();
-    
-    //$this->SaveSettings();
-    //WPI_Functions::qc($_REQUEST);
-    //WPI_Functions::qc($this->options);
   }
   
   /*
@@ -37,6 +33,10 @@ class WPI_Settings {
       );
       
       $this->options['debug'] = $wp_invoice_debug;
+      
+      if($wp_invoice_debug) {
+        $this->options['developer_mode'] = 'true';
+      }
       
       // Localization Labels
       $this->options['custom_label_tax'] = "Tax";
@@ -523,9 +523,9 @@ class WPI_Settings {
     
     function CommitUpdates() {
         $oldvalue = get_option( 'wpi_options' );
-        
+				
         if( $oldvalue == $this->options )
-            return true;
+            return false;
         else 
             return update_option( 'wpi_options', $this->options );
     }

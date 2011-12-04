@@ -122,7 +122,7 @@
 
 <h2>
 
-  <span id="wpi_page_title"><?php _e((empty($this_invoice->data['ID']) ? 'New Invoice' : 'Edit Invoice'), WP_INVOICE_TRANS_DOMAIN); ?></span>
+  <span id="wpi_page_title"><?php _e((empty($this_invoice->data['ID']) ? 'New Invoice' : 'Edit Invoice'), WPI); ?></span>
 
   <input type="button" class="wpi_hide_until_saved button add-new-h2" onclick="wpi_show_paycharge_box();" value="Add Payment / Charge" />
 
@@ -212,7 +212,7 @@
 
     <div class="inside">
 
-      <div id="edit-slug-box" class="wpi-edit-slug-box" title="<?php _e('Click to view full link',WP_INVOICE_TRANS_DOMAIN); ?>"><strong><?php _e('Invoice Link',WP_INVOICE_TRANS_DOMAIN); ?>:</strong>
+      <div id="edit-slug-box" class="wpi-edit-slug-box" title="<?php _e('Click to view full link',WPI); ?>"><strong><?php _e('Invoice Link',WPI); ?>:</strong>
 
         <span id="sample-permalink"><?php echo get_invoice_permalink( !empty($this_invoice->data['invoice_id'])?$this_invoice->data['invoice_id']:'' ); ?></span>
 
@@ -260,17 +260,17 @@
 
     <li class="header clearfix">
 
-      <span class="name"><?php _e("Charge Name", WP_INVOICE_TRANS_DOMAIN) ?></span>
+      <span class="name"><?php _e("Charge Name", WPI) ?></span>
 
       <span class="fixed_width_holder">
 
         <span style="margin: 0; width: 10px; float: left;">&nbsp;</span>
 
-        <span class="row_amount"><?php _e("Amount", WP_INVOICE_TRANS_DOMAIN) ?></span>
+        <span class="row_amount"><?php _e("Amount", WPI) ?></span>
 
-        <span class="row_charge_tax"><?php _e("Tax", WP_INVOICE_TRANS_DOMAIN) ?>&nbsp;%</span>
+        <span class="row_charge_tax"><?php _e("Tax", WPI) ?>&nbsp;%</span>
 
-        <span class="row_total"><?php _e("Total", WP_INVOICE_TRANS_DOMAIN) ?></span>
+        <span class="row_total"><?php _e("Total", WPI) ?></span>
 
       </span>
 
@@ -334,19 +334,19 @@
 
     <li class="header clearfix">
 
-      <span class="name"><?php _e("Name", WP_INVOICE_TRANS_DOMAIN) ?></span>
+      <span class="name"><?php _e("Name", WPI) ?></span>
 
       <span class="fixed_width_holder">
 
         <span style="margin: 0; width: 10px; float: left;">&nbsp;</span>
 
-        <span class="row_quantity"><?php _e("Qty.", WP_INVOICE_TRANS_DOMAIN) ?></span>
+        <span class="row_quantity"><?php _e("Qty.", WPI) ?></span>
 
-        <span class="row_price"><?php _e("Price", WP_INVOICE_TRANS_DOMAIN) ?></span>
+        <span class="row_price"><?php _e("Price", WPI) ?></span>
 
-        <span class="row_tax column-invoice-details-itemized-list-tax"><?php _e("Tax", WP_INVOICE_TRANS_DOMAIN) ?>&nbsp;%</span>
+        <span class="row_tax column-invoice-details-itemized-list-tax"><?php _e("Tax", WPI) ?>&nbsp;%</span>
 
-        <span class="row_total"><?php _e("Total", WP_INVOICE_TRANS_DOMAIN) ?></span>
+        <span class="row_total"><?php _e("Total", WPI) ?></span>
 
       </span>
 
@@ -478,23 +478,23 @@
 
       <dl>
 
-        <dt class="hidden column-invoice-details-subtotal"><?php _e("Subtotal Excluding Tax:", WP_INVOICE_TRANS_DOMAIN) ?></dt>
+        <dt class="hidden column-invoice-details-subtotal"><?php _e("Subtotal Excluding Tax:", WPI) ?></dt>
 
         <dd class="hidden column-invoice-details-subtotal"><input class="calculate_invoice_subtotal wpi_no_input" disabled='true' value="<?php echo !empty( $this_invoice->data['subtotal'] ) ? $this_invoice->data['subtotal'] : ''; ?>"/></dd>
 
-        <dt class="hidden column-invoice-details-adjustments" ><?php _e("Adjustments:", WP_INVOICE_TRANS_DOMAIN) ?></dt>
+        <dt class="hidden column-invoice-details-adjustments" ><?php _e("Adjustments:", WPI) ?></dt>
 
         <dd class="hidden column-invoice-details-adjustments" ><input class="calculate_invoice_adjustments wpi_no_input" disabled='true' value="<?php echo !empty( $this_invoice->data['adjustments'] ) ? $this_invoice->data['adjustments'] : '';?>"/></dd>
 
-        <dt class="hidden column-invoice-details-discounts"><?php _e("Discount:", WP_INVOICE_TRANS_DOMAIN) ?></dt>
+        <dt class="hidden column-invoice-details-discounts"><?php _e("Discount:", WPI) ?></dt>
 
         <dd class="hidden column-invoice-details-discounts"><input class="wpi_no_input calculate_discount_total" disabled='true' value="<?php echo !empty( $this_invoice->data['total_discount'] ) ? $this_invoice->data['total_discount'] : '';?>"/></dd>
 
-        <dt class="hidden column-invoice-details-tax"><?php _e("Sales Tax:", WP_INVOICE_TRANS_DOMAIN) ?></dt>
+        <dt class="hidden column-invoice-details-tax"><?php _e("Sales Tax:", WPI) ?></dt>
 
         <dd class="hidden column-invoice-details-tax"><input class="calculate_invoice_tax wpi_no_input" disabled='true' value="<?php echo !empty( $this_invoice->data['total_tax'] ) ? $this_invoice->data['total_tax'] : '';?>"/></dd>
 
-        <dt><b><?php _e("Balance:", WP_INVOICE_TRANS_DOMAIN) ?></b></dt>
+        <dt><b><?php _e("Balance:", WPI) ?></b></dt>
 
         <dd><input class="calculate_invoice_total wpi_no_input" disabled='true' value="<?php echo !empty( $this_invoice->data['net'] ) ? $this_invoice->data['net'] : '';?>"/></dd>
 
@@ -504,9 +504,9 @@
 
     <li class="footer clearfix">
 
-      <input type="button"  class="button wpi_button" id="wpi_predefined_services_select" value="<?php _e("Add Line", WP_INVOICE_TRANS_DOMAIN) ?>"/>
+      <input type="button"  class="button wpi_button" id="wpi_predefined_services_select" value="<?php _e("Add Line", WPI) ?>"/>
 
-      <input type="button" class="button wpi_button" id="wpi_add_discount" value="<?php _e("Add Discount", WP_INVOICE_TRANS_DOMAIN) ?>"/>
+      <input type="button" class="button wpi_button" id="wpi_add_discount" value="<?php _e("Add Discount", WPI) ?>"/>
 
       <span id="wpi_discount_mismatch_error"></span>
 

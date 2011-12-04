@@ -5,15 +5,15 @@
         <div class="invoice_description">
           <div class="invoice_top_message">
             <?php if(is_quote()) : ?>
-                  <p>We have sent you a quote in the amount of <?php balance_due(); ?>.</p>
+              <p>We have sent you a quote in the amount of <?php balance_due(); ?>.</p>
             <?php endif; ?>
 
-            <?php if(is_invoice()) : ?>
-                  <p>We have sent you invoice <?php invoice_id(); ?> with a balance of <?php balance_due(); ?>.</p>
+            <?php if(!is_quote()) : ?>
+              <p>We have sent you invoice <?php invoice_id(); ?> with a balance of <?php balance_due(); ?>.</p>
             <?php endif; ?>
 
             <?php if(is_recurring()): ?>
-                    <p>This is a recurring bill.</p>
+              <p>This is a recurring bill.</p>
             <?php endif; ?>
             
             </div>
@@ -33,41 +33,36 @@
     <?php do_action('wpi_front_end_left_col_bottom'); ?>
     </div>
 
-    <div class="wpi_right_col">      
-  
-    <?php if(allow_partial_payments()): ?>
-      <div class="partial_payments">
-      <p class='wpi_text_partial_payments'><?php _e('This invoice allows partial payments, please select the amount you would like to pay.'); ?></p>
-      <?php show_partial_payments(); ?>
-      </div>
-    <?php endif; ?>
-    
+    <div class="wpi_right_col">
 
    <?php if ( show_business_info() ) { ?>       
     <?php wp_invoice_show_business_information(); ?>   
    <?php } ?>
    
-   <?php if(!is_quote()) { ?>
-    <div class="wpi_billing_overview">
-        <?php show_payment_selection("Select your favorite way of paying"); ?>
+		<?php if(!is_quote()) { ?>
+    <div class="wpi_checkout">
+    <?php if(allow_partial_payments()): ?>
+      <?php show_partial_payments(); ?>
+    <?php endif; ?>
 
-        <?php
-        $method = !empty($invoice['default_payment_method']) ? $invoice['default_payment_method'] : 'manual';
+		<?php show_payment_selection("Select your favorite way of paying"); ?>
 
+		<?php
+				$method = !empty($invoice['default_payment_method']) ? $invoice['default_payment_method'] : 'manual';
         if ( $method == 'manual' ) {
-        ?>
-        <p><strong>Manual Payment Information</strong></p>
-        <p><?php echo !empty( $wpi_settings['manual_payment_info'] )?$wpi_settings['manual_payment_info']:'Contact site Administrator for payment information please.'; ?></p>
-        <?php
+		?>
+					<p><strong>Manual Payment Information</strong></p>
+					<p><?php echo !empty( $wpi_settings['manual_payment_info'] )?$wpi_settings['manual_payment_info']:'Contact site Administrator for payment information please.'; ?></p>
+		<?php
         } else {
           $wpi_settings['installed_gateways'][$method]['object']->frontend_display($invoice);
         }
-        ?>
-
-      </div>
-  <?php } ?>
+				apply_filters("wpi_closed_comments", $invoice);
+		?>
+		</div>
+		<?php } ?>
  
-<?php do_action('wpi_front_end_right_col_bottom'); ?>
-</div>
-
+		<?php do_action('wpi_front_end_right_col_bottom'); ?>
+			
+	</div>
 </div>

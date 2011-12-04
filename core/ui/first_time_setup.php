@@ -4,17 +4,17 @@
 <?php echo WPI_UI::input("type=hidden&name=wpi_settings[first_time_setup_ran]&value=true")?>
 
   
-<h2><?php _e("WP-Invoice First-Use Setup", WP_INVOICE_TRANS_DOMAIN) ?></h2>
+<h2><?php _e("WP-Invoice First-Use Setup", WPI) ?></h2>
 
 <div id="wp_invoice_potential_error"></div>
-<div style="margin: 5px 0 15px 0;"><?php _e("Thank you for installing WP-Invoice.  Please provide the necessary information to complete the first-time setup.", WP_INVOICE_TRANS_DOMAIN) ?></div>
+<div style="margin: 5px 0 15px 0;"><?php _e("Thank you for installing WP-Invoice.  Please provide the necessary information to complete the first-time setup.", WPI) ?></div>
 <div id="first_time_setup_accordion" class="">
   <div class="wp_invoice_accordion_section">
     <h3 id="basic_setup"><a href="#" class="selector"><?php _e("Basic Setup") ?></a></h3>
     <div>
       <table class="form-table">
         <tr>
-          <th width="200"><?php _e("Business Name:", WP_INVOICE_TRANS_DOMAIN) ?></th>
+          <th width="200"><?php _e("Business Name:", WPI) ?></th>
           <td>
           <?php echo WPI_UI::input("name=business_name&group=wpi_settings&value={$wpi_settings['business_name']}")?>
           </td>
@@ -22,7 +22,7 @@
 
         <tr>
           <th width="200">
-            <a class="wp_invoice_tooltip"  title="<?php _e("Your clients will have to follow their secure link to this page to see their invoice. Opening this page without following a link will result in the standard page content begin shown.", WP_INVOICE_TRANS_DOMAIN) ?>"><?php _e("Select a page to display invoices:", WP_INVOICE_TRANS_DOMAIN) ?></a>
+            <a class="wp_invoice_tooltip"  title="<?php _e("Your clients will have to follow their secure link to this page to see their invoice. Opening this page without following a link will result in the standard page content begin shown.", WPI) ?>"><?php _e("Select a page to display invoices:", WPI) ?></a>
           </th>
           <td>
             <select id="wp_invoice_web_invoice_page" name='wpi_settings[web_invoice_page]'>
@@ -39,7 +39,7 @@
         </tr>
         
         <tr>
-          <th> <a class="wp_invoice_tooltip"  title="<?php _e('Select whether to overwrite all page content, insert at the bottom of the content, or to look for the [wp-invoice] tag.', WP_INVOICE_TRANS_DOMAIN); ?>"><?php _e('How to Insert Invoice:', WP_INVOICE_TRANS_DOMAIN); ?></a></th>
+          <th> <a class="wp_invoice_tooltip"  title="<?php _e('Select whether to overwrite all page content, insert at the bottom of the content, or to look for the [wp-invoice] tag.', WPI); ?>"><?php _e('How to Insert Invoice:', WPI); ?></a></th>
           <td>
           <?php echo WPI_UI::select("name=where_to_display&group=wpi_settings&values=".serialize(array("overwrite" => "Overwrite All Page Content", "below_content" => "Place Below Content","above_content" => "Above Content","replace_tag" => "Replace [wp-invoice] Tag"))."&current_value={$wpi_settings['where_to_display']}"); ?>
           If using the tag, place <span class="wp_invoice_explanation">[wp-invoice]</span> somewhere within your page content.

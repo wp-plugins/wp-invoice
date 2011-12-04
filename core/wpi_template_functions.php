@@ -24,43 +24,33 @@ function invoice_pdf_link() {
 */
 function show_payment_forms($args = "") {
     global $invoice, $wpi_settings;
-  
+
     $defaults = array('return' => false);
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
-        //determinig the default payment method
-        foreach ($wpi_settings['billing'] as $key=>$method) {
+
+    foreach ($wpi_settings['billing'] as $key=>$method) {
       print $invoice['meta']['default_payment_method'];
-            if($invoice['meta']['client_change_payment_method'] == 'off' && $invoice['meta']['default_payment_method'] == $key) {
+
+      if($invoice['meta']['client_change_payment_method'] == 'off' && $invoice['meta']['default_payment_method'] == $key) {
         print TEMPLATEPATH.'/wpi/'.$key.'.php';
-                if($wpi_settings['use_custom_templates'] != 'yes' || !file_exists(TEMPLATEPATH.'/wpi/'.$key.'.php')){
-                    $method_file = realpath(__DIR__).'/template/payment_methods/'.$key.'.php';
-                }
-                else {
-                    $method_file = TEMPLATEPATH.'/wpi/'.$key.'.php';
-                }
-             break;
-            }
+
+        if($wpi_settings['use_custom_templates'] != 'yes' || !file_exists(TEMPLATEPATH.'/wpi/'.$key.'.php')){
+          $method_file = realpath(__DIR__).'/template/payment_methods/'.$key.'.php';
+        } else {
+          $method_file = TEMPLATEPATH.'/wpi/'.$key.'.php';
         }
-        ?>
-        <script type="text/javascript">
-        /*jQuery(document).ready(function(){
-            jQuery("#wpi_paypal_payment_form").submit(function() {
-            <?php if($invoice['meta']['terms_acceptance_required'] == 'on') { ?>
-                if (jQuery(".wpi_term_acceptance").is(":not(:checked)")) {
-                    jQuery("li.wpi_terms").css('background','#FFEFEF');
-                    return false;
-                }
-            <?php } ?>
-            });
-       });*/
-        </script>
-        <div id="_wpi_payment_form">
+       break;
+      }
+    }
+    ?>
+    <div id="_wpi_payment_form">
             <?php
-            if(!empty($method_file))
-                require_once $method_file; ?>
+            if(!empty($method_file)) {
+                require_once $method_file;
+            } ?>
         </div>
     <?php
-        if($return) 
+        if($return)
             return $result;
         echo $result;
 }
@@ -70,24 +60,22 @@ function show_payment_forms($args = "") {
     show_quantities = will show quantity column
     item_heading = column heading for item
     cost_heading = column heading for cost
-    quantity_heading = column heading for quantity   
+    quantity_heading = column heading for quantity
 */
 function show_itemized_table($args = '') {
     global $invoice, $wpi_settings;
 
-    //WPI_Functions::qc( $wpi_settings['globals'] );
-
     $defaults = array('return' => false, 'item_heading' => "Item", 'cost_heading' => "Cost", 'show_quantities' => false, 'quantity_heading' => 'Quantity');
-    
+
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
-    
+
     // If hide_quantity is not passed by function, we referr to global setting
     if(!$show_quantities) {
       $show_quantities = ($wpi_settings['globals']['show_quantities'] == 'true' ? true : false);
     }
-    
+
     $currency_symbol = (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$");
-     
+
     ob_start();
         if( !empty($invoice['deposit_amount']) && $invoice['deposit_amount']>0 ) {
           ?>
@@ -137,12 +125,15 @@ function show_itemized_table($args = '') {
                   set_pay_button_value();
                 });
                 // Handle changing of payment method
-                jQuery("#online_payment_form_wrapper").bind("DOMSubtreeModified", function(){
+                jQuery("#online_payment_form_wrapper").live("formLoaded", function(){
                   payment_amount = jQuery("#payment_amount");
                   my_amount      = jQuery("#my_amount");
                   // update field data
                   if ( custom_amount_option.is(":checked") ) {
                     payment_amount.val( validate_amount( my_amount.val() ) );
+                  }
+                  if ( minimum_amount_option.is(":checked") ) {
+                    payment_amount.val( validate_amount( minimum_amount_option.val() ) );
                   }
                   set_pay_button_value();
                 });
@@ -183,7 +174,7 @@ function show_itemized_table($args = '') {
         <tbody>
           <?php $i = 1; ?>
           <?php if(isset($invoice['itemized_list']) && is_array($invoice['itemized_list'])) : ?>
-            <?php foreach($invoice['itemized_list'] as $row) : ?> 
+            <?php foreach($invoice['itemized_list'] as $row) : ?>
             <tr class="<?php echo ++$i%2?'alt_row':'' ?>">
                 <td class="title_column">
                     <div class="wpi_line_item_title"><?php echo stripslashes($row['name']); ?></div>
@@ -194,9 +185,7 @@ function show_itemized_table($args = '') {
                     <?php echo $row['quantity']; ?>
                 </td>
                 <?php endif; ?>
-                <td class="cost_column">
-                    <?php echo $currency_symbol . wp_invoice_currency_format($row['line_total_before_tax']); ?>
-                </td>
+                <td class="cost_column"><?php echo $currency_symbol . wp_invoice_currency_format($row['line_total_before_tax']); ?></td>
             </tr>
             <?php endforeach; ?>
           <?php endif; ?>
@@ -222,7 +211,7 @@ function show_itemized_table($args = '') {
                     <?php echo $currency_symbol . wp_invoice_currency_format($row['amount']); ?>
                 </td>
             </tr>
-            <?php endforeach; ?> 
+            <?php endforeach; ?>
           <?php endif; ?>
         </tbody>
         <tfoot>
@@ -275,7 +264,7 @@ function show_itemized_table($args = '') {
         <?php else:
                 require_once TEMPLATEPATH.'/wpi/table.php';
         endif;?>
-    <?php 
+    <?php
     $result .= ob_get_contents();
     ob_end_clean();
     if($return)
@@ -295,7 +284,7 @@ function show_invoice_history() {
           <th><?php _e('Event'); ?></th>
         </tr>
       </thead>
-      
+
       <tbody>
     <?php foreach ( $invoice['log'] as $key => $value ) : ?>
           <?php if ( $value['action'] == 'create' ) : ?>
@@ -305,12 +294,12 @@ function show_invoice_history() {
             </tr>
           <?php endif; ?>
           <?php if ( $value['action'] == 'add_payment' ) : ?>
-              <?php 
+              <?php
                 $by = '';
                 if ( $value['user_id'] != 0 ) {
                   $user = get_user_by('id', $value['user_id']);
                   $by = " by ".$user->display_name;
-                } 
+                }
               ?>
             <tr class="invoice-history-item">
               <td class="time"><?php echo date(get_option('date_format') ,$value['time'] ) ?></td>
@@ -337,15 +326,15 @@ function show_invoice_history() {
 */
 function allow_partial_payments($args = '') {
   global $invoice;
-  
-  
+
+
 
   if(!empty($invoice['deposit_amount']) && $invoice['deposit_amount']>0) {
     return true;
   }
-  
+
   return false;
-  
+
 }
 
 
@@ -355,32 +344,44 @@ function allow_partial_payments($args = '') {
 function show_partial_payments($args = '') {
   global $invoice, $wpi_settings;
 
-  if(!empty($invoice['deposit_amount']) && $invoice['deposit_amount']>0): 
+  if(!empty($invoice['deposit_amount']) && $invoice['deposit_amount']>0):
 
-  $currency_symbol = (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$");  
+  $currency_symbol = (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$");
   $full_balance = wp_invoice_currency_format($invoice['net']);
   $minimum = wp_invoice_currency_format($invoice['deposit_amount']);
   ?>
-    
-    <ul>
-      <li>
-        <input type='radio' name='payment_amount' id="wpi_minimum_amount_option" value="<?php echo wp_invoice_currency_format($invoice['deposit_amount']); ?>" />
-        <label for="wpi_minimum_amount_option"><?php _e('Minimum Payment Due:'); ?> <?php echo  $currency_symbol . wp_invoice_currency_format($invoice['deposit_amount']); ?></label> 
-      </li>
-      <li>
-        <input checked="checked" type='radio' name='payment_amount' id="wpi_full_amount_option" value="<?php echo wp_invoice_currency_format($invoice['net']); ?>" />
-        <label for="wpi_full_amount_option"><?php _e('Statement Balance:'); ?> <?php echo  $currency_symbol . wp_invoice_currency_format($invoice['net']); ?></label> 
-      </li>
-      <li>
-        <input type='radio' name='payment_amount' id="wpi_custom_amount_option"  value="<?php echo wp_invoice_currency_format($invoice['net']); ?>" />
-        <label for="wpi_custom_amount_option"><?php _e('Other'); ?></label><span id="wpi_custom_amount_option_field_wrapper">: <?php echo  $currency_symbol; ?>
-        <input id="my_amount" name="my_amount" type="text" value="<?php echo wp_invoice_currency_format($invoice['net']); ?>">
-        </span> 
-      </li>
-      
-    </ul>
- 
-  <?php endif; 
+  <form class="wpi_checkout">
+    <div class="wpi_checkout_partial_payment wpi_checkout_payment_box">
+      <ul class="wpi_checkout_block">
+
+        <li class="section_title"><?php _e('Payment Amount'); ?></li>
+
+        <li class="wpi_checkout_row">
+          <label for="wpi_minimum_amount_option"><?php _e("Min. Payment Due:"); ?></label>
+          <input type="radio" name="payment_amount" id="wpi_minimum_amount_option" value="<?php echo wp_invoice_currency_format($invoice['deposit_amount']); ?>" />
+          <span><?php echo $currency_symbol . wp_invoice_currency_format($invoice['deposit_amount']); ?></span>
+        </li>
+
+        <li class="wpi_checkout_row">
+          <label for="wpi_full_amount_option"><?php _e("Statement Balance:"); ?></label>
+          <input checked="checked" type="radio" name="payment_amount" id="wpi_full_amount_option" value="<?php echo wp_invoice_currency_format($invoice['net']); ?>" />
+          <span><?php echo $currency_symbol . wp_invoice_currency_format($invoice['net']); ?></span>
+        </li>
+
+        <li class="wpi_checkout_row">
+          <label for="wpi_custom_amount_option"><?php _e("Other"); ?></label>
+          <input type="radio" name="payment_amount" id="wpi_custom_amount_option"  value="<?php echo wp_invoice_currency_format($invoice['net']); ?>" />
+
+          <span id="wpi_custom_amount_option_field_wrapper"><?php echo $currency_symbol; ?>
+          <input class="text-input small" id="my_amount" name="my_amount" type="text" value="<?php echo wp_invoice_currency_format($invoice['net']); ?>" />
+          </span>
+        </li>
+
+      </ul>
+      <small class="notice"><?php _e('This invoice allows partial payments, please select the amount you would like to pay.'); ?></small>
+    </div>
+  </form>
+  <?php endif;
 }
 
 
@@ -389,19 +390,19 @@ function show_partial_payments($args = '') {
 */
 function show_payment_selection($args = '') {
     global $invoice, $wpi_settings;
-    
+
     $defaults = array(
       'return' => false,
       'title' => "Payment Method",
       'output' => "select"
     );
-    
+
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
-    
+
     if(!in_array($output, array('select','radio','list'))) {
       $output = 'select';
     }
-    
+
     // Make sure invoice allows for user to change payment, and that there is more than one payment method
     if ( !empty( $invoice['client_change_payment_method'] ) ) {
       if($invoice['client_change_payment_method'] == 'off' || $invoice['client_change_payment_method'] == false || $invoice['client_change_payment_method'] == "false") {
@@ -410,13 +411,12 @@ function show_payment_selection($args = '') {
     } else {
       return;
     }
-    
+
     // Count number of available payment methods
     $count = 0;
-    foreach($wpi_settings['installed_gateways'] as $key => $value) {
-      $method = $value['object']->options;
-      if($method['allow'] == 'on' || $method['allow'] == 'true') {
-        $count++;    
+    foreach($invoice['billing'] as $value) {
+      if($value['allow'] == 'on' || $value['allow'] == 'true') {
+        $count++;
       }
     }
 
@@ -424,79 +424,69 @@ function show_payment_selection($args = '') {
         return;
     ob_start();
     ?>
-    <div id="_wpi_payment_method" class='wpi_payment_method'>
-        <?php if($output=='select'):?>
-            <fieldset class="wp_invoice_select_payment_method" id="wp_invoice_select_payment_method">
-                <ol>
-                    <li>
-                        <label for="wp_invoice_select_payment_method_selector"><?php echo $title; ?></label>
-                        <select name="wp_invoice_select_payment_method_selector" id="wp_invoice_select_payment_method_selector">
-                            <?php       
-                            foreach ($invoice['billing'] as $key => $value) {
-                              $method = $value;
-                              if(empty($method['name'])) continue;
-                              if($method['allow'] == 'on') { ?>
-                                <option value="<?php echo $key; ?>" <?php selected($key, $invoice['default_payment_method']); ?>><?php echo (!empty($method['public_name']) ? $method['public_name'] : $method['name']); ?></option>
-                              <?php
-                              }
-                            }
-                            ?>
-                        </select>
-                    </li>
-                </ol>
-            </fieldset>
-      
-        <?php elseif($output=='radio'):?>
-            <fieldset>
-                <ol>
-                    <li>
-                        <h2><?php echo $title; ?></h2>
-                        <?php foreach ($invoice['billing'] as $key => $method) {
-                                if(empty($method['name']))
-                                        continue;
-                                if($method['allow'] == 'on') { ?>
-                                    <input type="radio" name="wp_invoice_select_payment_method_selector" value="<?php echo $key; ?>" id="<?php echo $key; ?>"/><label for="<?php echo $key; ?>"><?php echo $method['name']; ?></label>
-                        <?php } } ?>
-                    </li>
-                </ol>
-            </fieldset>
-            <script type="text/javascript">
-                jQuery("#_wpi_payment_method input[type=radio]").click(function(){
-                    jQuery("#_wpi_payment_form").html('<img src="<?=WPI_URL?>/core/css/images/processing-ajax.gif" height="32" width="32" style="margin: 0pt auto; display: block; clear: both;" alt="loading"/>');
-                    slug = jQuery(this).val();
-                    jQuery.post('<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php', {action: 'wpi_payment_select', slug: slug, invoice: '<?php echo $invoice['invoice_id'] ?>'}, function(data){
-                        jQuery("#_wpi_payment_form").html(data);
-                    });
-                });
-            </script>
-        <?php elseif($output=='list'):?>
-            <fieldset>
-                <ol>
-                    <li>
-                        <ul>
-                            <li><?php echo $title; ?></li>
-                            <?php foreach ($invoice['billing'] as $key => $method) {
-                                    if(empty($method['name']))
-                                            continue;
-                                    if($method['allow'] == 'on') { ?>
-                                        <li><a href="#_wpi_payment_form" id="<?php echo $key; ?>"><?php echo $method['name']; ?></a></li>
-                            <?php } } ?>
-                        </ul>
-                    </li>
-                </ol>
-            </fieldset>
-            <script type="text/javascript">
-                jQuery("#_wpi_payment_method ul li a").click(function(){
-                    jQuery("#_wpi_payment_form").html('<img src="<?php echo WPI_URL?>/core/css/images/processing-ajax.gif" height="32" width="32" style="margin: 0pt auto; display: block; clear: both;" alt="loading"/>');
-                    slug = jQuery(this).attr('id');
-                    jQuery.post('<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php', {action: 'wpi_payment_select', slug: slug, invoice: '<?php echo $invoice['invoice_id'] ?>'}, function(data){
-                        jQuery("#_wpi_payment_form").html(data);
-                    });
-                });
-            </script>
-        <?php endif;?>
+			<div class="wpi_checkout_payment_box">
+				<ul class="wpi_checkout_block wpi_checkout_method_selection">
+					<li class="section_title">Payment Method</li>
+		<?php if($output=='select'):?>
+					<li class="wpi_checkout_row">
+							<label for="wp_invoice_select_payment_method_selector"><?php echo $title; ?></label>
+							<select name="wp_invoice_select_payment_method_selector" id="wp_invoice_select_payment_method_selector">
+									<?php
+									foreach ($invoice['billing'] as $key => $value) {
+										$method = $value;
+										if(empty($method['name'])) continue;
+										if($method['allow'] == 'on') { ?>
+											<option value="<?php echo $key; ?>" <?php selected($key, $invoice['default_payment_method']); ?>><?php echo (!empty($method['public_name']) ? $method['public_name'] : $method['name']); ?></option>
+										<?php
+										}
+									}
+									?>
+							</select>
+					</li>
+		<?php elseif($output=='radio'):?>
+					<li class="wpi_checkout_row">
+							<h2><?php echo $title; ?></h2>
+							<?php foreach ($invoice['billing'] as $key => $method) {
+											if(empty($method['name']))
+															continue;
+											if($method['allow'] == 'on') { ?>
+													<input type="radio" name="wp_invoice_select_payment_method_selector" value="<?php echo $key; ?>" id="<?php echo $key; ?>"/><label for="<?php echo $key; ?>"><?php echo $method['name']; ?></label>
+							<?php } } ?>
+					</li>
+					<script type="text/javascript">
+							jQuery("#_wpi_payment_method input[type=radio]").click(function(){
+									jQuery("#_wpi_payment_form").html('<img src="<?=WPI_URL?>/core/css/images/processing-ajax.gif" height="32" width="32" style="margin: 0pt auto; display: block; clear: both;" alt="loading"/>');
+									slug = jQuery(this).val();
+									jQuery.post('<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php', {action: 'wpi_payment_select', slug: slug, invoice: '<?php echo $invoice['invoice_id'] ?>'}, function(data){
+											jQuery("#_wpi_payment_form").html(data);
+									});
+							});
+					</script>
+		<?php elseif($output=='list'):?>
+					<li class="wpi_checkout_row">
+							<ul>
+									<li><?php echo $title; ?></li>
+									<?php foreach ($invoice['billing'] as $key => $method) {
+													if(empty($method['name']))
+																	continue;
+													if($method['allow'] == 'on') { ?>
+															<li><a href="#_wpi_payment_form" id="<?php echo $key; ?>"><?php echo $method['name']; ?></a></li>
+									<?php } } ?>
+							</ul>
+					</li>
+			<script type="text/javascript">
+					jQuery("#_wpi_payment_method ul li a").click(function(){
+							jQuery("#_wpi_payment_form").html('<img src="<?php echo WPI_URL?>/core/css/images/processing-ajax.gif" height="32" width="32" style="margin: 0pt auto; display: block; clear: both;" alt="loading"/>');
+							slug = jQuery(this).attr('id');
+							jQuery.post('<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php', {action: 'wpi_payment_select', slug: slug, invoice: '<?php echo $invoice['invoice_id'] ?>'}, function(data){
+									jQuery("#_wpi_payment_form").html(data);
+							});
+					});
+			</script>
+		<?php endif;?>
+    			</ul>
+			</div>
     <div style="clear:both;"></div>
-    </div>
     <?php
     $result .= ob_get_contents();
     ob_end_clean();
@@ -514,28 +504,28 @@ function show_payment_selection($args = '') {
 function show_terms_acceptance($args = '') {
     global $invoice;
     $defaults = array('label' => false, 'force' => false, 'page_id' => false);
-    
+
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
     // Make sure invoice requires terms acceptance, unless it is being forced
-    
+
     if(!$force && $invoice['terms_acceptance_required'] != 'on')
         return;
-    
+
     if($page_id)
         $terms_link = get_permalink($page_id);
-    
-    if(!empty($label)) {        
+
+    if(!empty($label)) {
         if($terms_link)
             $result .= "<label for='wpi_term_acceptance'><a href='$terms_link'>$label</a></label>";
         if(!$terms_link)
             $result .= "<label for='wpi_term_acceptance'>$label</a></label>";
     }
-    
+
     $result .= '<input style="width: 20px;" type="checkbox" value="accept"  class="wpi_term_acceptance" id="wpi_term_acceptance" name="wpi_term_acceptance">';
-    
+
     if($return)
         return $result;
-    
+
     echo $result;
 }
 
@@ -545,22 +535,22 @@ function show_terms_acceptance($args = '') {
 */
 function balance_due($args = '') {
   global $invoice, $wpi_settings;
-  
+
   $result = "";
-  
+
   $defaults = array('return' => false, 'hide_currency' => false);
   extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
-  
+
   if(!$hide_currency) {
     $currency_symbol = (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$");
   }
-  
+
   $result .= $currency_symbol . wp_invoice_currency_format($invoice['net']);
-  
+
   if($return) {
     return $result;
   }
-  
+
   echo $result;
 }
 
@@ -572,16 +562,16 @@ function the_description($args = '') {
 
     $defaults = array('return' => false);
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
-    
+
     if(empty($invoice['post_content']))
         return;
-    
-    $result = apply_filters('wpi_description', $invoice['post_content']); 
-    
+
+    $result = apply_filters('wpi_description', $invoice['post_content']);
+
     if($return) {
       return $result;
     }
-    
+
     echo $result;
 }
 
@@ -591,38 +581,40 @@ function the_description($args = '') {
 */
 function invoice_id($args = '') {
     global $invoice;
-    
+
     $defaults = array('return' => false, 'force_original' => false);
-    
+
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
-    
+
     if( !empty( $invoice['custom_id'] ) && !$force_original ) {
         $result = $invoice['custom_id'];
     } else {
         $result = wpi_post_id_to_invoice_id($invoice['ID']);
     }
-      
+
     if($return)
         return $result;
-    
+
     echo $result;
 }
 
 /**
     Display recipients name
 */
-function recipients_name($args = '') {
+  function recipients_name($args = '') {
     global $invoice;
-
-    //WPI_Functions::qc( $invoice );
     
     $defaults = array('return' => false);
+    
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
-    
-    if($return)
-        return $invoice['user_data']['display_name'];
-    
-    echo $invoice['user_data']['display_name'];
+
+    $display_name = $invoice['user_data']['display_name'];
+
+    if($return) {
+      return $display_name;
+    }
+
+    echo $display_name;
 }
 
 function is_paid() {
@@ -666,18 +658,18 @@ function paid_amount() {
 
 /**
  * Determines is this is invoice is actually a quote
- * 
- * @TODO: This and OTHER functions in this file should be renamed (add prefix) 
+ *
+ * @TODO: This and OTHER functions in this file should be renamed (add prefix)
  * to avoid bugs with duplicated functions in future.
  * It needs to be named something like wpi_is_quote OR wrapped by static class. Maxim Peshkov.
  */
 function is_quote() {
   global $invoice;
-  
+
   if(!empty($invoice['is_quote'])) {
     return true;
   }
-  
+
   return false;
 }
 
@@ -686,11 +678,11 @@ function is_quote() {
 */
 function is_invoice() {
     global $invoice;
-    
+
     if($invoice['type'] == 'invoice') {
        return true;
     }
-    
+
     return false;
 }
 
@@ -699,11 +691,11 @@ function is_invoice() {
  */
 function is_recurring() {
   global $invoice;
-  
+
   if(!empty($invoice['is_recurring'])) {
     return true;
   }
-  
+
   return false;
 }
 

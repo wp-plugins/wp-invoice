@@ -42,9 +42,9 @@ class WPI_UI {
     }
 
     // Add Filters
-
     add_filter('wpi_page_loader_path', array('WPI_UI', "wpi_display_user_selection"), 0,3);
     add_filter('wpi_pre_header_invoice_page_wpi_page_manage_invoice', array('WPI_UI', "page_manage_invoice_preprocess"));
+    
   }
   
   /**
@@ -498,10 +498,16 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         wp_enqueue_script('jquery.cookie');
 
         // Add scripts and styles for Tiny MCE Editor (default WP Editor)
-        wp_enqueue_script(array('jquery', 'editor', 'thickbox', 'media-upload'));
+        wp_enqueue_script(array('editor', 'thickbox', 'media-upload'));
         wp_enqueue_style('thickbox');
+        
+        do_action('wpi_ui_admin_scripts_invoice_editor');
+        
       break;
     }
+    
+    
+    
   }
 
   /**
@@ -584,8 +590,8 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
    * @since 3.0
   */
   function page_manage_invoice_preprocess($screen_id){
-    global $wpi_settings, $this_invoice;
-
+    global $wpi_settings, $this_invoice, $wpdb;
+    
     //add_screen_option( 'screen_option', array('label' => "Default Screen Option", 'default' => 7, 'option' => 'screen_option') );
     //add_contextual_help($screen_id, 'test');
 
@@ -606,6 +612,9 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
 
     }
 
+    // Select status of invoice from DB
+    $status = $wpdb->get_var("SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = '{$_REQUEST['wpi']['existing_invoice']['invoice_id']}' AND meta_key = 'status'");
+    
     // New Invoice
     if(isset($_REQUEST['wpi']['new_invoice']) && empty($invoice_id_exists)) {
       $this_invoice = new WPI_Invoice();
@@ -618,7 +627,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
 
       // Set user and determine type
       $this_invoice->load_user("email={$_REQUEST['wpi']['new_invoice']['user_email']}");
-
+ 
       // Add custom data if user doesn't exist.
       if(empty($this_invoice->data['user_data'])) {
         $this_invoice->data['user_data'] = array('user_email' => $_REQUEST['wpi']['new_invoice']['user_email']);
@@ -648,17 +657,18 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
       $this_invoice->load_invoice("id={$ID}");
 
     }
+    
 
-
-    add_meta_box('postbox_payment_methods', __('Payment Settings',WP_INVOICE_TRANS_DOMAIN), 'postbox_payment_methods', $screen_id, 'normal', 'high');
-    //  add_meta_box('postbox_settings',  __('Settings',WP_INVOICE_TRANS_DOMAIN), 'postbox_settings', 'admin_page_wpi_invoice_edit', 'side', 'low');
+    add_meta_box('postbox_payment_methods', __('Payment Settings',WPI), 'postbox_payment_methods', $screen_id, 'normal', 'high');
+    
+    //  add_meta_box('postbox_settings',  __('Settings',WPI), 'postbox_settings', 'admin_page_wpi_invoice_edit', 'side', 'low');
     if ( $this_invoice->data['type'] == 'single_payment' ) {
-      add_meta_box('postbox_overview', __('Overview',WP_INVOICE_TRANS_DOMAIN), 'postbox_overview', $screen_id, 'side', 'high');
+      add_meta_box('postbox_overview', __('Overview',WPI), 'postbox_overview', $screen_id, 'side', 'high');
     } else {
-      add_meta_box('postbox_publish', __('Publish',WP_INVOICE_TRANS_DOMAIN), 'postbox_publish', $screen_id, 'side', 'high');
+      add_meta_box('postbox_publish', __('Publish',WPI), 'postbox_publish', $screen_id, 'side', 'high');
     }
-    //add_meta_box('recurring_billing_box', __('Publish',WP_INVOICE_TRANS_DOMAIN), 'recurring_billing_box', 'admin_page_wpi_invoice_edit', 'middle', 'low');
-    add_meta_box('postbox_user_existing', __('User Information',WP_INVOICE_TRANS_DOMAIN), 'postbox_user_existing', $screen_id, 'side', 'low');
+    //add_meta_box('recurring_billing_box', __('Publish',WPI), 'recurring_billing_box', 'admin_page_wpi_invoice_edit', 'middle', 'low');
+    add_meta_box('postbox_user_existing', __('User Information',WPI), 'postbox_user_existing', $screen_id, 'side', 'low');
   }
 
     /**
@@ -733,7 +743,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
           // Invoice editing page
           case $wpi_settings['pages']['edit']:
 
-            $return = "<h5>Creating New Invoice</h5>";
+          $return = "<h5>Creating New Invoice</h5>";
           $return .= '<div class="metabox-prefs">';
           $return .= "Begin typing the recipient's email into the input box, or double-click to view list of possible options.  For new prospects, type in a new email address.";
           $return .= '</div>';
@@ -747,16 +757,16 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
           $help[] = "<p>".__('Please visit <a href="http://usabilitydynamics.com/products/wp-invoice/forum/">WP-Invoice Support Forum</a> to ask questions regarding the plugin.')."</p>";
           $help[] = "<p>".__('To suggest ideas please visit the <a href="http://feedback.twincitiestech.com/forums/9692-wp-invoice">WP-Invoice Feedback site</a>.')."</p>";
 
-          $help[] = "<h5>".__('Data Revalidation')."</h5>";
-          $help[] = "<p>".__('If you see some incorrect values click <a id="wpi_revalidate" href="#">Revalidate</a>. <img id="revalidate-loading" alt="" style="visibility:hidden;" src="'.WPI_URL.'/core/css/images/ajax-loader-blue.gif" />')."</p>";
-
           $return = implode('', $help);
         break;
 
         case $wpi_settings['pages']['settings']:
 
+          $help[] = "<h5>".__('Main & Business Process')."</h5>";
+          $help[] = "<p>".__('<b>Business Address</b> - This will display on the invoice page when printed for clients\' records.', WPI)."</p>";
+          
           $help[] = "<h5>".__('E-Mail Templates')."</h5>";
-          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page. The following variables can be used within the Subject or the Content of the e-mail templates:')."</p>";
+          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page. The following variables can be used within the Subject or the Content of the e-mail templates:', WPI)."</p>";
 
           $email_vars['invoice_id'] = __('Invoice ID');
           $email_vars['link'] = __('URL of invoice');
@@ -778,6 +788,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
             }
             $help[] = '</ul>';
           }
+          
           $help = apply_filters( 'wpi_contextual_help', $help );
 
           $return = implode('', $help);
@@ -1064,7 +1075,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
             $class_from_name = $class;
         $values_array = is_serialized($values) ? unserialize($values) : $values;
         if ($values == 'yon') {
-            $values_array = array("yes" => __("Yes", WP_INVOICE_TRANS_DOMAIN), "no" => __("No", WP_INVOICE_TRANS_DOMAIN));
+            $values_array = array("yes" => __("Yes", WPI), "no" => __("No", WPI));
         }
         if ($values == 'us_states') {
             $values_array = array( '0' => '--'.__('Select').'--' );
@@ -1153,7 +1164,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         ?>
           <li class="wp_crm_advanced_configuration">
             <input id="<?php echo $row_hash; ?>_no_edit_wpi" value='true' type="checkbox"  <?php checked($wp_crm['data_structure']['attributes'][$slug]['wp_invoice'], 'true'); ?> name="wp_crm[data_structure][attributes][<?php echo $slug; ?>][wp_invoice]" />
-            <label for="<?php echo $row_hash; ?>_no_edit_wpi" ><?php _e('WP-Invoice custom field', WP_INVOICE_TRANS_DOMAIN); ?></label>
+            <label for="<?php echo $row_hash; ?>_no_edit_wpi" ><?php _e('WP-Invoice custom field', WPI); ?></label>
           </li>
         <?php
         
@@ -1170,9 +1181,9 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
      */
     function wp_crm_contextual_help( $data ) {
       
-      $data['content'][] = __('<h3>WP-Invoice</h3>', WP_INVOICE_TRANS_DOMAIN);
-      $data['content'][] = __('<p>Advanced option <b>WP-Invoice custom field</b> may be used for adding custom user data fields for payments forms.</p>', WP_INVOICE_TRANS_DOMAIN);
-      $data['content'][] = __('<p>Works for Authorize.net payment method only for now.</p>', WP_INVOICE_TRANS_DOMAIN);
+      $data['content'][] = __('<h3>WP-Invoice</h3>', WPI);
+      $data['content'][] = __('<p>Advanced option <b>WP-Invoice custom field</b> may be used for adding custom user data fields for payments forms.</p>', WPI);
+      $data['content'][] = __('<p>Works for Authorize.net payment method only for now.</p>', WPI);
       
       return $data;
     }

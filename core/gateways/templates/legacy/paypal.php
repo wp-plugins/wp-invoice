@@ -29,30 +29,30 @@
     <fieldset id="credit_card_information">
         <ol>
             <li>
-                <label for="first_name"><?php _e('First Name', WP_INVOICE_TRANS_DOMAIN); ?></label>
+                <label for="first_name"><?php _e('First Name', WPI); ?></label>
                 <input name="first_name" value="<?php echo $invoice['user_data'][first_name];?>" />
             </li>
             <li>
-                <label for="last_name"><?php _e('Last Name', WP_INVOICE_TRANS_DOMAIN); ?></label>
+                <label for="last_name"><?php _e('Last Name', WPI); ?></label>
                 <input name="last_name" value="<?php echo $invoice[user_data][last_name];?>" />
             </li>
             <li>
-                <label for="email"><?php _e('Email Address', WP_INVOICE_TRANS_DOMAIN); ?></label>
+                <label for="email"><?php _e('Email Address', WPI); ?></label>
                 <input name="email_address" value="<?php echo $invoice[user_data][email_address];?>" />
             </li>
             <?php list($night_phone_a, $night_phone_b, $night_phone_c) = split('[/.-]', $invoice[user_data][phone_number]); ?>
             <li>
-                <label for="day_phone_a"><?php _e('Phone Number', WP_INVOICE_TRANS_DOMAIN); ?></label>
+                <label for="day_phone_a"><?php _e('Phone Number', WPI); ?></label>
                 <input name="night_phone_a" value="<?php echo $night_phone_a;?>" style="width:25px;" size="3" maxlength="3" />
                 <input name="night_phone_b" value="<?php echo $night_phone_b;?>" style="width:25px;" size="3" maxlength="3" />
                 <input name="night_phone_c" value="<?php echo $night_phone_c;?>" style="width:25px;" size="3" maxlength="3" />
             </li>
             <li>
-                <label for="address"><?php _e('Address', WP_INVOICE_TRANS_DOMAIN); ?></label>
+                <label for="address"><?php _e('Address', WPI); ?></label>
                 <input name="address1" value="<?php echo $invoice[user_data][streetaddress];?>" />
             </li>
             <li>
-                <label for="city"><?php _e('City', WP_INVOICE_TRANS_DOMAIN); ?></label>
+                <label for="city"><?php _e('City', WPI); ?></label>
                 <input name="city" value="<?php echo $invoice[user_data][city];?>" />
              </li>
             <?php 
@@ -72,11 +72,11 @@
             }
             ?>
             <li>
-                <label for="zip"><?php _e('Zip Code', WP_INVOICE_TRANS_DOMAIN); ?></label>
+                <label for="zip"><?php _e('Zip Code', WPI); ?></label>
                 <input name="zip" value="<?php echo $invoice[user_data][zip];?>" />
             </li>
             <li>
-                <label for="country"><?php _e('Country', WP_INVOICE_TRANS_DOMAIN); ?></label>
+                <label for="country"><?php _e('Country', WPI); ?></label>
                 <?php echo WPI_UI::select("name=country&current_value={$invoice[user_data][country]}&values=countries"); ?>
             </li>
             <?php /*if($invoice['meta']['terms_acceptance_required'] == 'on') { ?>

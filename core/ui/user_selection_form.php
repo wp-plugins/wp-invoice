@@ -21,7 +21,7 @@
                 <div class="wp_invoice_copy_invoice">
                   <?php $all_invoices = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'wpi_object' AND post_title != ''"); ?>
                     <select name="wpi[new_invoice][template_copy]">
-                    <option><?php _e('-- Select Invoice --', WP_INVOICE_TRANS_DOMAIN) ?></option>
+                    <option><?php _e('-- Select Invoice --', WPI) ?></option>
                     <?php foreach ($all_invoices as $invoice) {
                             $invoice_id = wpi_post_id_to_invoice_id($invoice->ID);
                             $invoice_obj = new WPI_Invoice();

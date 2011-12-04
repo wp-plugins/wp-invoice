@@ -56,6 +56,11 @@ div.wpi_payment_form div.partial_payments {
     padding: 3px;
     width: 230px;
 }
+
+#content form.wpi_checkout .text-input.small {
+    width: 68px;
+}
+
 #content form.wpi_checkout input.wpi_checkout_input_error{
   background: none repeat scroll 0 0 #F9EBEB;
   border: 1px solid #961C1C;
@@ -71,10 +76,6 @@ div.wpi_payment_form div.partial_payments {
     font-weight: bold;
     margin: 14px 8px 9px 132px;
     padding: 5px 16px;
-}
-
-#wp_invoice_select_payment_method_selector {
-  width: 174px;
 }
 
 div.wpi_billing_overview select {

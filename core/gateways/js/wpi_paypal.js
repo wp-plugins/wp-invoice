@@ -26,10 +26,29 @@ var wpi_paypal_validate_form = function(){
 
 /* This function handles the submit event */
 var wpi_paypal_submit = function(){
-  /* Just go ahead and return true, we want the form to submit */
-  return true;
+	
+	jQuery( "#cc_pay_button" ).attr("disabled", "disabled");
+  jQuery( ".loader-img" ).show();
+	var success = false;
+  var url = wpi_ajax.url+"?action="+jQuery("#wpi_action").val();
+	jQuery.ajaxSetup({
+		async: false
+	});
+  jQuery.post(
+		url, 
+		jQuery("#online_payment_form-wpi_paypal").serialize(), 
+		function(msg){
+			jQuery.ajaxSetup({
+				async: true
+			});
+			if ( msg.success == 1 ) {
+				success = true;
+			}
+		}, 'json');
+  return success;
+	
 };
 
 function wpi_paypal_init_form() {
-  
+  jQuery("#online_payment_form_wrapper").trigger('formLoaded');
 }

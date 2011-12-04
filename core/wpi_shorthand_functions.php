@@ -5,7 +5,7 @@
  */
 function get_invoice_permalink($identificator) {
   global $wpi_settings, $wpdb;
-  
+
   $hash = "";
   /* Check Invoice by ID and get hash */
   if (!empty($identificator)) {
@@ -16,7 +16,7 @@ function get_invoice_permalink($identificator) {
       /* Determine if $identificator is invoice_id */
       $id = $wpdb->get_var("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'invoice_id' AND meta_value = '{$identificator}'");
       /* If empty id, determine if $identificator is post ID */
-      if (empty($id)) { 
+      if (empty($id)) {
         $id = $wpdb->get_var("SELECT ID FROM {$wpdb->posts} WHERE ID = '{$identificator}'");
       }
       /* Get hash by post ID */
@@ -26,11 +26,11 @@ function get_invoice_permalink($identificator) {
       }
     }
   }
-  
+
   if(empty($hash) || empty($wpi_settings['web_invoice_page'])) {
     return false;
   }
-  
+
   if(get_option("permalink_structure")) {
       return get_permalink($wpi_settings['web_invoice_page']) . "?invoice_id=" . $hash;
   } else {
@@ -49,7 +49,7 @@ function get_invoice_permalink($identificator) {
  */
 function wpi_check_invoice($ID) {
   global $wpdb;
-  
+
   if(empty($ID) || (int)$ID == 0) {
     return false;
   }
@@ -79,14 +79,17 @@ function wpi_get_favorite_countries($args) {
 }
 
 /**
- * This function converts an invoices invoice_id to a post_id
+ * This function converts an invoices invoice_id to a post_id or returns post_id if it was passed
  * @param int $invoice_id The invoice ID
  * @return bool|int False or the post id
  * @since 3.0
  */
 function wpi_invoice_id_to_post_id($invoice_id){
   global $wpdb;
-  return $wpdb->get_var("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'invoice_id' AND meta_value = '{$invoice_id}'");
+  $maybe_id = $wpdb->get_var("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'invoice_id' AND meta_value = '{$invoice_id}'");
+
+  return ($maybe_id) ? $maybe_id : $invoice_id;
+
 }
 
 /**

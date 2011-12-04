@@ -1,3 +1,7 @@
+.wpi_advanced_option {
+  display: none;
+}
+
 .widefat th input.button {
   padding: 5px;
 }
@@ -357,7 +361,16 @@ input.wpi_no_input{
 
 
 #ajax-response {display:none;}
-.wpi_error {border:1px solid red !important;}
+
+.wpi_error {
+  border:1px solid red;
+}
+
+.wpi_ajax_response.wpi_error {
+  color: #B00000;
+  margin-top: 3px;
+  border: 0;
+}
 
 
 #wpi_manage_page #invoice_description{
@@ -872,7 +885,7 @@ margin-bottom:20px;
 .wpi_invoice_totals dl {float: right; width: 285px;}
 .wpi_invoice_totals dt, .wpi_invoice_totals dd  {height: 25px; margin-bottom: 0;}
 .wpi_invoice_totals dt {float: left;  width: 150px;  clear:left; text-align: left;}
-.wpi_invoice_totals dd {float: right;  width: 100px; text-align:right; margin-right: 15px;  clear:right; font-weight: bold; }
+.wpi_invoice_totals dd {float: right;  width: 80px; text-align:right; margin-right: 15px;  clear:right; font-weight: bold; }
 .wpi_invoice_totals input {
   width: 100%;
   text-align: right;

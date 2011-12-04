@@ -6,7 +6,7 @@
 class WPI_Payment_Api {
 
   const WPI_METHOD_AUTHORIZE_NET   = 'wpi_authorize';
-  const WPI_METHOD_PAYPAL          = 'wpi_paypal';
+	const WPI_METHOD_PAYPAL   = 'wpi_paypal';
 
   const WPI_METHOD_STATUS_COMPLETE = 'Complete';
   const WPI_METHOD_STATUS_ERROR    = 'Error';
@@ -49,7 +49,8 @@ class WPI_Payment_Api {
       'x_country'     => '',
       'x_phone'       => '',
       'x_fax'         => ''
-    )
+    ),
+		'wpi_paypal' => array(true)
   );
 
   // Default response object
@@ -154,12 +155,17 @@ class WPI_Payment_Api {
           }
           $this->response['receiver_email'] = $this->method['x_email'];
           $this->response['transaction_id'] = $transaction->getTransactionID();
+					$this->response['payment_method'] = self::WPI_METHOD_AUTHORIZE_NET;
 
           break;
+					
+				case self::WPI_METHOD_PAYPAL:
+						
+					$this->response['payment_status'] = self::WPI_METHOD_STATUS_COMPLETE;
+					$this->response['receiver_email'] = !empty( $args['payer_email'] ) ? $args['payer_email'] : '';
+					$this->response['payment_method'] = self::WPI_METHOD_PAYPAL;
 
-        case self::WPI_METHOD_PAYPAL:
-          /** @TODO: do paypal method */
-          break;
+					break;
 
         default:
           break;

@@ -107,11 +107,14 @@ class toplevel_page_wpi_main {
     </div>
       
     <div class="major-publishing-actions">
+      <?php do_action( 'wpi_other_actions' ); ?>
       <div class="publishing-action">
         <?php submit_button( __('Filter Results'), 'button', false, false, array('id' => 'search-submit') ); ?>
       </div>
       <br class='clear' />
     </div>
+
+    <?php do_action( 'wpi_after_actions' ); ?>
     
     <?php
   }

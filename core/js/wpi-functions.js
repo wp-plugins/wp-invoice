@@ -1,4 +1,94 @@
-// Invoice Page Functions
+/**
+ * Toggle advanced options that are somehow related to the clicked trigger
+ *
+ * If trigger element has an attr of 'show_type_source', then function attempt to find that element and get its value
+ * if value is found, that value is used as an additional requirement when finding which elements to toggle
+ *
+ * Example: <span class="wpi_show_advanced" show_type_source="id_of_input_with_a_string" advanced_option_class="class_of_elements_to_trigger" show_type_element_attribute="attribute_name_to_match">Show Advanced</span>
+ * The above, when clicked, will toggle all elements within the same parent tree of cicked element, with class of "advanced_option_class" and with attribute of "show_type_element_attribute" the equals value of "#id_of_input_with_a_string"
+ *
+ * Clicking the trigger in example when get the value of:
+ * <input id="value_from_source_element" value="some_sort_of_identifier" />
+ *
+ * And then toggle all elements like below:
+ * <li class="class_of_elements_to_trigger" attribute_name_to_match="some_sort_of_identifier">Data that will be toggled.</li>
+ *
+ * Copyright 2011 Usability Dynamics, Inc. <info@usabilitydynamics.com>
+ */
+function wpi_toggle_advanced_options(this_element) {
+
+    var advanced_option_class = false;
+    var show_type = false;
+    var show_type_element_attribute = false;
+
+    //* Try getting arguments automatically */
+    var wrapper = (jQuery(this_element).attr('wrapper') ? jQuery(this_element).closest('.' + jQuery(this_element).attr('wrapper'))  : jQuery(this_element).parents('.wpi_dynamic_table_row'));
+
+    if(jQuery(this_element).attr("advanced_option_class") !== undefined) {
+      var advanced_option_class = "." + jQuery(this_element).attr("advanced_option_class");
+    }
+
+    if(jQuery(this_element).attr("show_type_element_attribute") !== undefined) {
+      var show_type_element_attribute = jQuery(this_element).attr("show_type_element_attribute");
+    }
+
+    //* If no advanced_option_class is found in attribute, we default to 'wpi_advanced_option' */
+    if(!advanced_option_class) {
+      advanced_option_class = ".wpi_advanced_option";
+    }
+
+    //* If element does not have a table row wrapper, we look for the closts .wpi_something_advanced_wrapper wrapper */
+    if(wrapper.length == 0) {
+      var wrapper = jQuery(this_element).parents('.wpi_something_advanced_wrapper');
+    }
+
+    //* get_show_type_value forces the a look up a value of a passed element, ID of which is passed, which is then used as another conditional argument */
+    if(show_type_source = jQuery(this_element).attr("show_type_source")) {
+      var source_element = jQuery("#" + show_type_source);
+
+      if(source_element) {
+        //* Element found, determine type and get current value */
+        if(jQuery(source_element).is("select")) {
+          show_type = jQuery("option:selected", source_element).val();
+        }
+      }
+    }
+
+    if(!show_type) {
+      element_path = jQuery(advanced_option_class, wrapper);
+    }
+
+    //** Look for advanced options with show type */
+    if(show_type) {
+      element_path = jQuery(advanced_option_class + "[" + show_type_element_attribute + "='"+show_type+"']", wrapper);
+    }
+
+    /* Check if this_element element is a checkbox, we assume that we always show things when it is checked, and hiding when unchecked */
+    if(jQuery(this_element).is("input[type=checkbox]")) {
+
+      var toggle_logic = jQuery(this_element).attr("toggle_logic");
+
+      if(jQuery(this_element).is(":checked")) {
+        if(toggle_logic = 'reverse') {
+          jQuery(element_path).show();
+        } else {
+          jQuery(element_path).hide();
+        }
+      } else {
+        if(toggle_logic = 'reverse') {
+          jQuery(element_path).hide();
+        } else {
+          jQuery(element_path).show();
+        }
+      }
+
+      return;
+
+    }
+
+    jQuery(element_path).toggle();
+
+}
 
 
 /*
@@ -199,6 +289,15 @@ function wpi_create_slug(slug) {
   function wpi_disable_quote() {
     jQuery('.wpi_wpi_invoice_quote_').attr("checked",false);
   }
+
+/*
+ * Turn on quote option.
+ */
+  function wpi_enable_quote() {
+    jQuery('.wpi_quote_option').show();
+    jQuery('.wpi_wpi_invoice_quote_').attr("checked",true);
+  }
+
 /*
   Fixes the payment/charge/adjustment dropdown to only allow for
   accepting charges.  This way we don't overcomplicate things with recurring billing.
@@ -227,8 +326,8 @@ function wpi_create_slug(slug) {
   TurnsOFF deposit options on invoice
 */
   function wpi_disable_deposit() {
-    wpi_show_recurring_option()
-    wpi_show_quote_option()
+    wpi_show_recurring_option();
+    wpi_show_quote_option();
     jQuery('.wpi_deposit_settings').hide();
     jQuery('.wpi_deposit_settings input').val("");
     }
@@ -264,6 +363,10 @@ function wpi_create_slug(slug) {
     wpi_disable_quote();
     wpi_disable_deposit();
     wpi_hide_deposit_option();
+
+    /* Hide quote option */
+    wpi_hide_quote_option();
+
     jQuery('.wpi_recurring_options').show();
     jQuery('.wpi_turn_off_recurring').show();
     jQuery(".wpi_recurring_bill_settings").show();
@@ -312,11 +415,17 @@ function wpi_create_slug(slug) {
     jQuery('.wpi_recurring_bill_settings').val('');
     jQuery('.wpi_recurring_bill_settings input').attr('checked', false);
     jQuery('.wpi_recurring_bill_settings').hide();
-    jQuery(".wpi_not_for_recurring").show();
+//    jQuery(".wpi_not_for_recurring").show();
+//    jQuery(".wpi_not_for_deposit").show();
     is_recurring = false;
     wpi_recalc_totals();
     wpi_toggle_wpi_event_type();
-    wpi_show_deposit_option();
+
+    /*
+     * This function was moved to wpi-events.js
+     */
+//    wpi_show_deposit_option();
+//    wpi_show_quote_option();
   }
 /*
   Displays payment charge box
@@ -337,6 +446,7 @@ function wpi_create_slug(slug) {
 */
   function wpi_process_manual_event() {
     var event_data;
+
     event_data = {
       action:       "wpi_process_manual_event",
       nonce:        jQuery('#wpi_process_manual_event_nonce').val(),
@@ -348,6 +458,7 @@ function wpi_create_slug(slug) {
       event_date:   jQuery('.wpi_event_date').val(),
       event_time:   jQuery('.wpi_event_time').val()
     };
+
     jQuery.ajax({
       dataType: "json",
       data: event_data,
@@ -355,29 +466,41 @@ function wpi_create_slug(slug) {
       type: "POST",
       url: ajaxurl,
       success: function(data) {
-        jQuery('#wpi_event_amount').val('');
-        jQuery('#wpi_event_note').val('');
-        jQuery('#wpi_event_tax').val('');
-        jQuery('#wpi_event_type').val('add_payment');
-        jQuery("#event_tax_holder").hide();
-        jQuery("#ajax-response").show();
-        jQuery("#ajax-response p").html(data.message);
-        // Update status box
-        wpi_update_status_box();
-        // Update charges list
-        wpi_update_charges_list();
-        // Recalculate totals if adjustment is monetary
 
-        if ( event_data.event_type == 'add_payment' ) {
-          window.adjustments -= event_data.event_amount;
-        }
-        if ( event_data.event_type == 'do_adjustment' ) {
-          window.adjustments -= event_data.event_amount;
+        if(data.success == "true") {
+
+          jQuery('#wpi_event_amount').val('');
+          jQuery('#wpi_event_note').val('');
+          jQuery('#wpi_event_tax').val('');
+          jQuery('#wpi_event_type').val('add_payment');
+          jQuery("#event_tax_holder").hide();
+          jQuery("#ajax-response").show();
+          jQuery("#ajax-response p").html(data.message);
+
+          wpi_update_status_box();
+          wpi_update_charges_list();
+
+          // Recalculate totals if adjustment is monetary
+          if ( event_data.event_type == 'add_payment' ) {
+            window.adjustments -= event_data.event_amount;
+          }
+          if ( event_data.event_type == 'do_adjustment' ) {
+            window.adjustments -= event_data.event_amount;
+          }
+
+          wpi_recalc_totals();
+
+        } else {
+          jQuery(".wpi_ajax_response").addClass('wpi_error');
+          jQuery(".wpi_ajax_response").html(data.message);
         }
 
-        wpi_recalc_totals();
+
       }
+
+
     });
+
   }
 /*
   Displays email notification metabox
@@ -504,12 +627,12 @@ function checkdate(input){
 
 function wpi_validate_invoice() {
   var validated = true;
-  
+
   /*if ( jQuery('#wp_invoice_payment_method').length == 0 ) {
     validated = false;
     window.location.hash = '#postbox_payment_methods';
   }*/
-  
+
   // If recurring is setup, make sure billing cycles are set
   if( jQuery("#wpi_wpi_invoice_recurring_active_").is(":checked") ) {
     if( jQuery("#wpi_meta_recuring_cycles").val() == "" ) {
@@ -648,24 +771,45 @@ function wpi_save_invoice() {
       jQuery("#send_notification_box").show();
       jQuery("#postbox_status_and_history").show();
       jQuery(".wpi_hide_until_saved").show();
-      
+
       /* If data contains invoice's premalink, we update it in editor */
       var dom = "<div>"+data+"</div>";
       var a = jQuery("a", dom);
+
       if(a.length > 0) {
+
         var permalink = a.attr('href');
         if(jQuery('#sample-permalink').length > 0) {
           jQuery('#sample-permalink').html(permalink);
         }
-        if(jQuery('#view_online').length > 0) {
-          jQuery('#view_online').attr('href', permalink);
-        }
+
       }
-      
+
+      jQuery("a.wpi_update_with_invoice_url").each(function() {
+        var url_annex;
+
+        if(jQuery(this).attr('url_annex')) {
+          url_annex = jQuery(this).attr('url_annex');
+        } else {
+          url_annex = '';
+        }
+
+        jQuery(this).attr('href', permalink + url_annex);
+
+      });
+
       // Update status box
       wpi_update_status_box();
     }
   });
+
+  // Hide Payment postbox if quote checkbox is checked
+  if(jQuery("#wpi_wpi_invoice_quote_").is(':checked')) {
+      jQuery("#postbox_payment_methods").hide();
+  } else {
+      jQuery("#postbox_payment_methods").show();
+  }
+
   // Enter values into send notification box
   if(empty(jQuery("#wpi_notification_send_to").val())) {
      jQuery("#wpi_notification_send_to").val(jQuery("#wpi_user_email").text());
@@ -817,7 +961,7 @@ function wpi_save_postboxes() {
 
 function wpi_disable_all_payment_methods() {
   // uncheck app payment method checkboxes
-  jQuery('.wpi_billing_section_show').attr('checked',false)
+  jQuery('.wpi_billing_section_show').attr('checked',false);
   // blank out all billing venue default_payment settings
   jQuery(".billing-default-option").val('');
   // hide all accordion sections
@@ -1000,7 +1144,7 @@ function wpi_recalc_totals() {
         row_quantity = row_quantity < 0 || isNaN( row_quantity ) ? '' : row_quantity;
     var row_tax      = parseFloat(jQuery(".row_tax input", this).val());
         row_tax      = row_tax < 0 || isNaN( row_tax ) ? '' : row_tax;
-    
+
     // Update fields with valid data
     if ( !isNaN( row_price ) )
       jQuery(".row_price input", this).val(row_price);
@@ -1008,58 +1152,67 @@ function wpi_recalc_totals() {
       jQuery(".row_quantity input", this).val(row_quantity);
     if ( !isNaN( row_tax ) )
       jQuery(".row_tax input", this).val(row_tax);
-    
+
     row_price = !isNaN( row_price ) ? row_price : 0 ;
     row_quantity = !isNaN( row_quantity ) ? row_quantity : 0 ;
     row_tax = !isNaN( row_tax ) ? row_tax : 0 ;
 
     if ( row_tax > 0 && row_price > 0 && row_quantity > 0 ) {
       taxable_subtotal += row_price * row_quantity;
-      tax_percents.push(row_tax);
+      tax_percents.push({
+				'tax':row_tax,
+				'qty':row_quantity,
+				'prc':row_price
+			});
       var row_total = (row_price * row_quantity + row_price * row_quantity * row_tax / 100);
     } else {
       non_taxable_subtotal += row_price * row_quantity;
-      var row_total = (row_price * row_quantity);    
+      var row_total = (row_price * row_quantity);
     }
- 
+
     if(!row_total) {
       row_total = 0;
     }
-    
+
     jQuery(".row_total", this).html(row_total.toFixed(2));
-    
+
   });
 
   // Services itemized list
   jQuery(".wp_invoice_itemized_charge_row").each(function (i) {
     var row_amount     = parseFloat(jQuery(".row_amount input", this).val());
     var row_charge_tax = parseFloat(jQuery(".row_charge_tax input", this).val());
-    
+
     row_amount     = !isNaN( row_amount ) ? row_amount : 0 ;
     row_charge_tax = !isNaN( row_charge_tax ) ? row_charge_tax : 0 ;
-    
+
     if ( row_charge_tax > 0 ) {
       taxable_subtotal += row_amount;
-      tax_percents.push(row_charge_tax);
+      //tax_percents.push(row_charge_tax);
+			tax_percents.push({
+				'tax':row_charge_tax,
+				'qty':1,
+				'prc':row_amount
+			});
       var row_total =  (row_amount + row_amount * row_charge_tax / 100);
     } else {
       non_taxable_subtotal += row_amount;
       var row_total = row_amount;
     }
-    
+
     if(!row_total) {
       row_total = 0;
     }
-    
+
     jQuery(".row_total", this).html(row_total.toFixed(2) );
-    
+
   });
 
   //alert( 'Taxable: '+taxable_subtotal+' / NonTax: '+non_taxable_subtotal );
 
   var avg_tax = 0;
   for( var i = 0; i < tax_percents.length; i++ ) {
-    avg_tax += tax_percents[i];
+    avg_tax += tax_percents[i].tax;
   }
   if ( avg_tax > 0 ) {
     avg_tax = avg_tax / tax_percents.length;
@@ -1110,7 +1263,11 @@ function wpi_recalc_totals() {
   switch ( tax_method ) {
     case 'before_discount':
 
-      total_tax = taxable_subtotal * avg_tax / 100;
+			jQuery.each( tax_percents, function( k, v ){
+				total_tax += v.prc / 100 * v.tax * v.qty;
+			});
+
+      //total_tax = taxable_subtotal * avg_tax / 100;
 
       break;
 
@@ -1123,11 +1280,17 @@ function wpi_recalc_totals() {
       break;
 
     default:
+
+			jQuery.each( tax_percents, function( k, v ){
+				total_tax += v.prc / 100 * v.tax * v.qty;
+			});
+
+      //total_tax = taxable_subtotal * avg_tax / 100;
       break;
   }
 
   total = subtotal - total_discount + total_tax;
-  
+
   if ( total_discount >= ( subtotal + total_tax ) && total_discount > 0 ) {
     jQuery(".wp_invoice_discount_row:visible").each(function (i) {
       jQuery(".item_price input", this).val('');
@@ -1179,11 +1342,11 @@ function wpi_recalc_totals() {
   // Fix total is this is recurring. Note: on recurring bills, adjustments are not added to the balance
   if(is_recurring) {
     jQuery(".column-invoice-details-adjustments").hide();
-    /* 
-     * @TODO: There are no any place where discount_amount and tax_weighted_average variables is initialized. 
+    /*
+     * @TODO: There are no any place where discount_amount and tax_weighted_average variables is initialized.
      * Where are these variables from?
-     * I commented out code below for the current moment to avoid js errors because of undefined variables. 
-     * But it should be revised and fixed!!! Maxim Peshkov 
+     * I commented out code below for the current moment to avoid js errors because of undefined variables.
+     * But it should be revised and fixed!!! Maxim Peshkov
      */
     //total_tax = (subtotal  - (!empty(discount_amount) ? discount_amount : 0)) * tax_weighted_average;
     //total_due = subtotal + total_tax - (!empty(discount_amount) ? discount_amount : 0);
