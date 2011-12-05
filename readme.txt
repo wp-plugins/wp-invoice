@@ -82,6 +82,9 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 == Upgrade Notice ==
 
+= Version 3.04.1 =
+* Critical bugs fixed.
+
 = Version 3.04.0 =
 * Core plugin filename changed, plugin may require manual re-activation after upgrade. 
 
@@ -92,6 +95,10 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 * Complete rewrite. Old invoice data is not deleted, please notify us if you have any upgrading issues.
 
 == Change Log ==
+
+= Version 3.04.1 =
+* Critical bug with unknown column 'blog_id' fixed.
+* Bug with disappeared recepient name fixed.
 
 = Version 3.04.0 =
 * WordPress Multi Site (MS) compatibility.

@@ -80,7 +80,7 @@ class WPI_Invoice {
    *
    */
   function load_user($args = '') {
-    global $wpi_settings;
+    global $wpi_settings, $wp_version;
 
     extract(wp_parse_args($args, array (
       'email' => false,
@@ -90,27 +90,61 @@ class WPI_Invoice {
     $email = trim($email);
 
     //** If e-mail exists, but no user_id is passed we get ID from email */
+    //** 
+    // Fix for different versions of wordpress.
+    // 3.3 has 'data' object in result of get_user_by()
+    //*/
+    if ( version_compare($wp_version, '3.3', '>=') ) {
+      
+      if($user_id = get_user_by('ID', $user_id)->data->ID) {
+        WPI_Functions::console_log('Loaded user from passed ID.');
+        $new_user = false;
 
-    if($user_id = get_user_by('ID', $user_id)->data->ID) {
-      WPI_Functions::console_log('Loaded user from passed ID.');
-      $new_user = false;
+      } elseif (!empty($email) && $user_id = get_user_by('email', $email)->data->ID) {
+        WPI_Functions::console_log('Loaded user from e-mail.');
+        $new_user = false;
 
-    } elseif (!empty($email) && $user_id = get_user_by('email', $email)->data->ID) {
-      WPI_Functions::console_log('Loaded user from e-mail.');
-      $new_user = false;
+      } else {
+        WPI_Functions::console_log('User info not, found - assuming new user.');
+        $new_user = true;
+
+      }
+      
+      //** If new user, we create user_data array, and bail */
+      if($new_user) {
+        $this->data['user_data'] = array();
+        return;
+      }
+
+      //** Get basic user data */
+      $this->data['user_data'] = (array) get_userdata($user_id)->data;
+              
     } else {
-      WPI_Functions::console_log('User info not, found - assuming new user.');
-      $new_user = true;
-    }
+      
+      if($user_id = get_user_by('ID', $user_id)->ID) {
+        WPI_Functions::console_log('Loaded user from passed ID.');
+        $new_user = false;
 
-    //** If new user, we create user_data array, and bail */
-    if($new_user) {
-      $this->data['user_data'] = array();
-      return;
-    }
+      } elseif (!empty($email) && $user_id = get_user_by('email', $email)->ID) {
+        WPI_Functions::console_log('Loaded user from e-mail.');
+        $new_user = false;
 
-    //** Get basic user data */
-    $this->data['user_data'] = (array) get_userdata($user_id)->data;
+      } else {
+        WPI_Functions::console_log('User info not, found - assuming new user.');
+        $new_user = true;
+
+      }
+      
+      //** If new user, we create user_data array, and bail */
+      if($new_user) {
+        $this->data['user_data'] = array();
+        return;
+      }
+
+      //** Get basic user data */
+      $this->data['user_data'] = (array) get_userdata($user_id);
+      
+    }
 
     //** Get required user fields */
     $required_fields = (array) $wpi_settings['user_meta']['required'];

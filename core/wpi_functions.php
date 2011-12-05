@@ -1434,7 +1434,7 @@ class WPI_Functions {
     Can also handle AJAX save/update function
    */
   function save_invoice($invoice, $args = '') {
-    //WPI_Functions::qc($invoice);
+    //die( json_encode($invoice) );
 
     /* Set function additional params */
     $defaults = array(
@@ -1480,16 +1480,6 @@ class WPI_Functions {
 
     $ni->set("custom_id={$invoice['meta']['custom_id']}");
 
-    // Save status of invoice (quote or not quote)
-    if(isset ($invoice['quote'])) {
-        if($invoice['quote'] == "on") {
-            $ni->set("status=quote");
-            $ni->set("is_quote=true");
-        } else {
-            $ni->set("status=null");
-        }
-    }
-
     /**
      * DETECTING INVOICE TYPE
      * (Changes for ability to use premium feature Quotes)
@@ -1506,6 +1496,17 @@ class WPI_Functions {
     // If $invoice object has type definition then use it
     if ( !empty( $invoice['type'] ) ) {
       $invoice_type = $invoice['type'];
+    }
+    
+    // Save status of invoice (quote or not quote)
+    if(isset ($invoice['quote'])) {
+      if($invoice['quote'] == "on") {
+        $ni->set("status=quote");
+        $ni->set("is_quote=true");
+        $invoice_type = 'quote';
+      } else {
+        $ni->set("status=null");
+      }
     }
 
     // But if recurring settings are defined then invoice type should be recurring
@@ -1680,7 +1681,7 @@ class WPI_Functions {
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-    dbDelta("CREATE TABLE IF NOT EXISTS  {$wpdb->base_prefix}wpi_object_log  (
+    dbDelta("CREATE TABLE {$wpdb->base_prefix}wpi_object_log (
       ID mediumint(9) NOT NULL auto_increment,
       blog_id mediumint(9) NOT NULL,
       object_id mediumint(9) NOT NULL,
