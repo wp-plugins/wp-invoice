@@ -506,15 +506,11 @@
 
       <input type="button"  class="button wpi_button" id="wpi_predefined_services_select" value="<?php _e("Add Line", WPI) ?>"/>
 
-      <input type="button" class="button wpi_button" id="wpi_add_discount" value="<?php _e("Add Discount", WPI) ?>"/>
-
-      <span id="wpi_discount_mismatch_error"></span>
-
     <?php if(is_array($wpi_settings['predefined_services'])) {
 
        // Convert predefined services into special array
 
-      $services_array[""] = "Insert a line item...";
+      $services_array[""] = "Insert a predefined line item";
 
       foreach($wpi_settings['predefined_services'] as $service) {
 
@@ -541,6 +537,10 @@
       }
 
     } ?>
+      
+      <input type="button" class="button wpi_button" id="wpi_add_discount" value="<?php _e("Add Discount", WPI) ?>"/>
+
+      <span id="wpi_discount_mismatch_error"></span>
 
     </li>
 

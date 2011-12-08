@@ -764,7 +764,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
 
           $help[] = "<h5>".__('Main & Business Process')."</h5>";
           $help[] = "<p>".__('<b>Business Address</b> - This will display on the invoice page when printed for clients\' records.', WPI)."</p>";
-          
+
           $help[] = "<h5>".__('E-Mail Templates')."</h5>";
           $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page. The following variables can be used within the Subject or the Content of the e-mail templates:', WPI)."</p>";
 
@@ -776,6 +776,9 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
           $email_vars['description'] = __('Description of Invoice');
           $email_vars['business_name'] = __('Business Name');
           $email_vars['business_email'] = __('Business Email Address');
+          $email_vars['creator_name'] = __('Name of user who has created invoice');
+          $email_vars['creator_email'] = __('Email of user who has created invoice');
+          $email_vars['due_date'] = __('Invoice due date (if presented)');
 
           $email_vars = apply_filters('wpi_email_template_vars', $email_vars);
 

@@ -368,12 +368,12 @@ jQuery('#wpi_revalidate').live('click', function(){
 /*
   Event pack to toggle clickable link to add a description to an itemized row
 */    
-  jQuery('.wp_invoice_itemized_list_row').live('mouseover', function(event) {
+  /*jQuery('.wp_invoice_itemized_list_row').live('mouseover', function(event) {
     jQuery(".wpi_add_description_text .content", this).css('visibility','visible');
   });
   jQuery('.wp_invoice_itemized_list_row').live('mouseout', function(event) {
     jQuery(".wpi_add_description_text .content", this).css('visibility','hidden');
-  });
+  });*/
   jQuery('.wpi_add_description_text .content').live('click', function(event) {
     jQuery(this).parents('.wp_invoice_itemized_list_row').find('.item_description').toggle();
   });

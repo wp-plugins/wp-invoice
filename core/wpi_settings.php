@@ -396,28 +396,30 @@ class WPI_Settings {
         $this->options['globals']['show_business_address'] = 'false';
         $this->options['globals']['show_quantities'] = 'false';
         
-        //Mail - Notification
+        //** Mail - Notification */
         $this->options['notification'][1]['name']    = "New Invoice";
         $this->options['notification'][1]['subject'] = "[New Invoice] %subject%";
-        $this->options['notification'][1]['content'] = "Dear %recipient%, \n\n".get_bloginfo() . " has sent you a %recurring% invoice in the amount of %amount%. \n\n%description% \n\nYou may pay, view and print the invoice online by visiting the following link: \n%link% \n\nBest regards, \n".get_bloginfo() . " (".get_bloginfo('admin_email') . ")";
+        $this->options['notification'][1]['content'] = "Dear %recipient%, \n\n%business_name% has sent you a %recurring% invoice in the amount of %amount%. \n\n%description% \n\nYou may pay, view and print the invoice online by visiting the following link: \n%link% \n\nBest regards, \n%business_name% (%business_email%)";
+        
         $this->options['notification'][2]['name']    = "Reminder";
         $this->options['notification'][2]['subject'] = "[Reminder] %subject%";
-        $this->options['notification'][2]['content'] = "Dear %recipient%, \n\n".get_bloginfo() . " has sent you a reminder for the %recurring% invoice in the amount of %amount%. \n\n%description% \n\nYou may pay, view and print the invoice online by visiting the following link: \n%link%. \n\nBest regards, \n".get_bloginfo() . " (".get_bloginfo('admin_email') . ")";
+        $this->options['notification'][2]['content'] = "Dear %recipient%, \n\n%business_name% has sent you a reminder for the %recurring% invoice in the amount of %amount%. \n\n%description% \n\nYou may pay, view and print the invoice online by visiting the following link: \n%link%. \n\nBest regards, \n%business_name% (%business_email%)";
+        
         $this->options['notification'][3]['name']    = 'Send Receipt';
         $this->options['notification'][3]['subject'] = "[Payment Received] %subject%";
-        $this->options['notification'][3]['content'] = "Dear %recipient%, \n\n".get_bloginfo() . " has received your payment for the %recurring% invoice in the amount of %amount%. \n\nThank you very much for your patronage. \n\nBest regards, \n".get_bloginfo() . " (".get_bloginfo('admin_email') . ")";
+        $this->options['notification'][3]['content'] = "Dear %recipient%, \n\n%business_name% has received your payment for the %recurring% invoice in the amount of %amount%. \n\nThank you very much for your patronage. \n\nBest regards, \n%business_name% (%business_email%)";
 
     }
 
     function SaveSettings($new_settings) {
         global $wpi_settings;
         
-        /* Set 'first_time_setup_ran' as 'true' to avoid loading First Time Setup Page in future */
+        //** Set 'first_time_setup_ran' as 'true' to avoid loading First Time Setup Page in future */
         $new_settings['first_time_setup_ran'] = 'true';
         
         $this->options = WPI_Functions::array_merge_recursive_distinct($this->options, $new_settings);
         
-        // Copy template files from plugin folder to active theme/template
+        //** Copy template files from plugin folder to active theme/template */
         if(isset($new_settings['install_use_custom_templates']) &&
           isset($new_settings['use_custom_templates']) &&
           $new_settings['install_use_custom_templates'] == 'yes' && 
@@ -425,17 +427,25 @@ class WPI_Settings {
             WPI_Functions::install_templates();
         }
         
-        /* Process Special Settings */
-        /* Predefined Services */
-        $this->options['predefined_services'] = ( isset($new_settings['predefined_services']) ? $new_settings['predefined_services'] : false );
-        /* E-Mail Templates */
+        //** Process Special Settings */
+        //** Default predefined services */
+        $this->options['predefined_services'][0]['name'] = "Web Design Services";
+        $this->options['predefined_services'][0]['quantity'] = 1;
+        $this->options['predefined_services'][0]['price'] = 30;
+        $this->options['predefined_services'][1]['name'] = "Web Development Services";
+        $this->options['predefined_services'][1]['quantity'] = 1;
+        $this->options['predefined_services'][1]['price'] = 30;
+        
+        $this->options['predefined_services'] = ( isset($new_settings['predefined_services']) ? $new_settings['predefined_services'] : $this->options['predefined_services'] );
+
+        //** E-Mail Templates */
         if(isset($new_settings['notification'])) {
           $this->options['notification'] = $new_settings['notification'];
         }
         
-        /* Process Special Settings */
+        //** Process Special Settings */
         
-        // fix checkboxes
+        //** fix checkboxes */
         foreach($this->options['billing'] as $key => $value) {
             if(!isset($new_settings['billing'][$key]['allow'])) unset($this->options['billing'][$key]['allow']);
         }
@@ -445,26 +455,19 @@ class WPI_Settings {
             if(!isset($new_settings[$checkbox_name])) unset($this->options[$checkbox_name]);
         }
         
-        /*// Does it really need here? Maxim Peshkov.
-        $globals_checkbox_array = array('show_business_address','show_quantities');
-        foreach($globals_checkbox_array as $checkbox_name) {
-          if(!isset($new_settings['globals'][$checkbox_name])) unset($this->options['globals'][$checkbox_name]);
-        }
-        */
-        
         $this->CommitUpdates();
         
-        // Update global variable
+        //** Update global variable */
         $wpi_settings = WPI_Functions::array_merge_recursive_distinct($wpi_settings, $this->options);
-        /* Fix Predefined Services */
+        //** Fix Predefined Services */
         $wpi_settings['predefined_services'] = $this->options['predefined_services'];
-        /* Fix E-Mail Templates */
+        //** Fix E-Mail Templates */
         $wpi_settings['notification'] = $this->options['notification'];
         wpi_gateway_base::sync_billing_objects();
     }
     
     function LoadOptions() {
-        // Options concept taken from Theme My Login (http://webdesign.jaedub.com)
+        //** Options concept taken from Theme My Login (http://webdesign.jaedub.com) */
         $this->InitOptions();
         $storedoptions = get_option( 'wpi_options' );
         
@@ -474,8 +477,6 @@ class WPI_Settings {
             }
         } else update_option( 'wpi_options', $this->options);
         
-        // Depreciatd - Apply filters
-        // $this->options['billing'] = apply_filters('wpi_billing_method', $this->options['billing']);
     }
     
     function GetOption( $key ) {

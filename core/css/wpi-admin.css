@@ -456,9 +456,9 @@ width: 99%
 #wpi_line_items_row ul{position: relative; left: -0px;}
 #wpi_invoice_form #wpi_message_box .inside{ margin: 0}
 
-#wpi_predefined_services_select {margin-left: 30px; float: left; width: 50px; padding: 4px 15px;}
+#wpi_predefined_services_select {margin-right: 8px; float: left; width: 50px; padding: 4px 15px;}
 #wpi_add_discount {float: left; width: 80px; padding: 4px 15px;}
-#wpi_predefined_services {float: right; }
+#wpi_predefined_services {float: left;margin-right: 8px; }
 
 #wp_invoice_main_info #invoice_list {margin-bottom: 10px;}
 #wpi_invoice_form #wpi_message_box .invoice_main{ background: transparent}
@@ -788,8 +788,8 @@ width:100%;
 .wpp_dynamic_table_row .flexible_width_holder_content{ 
   position: relative;
 }
-.wpi_add_description_text { display:block; margin-left: 35px; font-size: 10px; color: #9F9F9F; }
-.wpi_add_description_text .content {visibility:hidden; cursor: pointer;}
+.wpi_add_description_text { display:block; margin-left: 35px; font-size: 10px; color: #22749B; }
+.wpi_add_description_text .content {/*visibility:hidden;*/ cursor: pointer;}
 .fixed_width_holder { float: right;}
 .fixed_width_holder span { float: left; margin-left: 15px;}
 .fixed_width_holder input{ float: left; }

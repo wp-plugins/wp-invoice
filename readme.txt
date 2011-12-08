@@ -82,6 +82,9 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 == Upgrade Notice ==
 
+= Version 3.04.3 =
+* Total improvements.
+
 = Version 3.04.1 =
 * Critical bugs fixed.
 
@@ -95,6 +98,13 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 * Complete rewrite. Old invoice data is not deleted, please notify us if you have any upgrading issues.
 
 == Change Log ==
+
+= Version 3.04.3 =
+* Fixed Reports calculation process with discount.
+* UI fixes.
+* Installing from scratch issues fixed.
+* Default settings data improved.
+* Other improvements
 
 = Version 3.04.2 =
 * Fixed Reports calculation process.

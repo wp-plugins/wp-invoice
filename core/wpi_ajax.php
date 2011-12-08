@@ -206,8 +206,11 @@ class WPI_Ajax {
     }
 
     /**
-        Returns notification email based on pased values
-    */
+     * Returns notification email based on pased values
+     * 
+     * @global object $wpdb
+     * @global array $wpi_settings 
+     */
     function get_notification_email() {
       global $wpdb, $wpi_settings;
 
@@ -218,28 +221,75 @@ class WPI_Ajax {
       $currency_symbol = (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$");
       $invoice_id = (!empty($invoice['meta']['custom_id']) ? $invoice['meta']['custom_id'] : $invoice['invoice_id']);
 
-      // Load Templates
+      //** Get creator user data */
+      $creator = get_userdata( $invoice['post_author'] );
+      
+      //** Due Date */
+      $due_date = get_due_date( $invoice );
+      $due_date = $due_date ? $due_date : __('Due date is not set');
+      
+      //** Load Templates */
       $template_array = apply_filters('wpi_email_templates', $wpi_settings['notification']);
 
       $ary['NotificationContent'] = $template_array[$template_id]['content'];
-      $ary['NotificationContent'] = str_replace("%invoice_id%",$invoice_id,$ary['NotificationContent']);
-      // Format description
-      $desc = (!empty($invoice['post_content']) ? strip_tags( $invoice['post_content'] ) : "No description given.");
-      $ary['NotificationContent'] = str_replace("%description%",$desc, $ary['NotificationContent']);
-      $ary['NotificationContent'] = str_replace("%recipient%",$invoice['user_data']['display_name'],$ary['NotificationContent']);
-      $ary['NotificationContent'] = str_replace("%link%", get_invoice_permalink($invoice['invoice_id']),$ary['NotificationContent']);
-      $ary['NotificationContent'] = str_replace("%amount%",$currency_symbol . wp_invoice_currency_format($invoice['net']),$ary['NotificationContent']);
-      $ary['NotificationContent'] = str_replace("%subject%",$invoice['post_title'],$ary['NotificationContent']);
-      $ary['NotificationContent'] = str_replace("%business_name%",$wpi_settings['business_name'],$ary['NotificationContent']);
-      $ary['NotificationContent'] = str_replace("%business_email%",$wpi_settings['email_address'],$ary['NotificationContent']);
+      
+      //**
+      // Tags which can be used in Content of notification email 
+      //*/
 
-      /** @todo: Recurring */
+      //** Invoice ID */
+      $ary['NotificationContent'] = str_replace("%invoice_id%", $invoice_id, $ary['NotificationContent']);
+
+      //** Format description */
+      $desc = (!empty($invoice['post_content']) ? strip_tags( $invoice['post_content'] ) : "No description given.");
+      $ary['NotificationContent'] = str_replace("%description%", $desc, $ary['NotificationContent']);
+
+      //** Recipient name */
+      $ary['NotificationContent'] = str_replace("%recipient%", $invoice['user_data']['display_name'], $ary['NotificationContent']);
+
+      //** Invoice link */
+      $ary['NotificationContent'] = str_replace("%link%", get_invoice_permalink($invoice['invoice_id']), $ary['NotificationContent']);
+
+      //** Invoice balance */
+      $ary['NotificationContent'] = str_replace("%amount%", $currency_symbol . wp_invoice_currency_format($invoice['net']), $ary['NotificationContent']);
+
+      //** Invoice subject/title */
+      $ary['NotificationContent'] = str_replace("%subject%", $invoice['post_title'], $ary['NotificationContent']);
+
+      //** Business name according to business settings */
+      $ary['NotificationContent'] = str_replace("%business_name%", $wpi_settings['business_name'], $ary['NotificationContent']);
+
+      //** Business email according to business settings */
+      $ary['NotificationContent'] = str_replace("%business_email%", $wpi_settings['email_address'], $ary['NotificationContent']);
+
+      //** Invoice creator name */
+      $ary['NotificationContent'] = str_replace("%creator_name%", $creator->display_name, $ary['NotificationContent']);
+
+      //** Invoice creator email */
+      $ary['NotificationContent'] = str_replace("%creator_email%", $creator->user_email, $ary['NotificationContent']);
+
+      //** Invoice Due Date */ 
+      $ary['NotificationContent'] = str_replace("%due_date%", $due_date, $ary['NotificationContent']);
+
+      //** @todo: Recurring */
       $ary['NotificationContent'] = str_replace("%recurring%", '', $ary['NotificationContent']);
 
       $ary['NotificationSubject'] = $template_array[$template_id]['subject'];
+
+      //**
+      // Tags which can be used in Subject of notification email 
+      //*/
+
+      //** Invoice ID */
       $ary['NotificationSubject'] = str_replace("%invoice_id%",$invoice_id,$ary['NotificationSubject']);
+
+      //** Recipients name */
       $ary['NotificationSubject'] = str_replace("%recipient%",$invoice['user_data']['display_name'],$ary['NotificationSubject']);
+
+      //** Invoice balance */
       $ary['NotificationSubject'] = str_replace("%amount%",$invoice['net'],$ary['NotificationSubject']);
+
+      //** Invoice subject/title */
       $ary['NotificationSubject'] = str_replace("%subject%",$invoice['post_title'],$ary['NotificationSubject']);
 
       $aryJson = array();
@@ -254,13 +304,13 @@ class WPI_Ajax {
    * @since 3.0
    */
   function send_notification(){
-    /** Setup, and send our e-mail */
+    //** Setup, and send our e-mail */
     $headers = "From: ".get_bloginfo()." <".get_bloginfo('admin_email').">\r\n";
     $message = html_entity_decode($_REQUEST['body'], ENT_QUOTES, 'UTF-8');
     $subject = html_entity_decode($_REQUEST['subject'], ENT_QUOTES, 'UTF-8');
     $to = $_REQUEST['to'];
 
-    /* Validate for empty fields data */
+    //** Validate for empty fields data */
     if(empty($to) || empty($subject) || empty($message)) {
       die(json_encode(array("status" => 500, "msg" => "The fields should not be empty. Please, check the fields data and try to send notification again.")));
     }
@@ -274,6 +324,9 @@ class WPI_Ajax {
     die(json_encode(array("status" => 500, "msg" => "Unable to send the e-mail. Please, try again later.")));
   }
 
+  /**
+   * Save invoice from Ajax
+   */
   function save_invoice() {
     $invoice_id = WPI_Functions::save_invoice($_REQUEST['wpi_invoice']);
     if ($invoice_id) {

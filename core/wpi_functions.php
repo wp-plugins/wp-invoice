@@ -378,8 +378,8 @@ class WPI_Functions {
 
       //** Total paid invoices per client  */
       if ($object['post_status'] == 'paid') {
-        $r['collected_client_value'][$object['user_email']] = !empty($r['client_value'][$object['user_email']]) ? $r['client_value'][$object['user_email']] : 0 + $object['subtotal'] + $object['total_tax'];
-        $r['total_paid'][] = $objects[$object['ID']]['subtotal'] + $objects[$object['ID']]['total_tax'];
+        $r['collected_client_value'][$object['user_email']] = !empty($r['client_value'][$object['user_email']]) ? $r['client_value'][$object['user_email']] : 0 + $object['subtotal'] + $object['total_tax'] - $object['total_discount'];
+        $r['total_paid'][] = $objects[$object['ID']]['subtotal'] + $objects[$object['ID']]['total_tax'] - $objects[$object['ID']]['total_discount'];;
 
         foreach ($object['itemized_list'] as $list_item) {
           $r['collected_line_items'][$list_item['name']] = !empty($r['collected_line_items'][$list_item['name']]) ? $r['collected_line_items'][$list_item['name']] : 0 + $list_item['line_total_after_tax'];
@@ -392,9 +392,8 @@ class WPI_Functions {
       }
 
       if ($object['post_status'] == 'active') {
-        echo '<pre>'.print_r( $object, true ).'</pre>';
-        $r['uncollected_client_value'][$object['user_email']] = !empty($r['uncollected_client_value'][$object['user_email']]) ? $r['uncollected_client_value'][$object['user_email']] : 0 + $object['subtotal'] + $object['total_tax'];
-        $r['total_unpaid'][] = $objects[$object['ID']]['subtotal'] + $objects[$object['ID']]['total_tax'];
+        $r['uncollected_client_value'][$object['user_email']] = !empty($r['uncollected_client_value'][$object['user_email']]) ? $r['uncollected_client_value'][$object['user_email']] : 0 + $object['subtotal'] + $object['total_tax'] - $object['total_discount'];
+        $r['total_unpaid'][] = $objects[$object['ID']]['subtotal'] + $objects[$object['ID']]['total_tax'] - $objects[$object['ID']]['total_discount'];
       }
       
     }
@@ -2775,6 +2774,23 @@ function wp_invoice_show_business_information() {
     <p class="wp_invoice_bi wp_invoice_business_phone"><?php echo $business_info['phone']; ?></p>
   </div>
   <?php
+}
+
+/**
+ * Returns due date in format
+ * 
+ * @param type $invoice
+ * @return type 
+ * @author korotkov@ud
+ */
+function get_due_date( $invoice ) {
+  
+  if ( !empty( $invoice['due_date_year'] ) && !empty( $invoice['due_date_month'] ) && !empty( $invoice['due_date_day'] ) ) {
+    return date( get_option('date_format'), strtotime( $invoice['due_date_day'].'-'.$invoice['due_date_month'].'-'.$invoice['due_date_year'] ) );
+  }
+  
+  return false;
+  
 }
 
 /**
