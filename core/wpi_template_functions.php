@@ -77,7 +77,7 @@ function show_itemized_table($args = '') {
     $currency_symbol = (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$");
 
     ob_start();
-        if( !empty($invoice['deposit_amount']) && $invoice['deposit_amount']>0 ) {
+        if( allow_partial_payments() ) {
           ?>
             <script type="text/javascript">
               // Partial payments JS
@@ -329,7 +329,7 @@ function allow_partial_payments($args = '') {
 
 
 
-  if(!empty($invoice['deposit_amount']) && $invoice['deposit_amount']>0) {
+  if(!empty($invoice['deposit_amount']) && $invoice['deposit_amount']>0 && $invoice['net'] > $invoice['deposit_amount']) {
     return true;
   }
 
@@ -349,6 +349,7 @@ function show_partial_payments($args = '') {
   $currency_symbol = (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$");
   $full_balance = wp_invoice_currency_format($invoice['net']);
   $minimum = wp_invoice_currency_format($invoice['deposit_amount']);
+  
   ?>
   <form class="wpi_checkout">
     <div class="wpi_checkout_partial_payment wpi_checkout_payment_box">

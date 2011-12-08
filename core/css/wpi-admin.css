@@ -363,7 +363,7 @@ input.wpi_no_input{
 #ajax-response {display:none;}
 
 .wpi_error {
-  border:1px solid red;
+  border:1px solid red !important;
 }
 
 .wpi_ajax_response.wpi_error {

@@ -252,14 +252,14 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
     $screen_id = $current_screen->id;
 
     /**
-     * If plugin just installed - Anton Korotkov
+     * If plugin just installed
      */
     if ( $wpi_settings['first_time_setup_ran'] == 'false' ) {
       $file_path = apply_filters('wpi_page_loader_path', WPI_Path . "/core/ui/first_time_setup.php", 'first_time_setup', WPI_Path . "/core/ui/");
     } else {
       /**
        * Check if 'web_invoice_page' exists
-       * and show warning message if not. - Anton Korotkov
+       * and show warning message if not.
        * and also check that the web_invoice_page is a real page
        */
       if ( empty( $wpi_settings['web_invoice_page'] ) ) {

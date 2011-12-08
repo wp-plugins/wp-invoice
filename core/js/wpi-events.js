@@ -314,15 +314,15 @@ jQuery('#wpi_revalidate').live('click', function(){
   
   jQuery(".wp_invoice_discount_row").keyup(function(){
     if ( jQuery.trim( jQuery('.item_name', this).val() ).length && !empty(jQuery('.item_amount', this).val()) ) {
-      jQuery('.item_name', this).css({'border-color':''});
-      jQuery(".item_amount", this).css({'border-color':''});
+      jQuery('.item_name', this).removeClass('wpi_error');
+      jQuery(".item_amount", this).removeClass('wpi_error');
     } else if ( jQuery.trim( jQuery('.item_name', this).val() ).length && empty(jQuery('.item_amount', this).val()) ) {
-      jQuery(".item_amount", this).css({'border-color':'red'});
+      jQuery(".item_amount", this).addClass('wpi_error');;
     } else if ( !jQuery.trim( jQuery('.item_name', this).val() ).length && empty(jQuery('.item_amount', this).val()) ) {
-      jQuery('.item_name', this).css({'border-color':''});
-      jQuery(".item_amount", this).css({'border-color':''});
+      jQuery('.item_name', this).removeClass('wpi_error');
+      jQuery(".item_amount", this).removeClass('wpi_error');
     } else if ( !jQuery.trim( jQuery('.item_name', this).val() ).length && !empty(jQuery('.item_amount', this).val()) ) {
-      jQuery(".item_name", this).css({'border-color':'red'});
+      jQuery(".item_name", this).addClass('wpi_error');;
     }
   });
   
@@ -340,9 +340,9 @@ jQuery('#wpi_revalidate').live('click', function(){
     var price = jQuery(this).parents('.wp_invoice_itemized_list_row').find('.item_price');
     var quantity = jQuery(this).parents('.wp_invoice_itemized_list_row').find('.item_quantity');
     if ( !jQuery.trim(name.val()).length && !empty(price.val()) && !empty(quantity.val()) ) {
-      name.css('border-color', 'red');
+      name.addClass('wpi_error');
     } else {
-      name.css('border-color', '');
+      name.removeClass('wpi_error');
     }
   });
   /*
@@ -912,6 +912,5 @@ submitHandler: function(form) {
       jQuery("#the-list td.cb input:checkbox").removeAttr('checked');
     }
   });
- 
 
 });

@@ -242,9 +242,9 @@ class WPI_Settings_page {
             echo "</select>";?>
                    page. </label>
                 </li>
-                <li><?php echo WPI_UI::checkbox("name=replace_page_title_with_subject&group=wpi_settings&value=true&label=Replace page title with invoice subject when viewing invoice.", $wpi_settings['replace_page_title_with_subject']); ?></li>
-                <li><?php echo WPI_UI::checkbox("name=replace_page_heading_with_subject&group=wpi_settings&value=true&label=Replace page heading with invoice subject when viewing invoice.", $wpi_settings['replace_page_heading_with_subject']); ?></li>
-                <li><?php echo WPI_UI::checkbox("name=hide_page_title&group=wpi_settings&value=true&label=Hide page title completely.", $wpi_settings['hide_page_title']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=replace_page_title_with_subject&group=wpi_settings&value=true&label=Replace HTML title with invoice subject when viewing invoice.", $wpi_settings['replace_page_title_with_subject']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=replace_page_heading_with_subject&group=wpi_settings&value=true&label=Replace page heading and navigation link title with invoice subject when viewing invoice.", $wpi_settings['replace_page_heading_with_subject']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=hide_page_title&group=wpi_settings&value=true&label=Hide page heading and navigation link completely.", $wpi_settings['hide_page_title']); ?></li>
 
                 <li><?php echo WPI_UI::checkbox("name=show_business_address&group=wpi_settings|globals&value=true&label= Show my business name and address.", $wpi_settings['globals']['show_business_address']);?> </li>
                 <li><?php echo WPI_UI::checkbox("name=show_quantities&group=wpi_settings|globals&value=true&label= Show quantity breakdowns in the itemized list.", $wpi_settings['globals']['show_quantities']);?> </li>
@@ -257,12 +257,12 @@ class WPI_Settings_page {
             <td><?php echo WPI_UI::select("name=where_to_display&group=wpi_settings&values=".serialize(array("overwrite" => "Overwrite All Page Content", "below_content" => "Place Below Content","above_content" => "Above Content","replace_tag" => "Replace [wp-invoice] Tag"))."&current_value={$wpi_settings['where_to_display']}"); ?> If using the tag, place <span class="wp_invoice_explanation">[wp-invoice]</span> somewhere within your page content. </td>
           </tr>
           <tr>
-            <th><?php _e("After a customer pays", WPI) ?></th>
+            <th><?php _e("After a payment has been completed", WPI) ?></th>
             <td>
               <ul class="wpi_settings_list">
-                <li><?php echo WPI_UI::checkbox("name=send_thank_you_email&group=wpi_settings&value=true&label=Email a confirmation to client after invoice had been paid.", $wpi_settings['send_thank_you_email']); ?></li>
-                <li><?php echo WPI_UI::checkbox("name=cc_thank_you_email&group=wpi_settings&value=true&label=Email <u>".get_option('admin_email')."</u> any time an invoice is paid.",$wpi_settings['cc_thank_you_email']); ?></li>
-                <li><?php echo WPI_UI::checkbox("name=send_invoice_creator_email&group=wpi_settings&value=true&label=Email invoice creator when an invoice is paid.",$wpi_settings['send_invoice_creator_email']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=send_thank_you_email&group=wpi_settings&value=true&label=Email a confirmation to client", $wpi_settings['send_thank_you_email']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=cc_thank_you_email&group=wpi_settings&value=true&label=Email address set for administrative puproses from <a href='".get_option('home')."/wp-admin/options-general.php'>General Settings</a> (<u>".get_option('admin_email')."</u>)",$wpi_settings['cc_thank_you_email']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=send_invoice_creator_email&group=wpi_settings&value=true&label=Email invoice creator",$wpi_settings['send_invoice_creator_email']); ?></li>
               </ul>
             </td>
           </tr>

@@ -680,7 +680,7 @@ There can only be one, so deletes any other schedule.
 				}
       }
 
-      $total = $this->data['subtotal'] - $this->data['total_discount'] + $this->data['total_tax'];
+      $total = number_format( (float)($this->data['subtotal'] - $this->data['total_discount'] + $this->data['total_tax']), 2, '.', '' );
 
       $total_payments = 0;
       $total_admin_adjustment = 0;
@@ -711,12 +711,12 @@ There can only be one, so deletes any other schedule.
       $this->data['total_payments'] = $total_payments;
       $this->data['adjustments']    = - ($total_payments + $total_admin_adjustment);
 
-      $this->data['net'] = $total + $this->data['adjustments'];
+      $this->data['net'] = number_format( (float)($total + $this->data['adjustments']), 2, '.', '' );
 
       // Fixes calculations for recurring invoices - should be last to overwrite incorrect values.
       if( $this->data['type'] == 'recurring' ) {
-        $this->data['total_tax'] = $this->data['subtotal'] * $avg_tax / 100;
-        $this->data['net'] = $this->data['subtotal'] - $this->data['total_discount'] + $this->data['total_tax'];
+        $this->data['total_tax'] = number_format( (float)($this->data['subtotal'] * $avg_tax / 100), 2, '.', '' );
+        $this->data['net'] = number_format( (float)($this->data['subtotal'] - $this->data['total_discount'] + $this->data['total_tax']), 2, '.', '' );
         unset($this->data['adjustments']);
       }
     }

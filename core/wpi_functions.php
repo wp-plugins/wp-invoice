@@ -378,8 +378,8 @@ class WPI_Functions {
 
       //** Total paid invoices per client  */
       if ($object['post_status'] == 'paid') {
-        $r['collected_client_value'][$object['user_email']] = !empty($r['client_value'][$object['user_email']]) ? $r['client_value'][$object['user_email']] : 0 + $object['subtotal'];
-        $r['total_paid'][] = $objects[$post_id]['subtotal'];
+        $r['collected_client_value'][$object['user_email']] = !empty($r['client_value'][$object['user_email']]) ? $r['client_value'][$object['user_email']] : 0 + $object['subtotal'] + $object['total_tax'];
+        $r['total_paid'][] = $objects[$object['ID']]['subtotal'] + $objects[$object['ID']]['total_tax'];
 
         foreach ($object['itemized_list'] as $list_item) {
           $r['collected_line_items'][$list_item['name']] = !empty($r['collected_line_items'][$list_item['name']]) ? $r['collected_line_items'][$list_item['name']] : 0 + $list_item['line_total_after_tax'];
@@ -392,9 +392,11 @@ class WPI_Functions {
       }
 
       if ($object['post_status'] == 'active') {
-        $r['uncollected_client_value'][$object['user_email']] = !empty($r['uncollected_client_value'][$object['user_email']]) ? $r['uncollected_client_value'][$object['user_email']] : 0 + $object['subtotal'];
-        $r['total_unpaid'][] = $objects[$post_id]['subtotal'];
+        echo '<pre>'.print_r( $object, true ).'</pre>';
+        $r['uncollected_client_value'][$object['user_email']] = !empty($r['uncollected_client_value'][$object['user_email']]) ? $r['uncollected_client_value'][$object['user_email']] : 0 + $object['subtotal'] + $object['total_tax'];
+        $r['total_unpaid'][] = $objects[$object['ID']]['subtotal'] + $objects[$object['ID']]['total_tax'];
       }
+      
     }
 
     if (isset($r['collected_line_items']) && is_array($r['collected_line_items'])) {
@@ -1854,12 +1856,15 @@ class WPI_Functions {
     $wpi_version = WP_INVOICE_VERSION_NUM;
 
     if(@version_compare($installed_ver, $wpi_version) == '-1') {
-      // We are upgrading.
+      //** We are upgrading */
 
-      // Update option to latest version so this isn't run on next admin page load
+      //** Update option to latest version so this isn't run on next admin page load */
       update_option( "wp_invoice_version", $wpi_version );
+      
+      //** Try to create new schema tables */
+      WPI_Functions::create_new_schema_tables();
 
-      // Get premium features on activation
+      //** Get premium features on activation */
       WPI_Functions::check_for_premium_features();
 
     }

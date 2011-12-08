@@ -14,7 +14,15 @@ $bill_to = '<tr><td align="right" width="40%"><strong>BILL TO:</strong></td><td 
 $address = '<tr><td align="right" width="40%"><strong>ADDRESS:</strong></td><td align="left" width="60%">%address%</td></tr>';
 $telephone = '<tr><td align="right" width="40%"><strong>TELEPHONE:</strong></td><td align="left" width="60%">%telephone%</td></tr>';
 
-$total_tax = '<tr><td style="border-collapse: collapse" colspan="%description_cols%" align="right"><strong>TOTAL <span style="color: #198556">%subtotal%</span></strong></td></tr><tr><td style="border-collapse: collapse" colspan="%description_cols%" align="right"><strong>TAX <span style="color: #198556">%total_tax%</span></strong></td></tr>';
+//** Display Subtotal */
+$subtotal = '<tr><td style="border-collapse: collapse" colspan="%description_cols%" align="right"><strong>TOTAL: <span style="color: #198556">%subtotal%</span></strong></td></tr>';
+
+//** Display Tax value if it is greater then 0 */
+$total_tax = '<tr><td style="border-collapse: collapse" colspan="%description_cols%" align="right"><strong>TAX: <span style="color: #198556">%total_tax%</span></strong></td></tr>';
+
+//** Display Discount value if it is greater then 0 */
+$total_discount = '<tr><td style="border-collapse: collapse" colspan="%description_cols%" align="right"><strong>DISCOUNT: <span style="color: #198556">%total_discount%</span></strong></td></tr>';
+
 $tax_th = '<th style="border-collapse: collapse; border: 1px solid #9f9f9f" width="100" align="center">TAX</th>';
 $tax_td = '<td style="border-collapse: collapse; border: 1px solid #9f9f9f; color: #276822" bgcolor="%bgcolor%" align="center"><b>%line_total_tax%</b></td>';
 
@@ -79,7 +87,9 @@ $description_table = '
     %tax_th%
   </tr>
   %description_row%
+  %subtotal%
   %total_tax%
+  %total_discount%
   <tr>
     <td style="border-collapse: collapse" colspan="%description_cols%" align="right"><strong>BALANCE: <span style="color: #198556">%grand_total%</span></strong></td>
   </tr>

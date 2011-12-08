@@ -16,7 +16,16 @@ $bill_to = '<span style="color: #22b273"><b>%bill_to%</b></span>';
 $address = '<span style="color: #7a7a7a"><b>%address%</b></span>';
 $telephone = '<strong>%telephone%</strong>';
 $name_and_address = '<td width="50%" align="center">%bill_to%<br />%address%<br />%telephone%<br /></td>';
-$total_tax = '<strong>TOTAL <span style="color: #bc4873">%subtotal%</span></strong><br><strong>TAX <span style="color: #bc4873">%total_tax%</span></strong><br>';
+
+//** Display Subtotal */
+$subtotal  = '<strong>TOTAL: <span style="color: #bc4873">%subtotal%</span></strong><br>';
+
+//** Display Tax value if it is greater then 0 */
+$total_tax = '<strong>TAX: <span style="color: #bc4873">%total_tax%</span></strong><br>';
+
+//** Display Discount value if it is greater then 0 */
+$total_discount = '<strong>DISCOUNT: <span style="color: #bc4873">%total_discount%</span></strong><br>';
+
 $tax_th = '<td style="color: #d4d4d4;" width="90"><strong>TAX</strong></td>';
 $tax_td = '<td bgcolor="#d4d4d4" style="color: #3e8eaf; text-transform: uppercase"><b>%line_total_tax%</b></td>';
 
@@ -30,7 +39,7 @@ $description_table = '<table border="0" cellspacing="0" cellpadding="3">
     %description_row%
     </table><table border="0" cellspacing="0" cellpadding="3">
     <tr>
-      <td style="border-top: 1px solid #cdcdcd;" align="right">%total_tax%<strong>BALANCE: <span style="color: #bc4873">%grand_total%</span></strong>
+      <td style="border-top: 1px solid #cdcdcd;" align="right">%subtotal%%total_tax%%total_discount%<strong>BALANCE: <span style="color: #bc4873">%grand_total%</span></strong>
       </td>
     </tr>
   </table>

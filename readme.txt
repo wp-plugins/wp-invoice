@@ -96,6 +96,13 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 == Change Log ==
 
+= Version 3.04.2 =
+* Fixed Reports calculation process.
+* Fixed critical bug with float value of paid amount.
+* Fixed bug from 3.04.0 with updating table structure.
+* Fixed bug when partial payment is allowed and it's amount is less than balance.
+* Settings UI improvements.
+
 = Version 3.04.1 =
 * Critical bug with unknown column 'blog_id' fixed.
 * Bug with disappeared recepient name fixed.
