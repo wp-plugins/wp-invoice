@@ -609,7 +609,9 @@ function invoice_id($args = '') {
     
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
 
-    $display_name = $invoice['user_data']['display_name'];
+    $user = get_userdata( $invoice['user_data']['ID'] );
+
+    $display_name = $user->display_name;
 
     if($return) {
       return $display_name;

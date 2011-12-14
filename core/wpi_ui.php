@@ -13,7 +13,7 @@ class WPI_UI {
    *
    */
   function admin_menu() {
-    global $wpi_settings, $submenu;
+    global $wpi_settings, $submenu, $wp_version;
 
     //unset($submenu['edit.php?post_type=wpi_object'][10]);
 
@@ -39,6 +39,10 @@ class WPI_UI {
     //* Load common actions on all WPI pages */
     foreach($wpi_settings['pages'] as $page_slug) {
       add_action('load-' . $page_slug, array( 'WPI_UI', 'common_pre_header'));
+      //** WP 3.3 fix. - korotkov@ud */
+      if ( version_compare($wp_version, '3.3', '>=') ) {
+        add_action("load-$page_slug", array( 'WPI_UI', 'contextual_help' ));
+      }
     }
 
     // Add Filters
@@ -725,17 +729,13 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
 
 
   /**
-   * Main function for handling contextual help for different pages.
+   * Legacy contextual help function for handling contextual help for different pages.
    *
-   *
-   * @todo Find a better way of including advanced "Screen Options" configuration for invoice edit pages
    *
    * @since 3.0
    *
    */
-    function contextual_help($return) {
-
-
+    function contextual_help_old() {
         global $wpi_settings, $page_hook;
 
         switch ($page_hook) {
@@ -795,6 +795,109 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
           $help = apply_filters( 'wpi_contextual_help', $help );
 
           $return = implode('', $help);
+
+        break;
+
+        default: break;
+
+      }
+
+      return $return;
+
+    }
+
+
+  /**
+   * Main function for handling contextual help for different pages.
+   *
+   * @todo Find a better way of including advanced "Screen Options" configuration for invoice edit pages
+   *
+   * @since 3.0
+   *
+   */
+    function contextual_help() {
+
+
+        global $wpi_settings, $page_hook;
+        
+        $screen = get_current_screen();
+
+        switch ($page_hook) {
+
+          //** Invoice editing page */
+          case $wpi_settings['pages']['edit']:
+
+          $return = "<p>".__("Begin typing the recipient's email into the input box, or double-click to view list of possible options.")."</p>";
+          $return .= "<p>".__("For new prospects, type in a new email address.")."</p>";
+          
+          $screen->add_help_tab( array(
+            'id'	=> $page_hook.'_my_help_tab',
+            'title'	=> __('Creating New Invoice', 'wpi'),
+            'content'	=> $return,
+          ) );
+
+        break;
+
+        case $wpi_settings['pages']['main']:
+
+          $help[] = "<p>".__('Please visit <a href="http://usabilitydynamics.com/products/wp-invoice/forum/">WP-Invoice Support Forum</a> to ask questions regarding the plugin.')."</p>";
+          $help[] = "<p>".__('To suggest ideas please visit the <a href="http://feedback.twincitiestech.com/forums/9692-wp-invoice">WP-Invoice Feedback site</a>.')."</p>";
+
+          $return = implode('', $help);
+          
+          $screen->add_help_tab( array(
+            'id'	=> $page_hook.'_my_help_tab',
+            'title'	=> __('Support', 'wpi'),
+            'content'	=> $return,
+          ) );
+          
+        break;
+
+        case $wpi_settings['pages']['settings']:
+
+          $help = array();
+          $help[] = "<p>".__('<b>Business Address</b> - This will display on the invoice page when printed for clients\' records.', WPI)."</p>";
+      
+          $screen->add_help_tab( array(
+            'id'	=> $page_hook.'_my_help_tab_business_process',
+            'title'	=> __('Main & Business Process', WPI),
+            'content'	=> implode('', $help)
+          ) );
+
+          $help = array();
+          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page. The following variables can be used within the Subject or the Content of the e-mail templates:', WPI)."</p>";
+
+          $email_vars['invoice_id'] = __('Invoice ID');
+          $email_vars['link'] = __('URL of invoice');
+          $email_vars['recipient'] = __('Name or business name of receipient');
+          $email_vars['amount'] = __('Due BalanceID');
+          $email_vars['subject'] = __('Invoice title');
+          $email_vars['description'] = __('Description of Invoice');
+          $email_vars['business_name'] = __('Business Name');
+          $email_vars['business_email'] = __('Business Email Address');
+          $email_vars['creator_name'] = __('Name of user who has created invoice');
+          $email_vars['creator_email'] = __('Email of user who has created invoice');
+          $email_vars['due_date'] = __('Invoice due date (if presented)');
+
+          $email_vars = apply_filters('wpi_email_template_vars', $email_vars);
+
+          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page..')."</p>";
+
+          if(is_array($email_vars)) {
+            $help[] = '<ul>';
+            foreach($email_vars as $var => $title) {
+              $help[] =  '<li><b>%' . $var . '%</b> - ' . $title . '</li>';
+            }
+            $help[] = '</ul>';
+          }
+          
+          $screen->add_help_tab( array(
+            'id'	=> $page_hook.'_my_help_tab_email_templates',
+            'title'	=> __('E-Mail Templates', WPI),
+            'content'	=> implode('', $help),
+          ) );
+          
+          do_action("wpi_contextual_help_{$wpi_settings['pages']['settings']}");
 
         break;
 

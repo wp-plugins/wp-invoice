@@ -7,19 +7,26 @@ function get_invoice_permalink($identificator) {
   global $wpi_settings, $wpdb;
 
   $hash = "";
-  /* Check Invoice by ID and get hash */
+  //** Check Invoice by ID and get hash */
   if (!empty($identificator)) {
-    /* Hash always contains 32 symbols */
+    //** Hash always contains 32 symbols */
     if (strlen($identificator) == 32) {
       $hash = $identificator;
     } else {
-      /* Determine if $identificator is invoice_id */
-      $id = $wpdb->get_var("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'invoice_id' AND meta_value = '{$identificator}'");
-      /* If empty id, determine if $identificator is post ID */
-      if (empty($id)) {
+      //** Determine if $identificator id custom_id - korotkov@ud */
+      $id = $wpdb->get_var("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'custom_id' AND meta_value = '{$identificator}'");
+      
+      //** Determine if $identificator is invoice_id */
+      if ( empty( $id ) ) {
+        $id = $wpdb->get_var("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'invoice_id' AND meta_value = '{$identificator}'");
+      }
+      
+      //** If empty id, determine if $identificator is post ID */
+      if ( empty( $id ) ) {
         $id = $wpdb->get_var("SELECT ID FROM {$wpdb->posts} WHERE ID = '{$identificator}'");
       }
-      /* Get hash by post ID */
+      
+      //** Get hash by post ID */
       if(!empty($id)) {
         $hash = $wpdb->get_var("SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = 'invoice_id' AND post_id = '{$id}'");
         $hash = md5($hash);
@@ -34,7 +41,7 @@ function get_invoice_permalink($identificator) {
   if(get_option("permalink_structure")) {
       return get_permalink($wpi_settings['web_invoice_page']) . "?invoice_id=" . $hash;
   } else {
-    //* check if page is on front-end */
+    //** check if page is on front-end */
     if(get_option('page_on_front') == $wpi_settings['web_invoice_page']) {
       return get_permalink($wpi_settings['web_invoice_page']) . "?invoice_id=" . $hash;
     } else {

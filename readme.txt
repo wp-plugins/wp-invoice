@@ -99,6 +99,10 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 == Change Log ==
 
+= Version 3.04.4 =
+* Wordpress 3.3 compatibility.
+* Reported bugs fixed.
+
 = Version 3.04.3 =
 * Fixed Reports calculation process with discount.
 * UI fixes.

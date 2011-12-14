@@ -4,7 +4,7 @@
   Plugin URI: http://usabilitydynamics.com/products/wp-invoice/
   Description: Send itemized web-invoices directly to your clients.  Credit card payments may be accepted via Authorize.net, MerchantPlus NaviGate, or PayPal account. Recurring billing is also available via Authorize.net's ARB. Visit <a href="admin.php?page=wpi_page_settings">WP-Invoice Settings Page</a> to setup.
   Author: UsabilityDynamics.com
-  Version: 3.04.3
+  Version: 3.04.4
   Author URI: http://UsabilityDynamics.com/
   Copyright 2011  Usability Dynamics, Inc.   (email : andy.potanin@UsabilityDynamics.com)
 
@@ -32,7 +32,7 @@ define('WPI_Path', WP_PLUGIN_DIR . '/wp-invoice');
 /** Path for front-end links */
 define('WPI_URL', WP_PLUGIN_URL . '/wp-invoice');
 
-define("WP_INVOICE_VERSION_NUM", "3.04.3");
+define("WP_INVOICE_VERSION_NUM", "3.04.4");
 define("WPI", "wp-invoice");
  
 /** Directory paths */
@@ -323,17 +323,17 @@ if (!class_exists('WPI_Core')) {
      * @since 3.0
      */
     function admin_head() {
-      global $current_screen;
-      if ( $current_screen->id == 'invoice_page_wpi_page_manage_invoice' ) {
-        //echo '<style>#screen-options-link-wrap{display:none !important;}</style>';
-      }
+      global $current_screen, $wp_version;
       
       do_action("wpi_pre_header_{$current_screen->id}", $current_screen->id);
       //do_action("wpi_print_styles");
       
-      // Load contextual help for all pages
-      add_filter('contextual_help', array('WPI_UI', 'contextual_help'));
-      
+      if ( version_compare($wp_version, '3.3', '>=') ) {
+        
+      } else {
+        add_filter('contextual_help', array('WPI_UI', 'contextual_help_old'));
+      }
+
     }
     
     /*
