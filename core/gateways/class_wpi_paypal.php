@@ -130,7 +130,7 @@ class wpi_paypal extends wpi_gateway_base {
         'type'   => 'text',
         'class'  => 'text-input',
         'name'   => 'country',
-        'label'  => 'County'
+        'label'  => 'Country'
       )
         
     )

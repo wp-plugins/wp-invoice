@@ -99,6 +99,11 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 == Change Log ==
 
+= Version 3.04.6 =
+* Fixes for 'PDF Invoices and Receipts' Premium Feature.
+* Typo 'County' fixed.
+* Fixed currency symbol on Edit Invoice page.
+
 = Version 3.04.5 =
 * Option 'Automatically increment the invoice's custom ID by one.' fixed.
 * 'First Time Setup' page fixed.

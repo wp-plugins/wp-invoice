@@ -1,4 +1,8 @@
 <script type="text/javascript">
+  
+  var wpi = {
+    'currency':'<?php echo $wpi_settings['currency']['symbol'][$this_invoice->data['default_currency_code']]; ?> '
+  };
 
   var adjustments = <?php echo !empty( $this_invoice->data['adjustments'] )?$this_invoice->data['adjustments']:0; ?>;
 
@@ -138,7 +142,7 @@
 
 <?php } ?>
 
-<form id='wpi_invoice_form' action="" method='post'>
+<form id="wpi_invoice_form" action="" method="post">
 
     <?php if ( !empty($notice) ) : ?>
 
