@@ -9,8 +9,8 @@ $logo = '<td width="150"><img src="%logo%" width="150" /></td>';
 $header_width = 'width="450"';
 
 $due_date = 'DUE: %due_date%';
-$amount_due = '<strong>AMOUNT DUE:</strong> <span style="color: #bc4873">%amount_due%</span>';
-$attn = '<strong>ATTN:</strong> %attn%';
+$amount_due = '<strong>' . __('AMOUNT DUE', WPI) . ':</strong> <span style="color: #bc4873">%amount_due%</span>';
+$attn = '<strong>' . __('ATTN', WPI) . ':</strong> %attn%';
 
 $bill_to = '<span style="color: #22b273"><b>%bill_to%</b></span>';
 $address = '<span style="color: #7a7a7a"><b>%address%</b></span>';
@@ -18,28 +18,31 @@ $telephone = '<strong>%telephone%</strong>';
 $name_and_address = '<td width="50%" align="center">%bill_to%<br />%address%<br />%telephone%<br /></td>';
 
 //** Display Subtotal */
-$subtotal  = '<strong>TOTAL: <span style="color: #bc4873">%subtotal%</span></strong><br>';
+$subtotal  = '<strong>' . __('TOTAL', WPI) . ': <span style="color: #bc4873">%subtotal%</span></strong><br>';
 
 //** Display Tax value if it is greater then 0 */
-$total_tax = '<strong>TAX: <span style="color: #bc4873">%total_tax%</span></strong><br>';
+$total_tax = '<strong>' . __('TAX', WPI) . ': <span style="color: #bc4873">%total_tax%</span></strong><br>';
 
 //** Display Discount value if it is greater then 0 */
-$total_discount = '<strong>DISCOUNT: <span style="color: #bc4873">%total_discount%</span></strong><br>';
+$total_discount = '<strong>' . __('DISCOUNT', WPI) . ': <span style="color: #bc4873">%total_discount%</span></strong><br>';
 
-$tax_th = '<td style="color: #d4d4d4;" width="90"><strong>TAX</strong></td>';
+//** Display Balance value if it is greater then 0 */
+$grand_total = '<strong>' . __('BALANCE', WPI) . ': <span style="color: #bc4873">%grand_total%</span></strong><br>';
+
+$tax_th = '<td style="color: #d4d4d4;" width="90"><strong>' . __('TAX', WPI) . '</strong></td>';
 $tax_td = '<td bgcolor="#d4d4d4" style="color: #3e8eaf; text-transform: uppercase"><b>%line_total_tax%</b></td>';
 
 $description_table = '<table border="0" cellspacing="0" cellpadding="3">
     <tr>
-      <td style="color: #d4d4d4;" width="%desc_width%"><strong>DESCRIPTION</strong></td>
-      <td style="color: #d4d4d4;" width="90"><strong>QTY</strong></td>
-      <td style="color: #d4d4d4;" width="90"><strong>SUM</strong></td>
+      <td style="color: #d4d4d4;" width="%desc_width%"><strong>' . __('DESCRIPTION', WPI) . '</strong></td>
+      <td style="color: #d4d4d4;" width="90"><strong>' . __('QTY', WPI) . '</strong></td>
+      <td style="color: #d4d4d4;" width="90"><strong>' . __('SUM', WPI) . '</strong></td>
       %tax_th%
     </tr>
     %description_row%
     </table><table border="0" cellspacing="0" cellpadding="3">
     <tr>
-      <td style="border-top: 1px solid #cdcdcd;" align="right">%subtotal%%total_tax%%total_discount%<strong>BALANCE: <span style="color: #bc4873">%grand_total%</span></strong>
+      <td style="border-top: 1px solid #cdcdcd;" align="right">%subtotal%%total_tax%%total_discount%%grand_total%
       </td>
     </tr>
   </table>
@@ -60,7 +63,7 @@ $description_row = '
 $terms_n_conditions = '
   <tr>
     <td><table border="0" cellspacing="5" cellpadding="5" width="100%">
-        <tr><td style="border-bottom: 1px solid #474747;color: #474747;">TERMS &amp; CONDITIONS</td>
+        <tr><td style="border-bottom: 1px solid #474747;color: #474747;">' . __('TERMS &amp; CONDITIONS', WPI) . '</td>
         </tr>
         <tr>
           <td style="color: #474747; font-size: 0.8em;">%terms_n_conditions_text%</td>
@@ -74,7 +77,7 @@ $notes = '
   <tr>
     <td><table border="0" cellspacing="5" cellpadding="5" width="100%">
         <tr>
-          <td style="border-bottom: 1px solid #474747;color: #474747;">NOTES</td>
+          <td style="border-bottom: 1px solid #474747;color: #474747;">' . __('NOTES', WPI) . '</td>
         </tr>
         <tr>
           <td style="color: #474747; font-size: 0.8em;">%notes_text%</td>

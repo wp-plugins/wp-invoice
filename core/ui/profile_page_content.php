@@ -7,13 +7,13 @@
 
  
 
-  <h3>Billing / Invoicing Info</h3>
+  <h3><?php _e('Billing / Invoicing Info', WPI) ?></h3>
   <a name="billing_info"></a>
   <table class="form-table" >
 
   <?php foreach ($user_information as $field_id => $field_name) { ?>
   <tr>
-        <th><?php _e($field_name) ?></th>
+        <th><?php _e($field_name, WPI) ?></th>
         <td><?php echo WPI_UI::input("class=regular-text&name=$field_id&value=".get_user_meta($user_id, $field_id, true)); ?></td>
     </tr>  
   <?php } ?>

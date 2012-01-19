@@ -66,7 +66,7 @@ class toplevel_page_wpi_main {
       if ( !empty( $filters['status'] ) && is_array( $filters['status'] ) ) : ?>
         
         <ul class="wpi_overview_filters status">
-          <li class="wpi_filter_section_title">Status<a class="wpi_filter_show">Hide</a></li>	
+          <li class="wpi_filter_section_title"><?php _e('Status', WPI) ?><a class="wpi_filter_show"><?php _e('Hide', WPI) ?></a></li>	
           <li class="all wpi_checkbox_filter" style="display:block;">
             <ul>
               <?php foreach ( $filters['status'] as $item ) : ?>
@@ -83,7 +83,7 @@ class toplevel_page_wpi_main {
       <?php if ( !empty( $users ) && is_array( $users ) ) : ?>
       
         <ul class="wpi_overview_filters users">
-          <li class="wpi_filter_section_title">Recipient<a class="wpi_filter_show">Show</a></li>	
+          <li class="wpi_filter_section_title"><?php _e('Recipient', WPI) ?><a class="wpi_filter_show"><?php _e('Show', WPI) ?></a></li>	
           <li class="all wpi_checkbox_filter">
             <?php wpi_invoice_users_dropdown('wpi_object', 'wpi_search[recipient]'); ?>
           </li>
@@ -95,7 +95,7 @@ class toplevel_page_wpi_main {
       <?php $months_dropdown = $wp_list_table->months_dropdown('wpi_object', 'wpi_search[m]', true); ?>
       <?php if (!empty($months_dropdown)) : ?>
       <ul class="wpi_overview_filters month">
-        <li class="wpi_filter_section_title">Date<a class="wpi_filter_show">Show</a></li>  
+        <li class="wpi_filter_section_title"><?php _e('Date', WPI) ?><a class="wpi_filter_show"><?php _e('Show', WPI) ?></a></li>  
         <li class="all wpi_checkbox_filter">
           <?php echo $months_dropdown; ?>
         </li>
@@ -109,7 +109,7 @@ class toplevel_page_wpi_main {
     <div class="major-publishing-actions">
       <?php do_action( 'wpi_other_actions' ); ?>
       <div class="publishing-action">
-        <?php submit_button( __('Filter Results'), 'button', false, false, array('id' => 'search-submit') ); ?>
+        <?php submit_button( __('Filter Results', WPI), 'button', false, false, array('id' => 'search-submit') ); ?>
       </div>
       <br class='clear' />
     </div>

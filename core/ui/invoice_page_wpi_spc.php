@@ -38,7 +38,7 @@ $title = $post_type_object->labels->name;
 ?>
  <div class="wrap">
     <?php screen_icon(); ?>
-    <h2><?php _e('Sales Log'); ?></h2>
+    <h2><?php _e('Sales Log', WPI); ?></h2>
  
     <?php WPI_Functions::print_messages(); ?>
 

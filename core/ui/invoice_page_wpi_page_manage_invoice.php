@@ -124,7 +124,7 @@
 
   <span id="wpi_page_title"><?php _e((empty($this_invoice->data['ID']) ? 'New Invoice' : 'Edit Invoice'), WPI); ?></span>
 
-  <input type="button" class="wpi_hide_until_saved button add-new-h2" onclick="wpi_show_paycharge_box();" value="Add Payment / Charge" />
+  <input type="button" class="wpi_hide_until_saved button add-new-h2" onclick="wpi_show_paycharge_box();" value="<?php esc_attr(_e('Add Payment / Charge', WPI)) ?>" />
 
 </h2>
 
@@ -132,7 +132,7 @@
 
   <div class="wpi_invoice_paid">
 
-    <?php echo apply_filters('wpi_object_paid_message', __('Invoice paid in full.'), $this_invoice); ?>
+    <?php echo apply_filters('wpi_object_paid_message', __('Invoice paid in full.', WPI), $this_invoice); ?>
 
   </div>
 
@@ -384,7 +384,7 @@
 
           <input class="item_name input_field" name="wpi_invoice[itemized_list][<?php echo $counter; ?>][name]" value="<?php echo stripslashes($itemized_item['name']); ?>" />
 
-          <span class="wpi_add_description_text">&nbsp;<span class="content">Toggle Description</span></span>
+          <span class="wpi_add_description_text">&nbsp;<span class="content"><?php _e('Toggle Description', WPI) ?></span></span>
 
         </div>
 
@@ -434,7 +434,7 @@
 
     }
 
-    $discount_types = serialize(array('amount' => 'Amount Discount', 'percent' => 'Percent Discount'));
+    $discount_types = serialize(array('amount' => __('Amount Discount', WPI), 'percent' => __('Percent Discount', WPI)));
 
     ?>
 
@@ -504,13 +504,13 @@
 
     <li class="footer clearfix">
 
-      <input type="button"  class="button wpi_button" id="wpi_predefined_services_select" value="<?php _e("Add Line", WPI) ?>"/>
+      <input type="button"  class="button wpi_button" id="wpi_predefined_services_select" value="<?php esc_attr(_e("Add Line", WPI)) ?>"/>
 
     <?php if(is_array($wpi_settings['predefined_services'])) {
 
        // Convert predefined services into special array
 
-      $services_array[""] = "Insert a predefined line item";
+      $services_array[""] = __("Insert a predefined line item", WPI);
 
       foreach($wpi_settings['predefined_services'] as $service) {
 
@@ -538,7 +538,7 @@
 
     } ?>
       
-      <input type="button" class="button wpi_button" id="wpi_add_discount" value="<?php _e("Add Discount", WPI) ?>"/>
+      <input type="button" class="button wpi_button" id="wpi_add_discount" value="<?php esc_attr(_e("Add Discount", WPI)) ?>"/>
 
       <span id="wpi_discount_mismatch_error"></span>
 

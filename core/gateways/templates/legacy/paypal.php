@@ -87,7 +87,7 @@
             <?php }*/ ?>
             <li>
                 <label for="submit">&nbsp;</label>
-                <input type="image"  src="<?php echo $invoice['billing']['paypal']['settings']['button_url']['value']; ?>" class="paypal_button" name="submit" alt="Pay with PayPal">
+                <input type="image"  src="<?php echo $invoice['billing']['paypal']['settings']['button_url']['value']; ?>" class="paypal_button" name="submit" alt="<?php _e('Pay with PayPal', WPI); ?>">
             </li>
 
             <br class="cb" />    

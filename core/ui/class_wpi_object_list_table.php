@@ -61,11 +61,11 @@ class WPI_Object_List_Table extends WPI_List_Table {
   public function get_bulk_actions() {
     $actions = array();
     
-    $actions['untrash'] = __( 'Restore' );
-    $actions['archive'] = __( 'Archive' );
-    $actions['delete'] = __( 'Delete Permanently' );
-    $actions['trash'] = __( 'Move to Trash' );
-    $actions['unarchive'] = __( 'Un-Archive' );
+    $actions['untrash'] = __( 'Restore', WPI );
+    $actions['archive'] = __( 'Archive', WPI );
+    $actions['delete'] = __( 'Delete Permanently', WPI );
+    $actions['trash'] = __( 'Move to Trash', WPI );
+    $actions['unarchive'] = __( 'Un-Archive', WPI );
     
     return $actions;
   }
@@ -119,7 +119,7 @@ class WPI_Object_List_Table extends WPI_List_Table {
         case 'post_title':
           $attributes = 'class="post-title page-title column-title"' . $style;
           if ( $can_edit_post && $post->post_status != 'trash' && $post->post_status != 'archived' ) { 
-            $r .= '<a class="row-title" href="' . $edit_link . '" title="' . esc_attr( sprintf( __( 'Edit &#8220;%s&#8221;' ), $title ) ) . '">' . $title . '</a>';
+            $r .= '<a class="row-title" href="' . $edit_link . '" title="' . esc_attr( sprintf( __( 'Edit &#8220;%s&#8221;', WPI ), $title ) ) . '">' . $title . '</a>';
           } else { 
             $r .= $title;
           } 
@@ -127,29 +127,29 @@ class WPI_Object_List_Table extends WPI_List_Table {
           
           $actions = array();
           if ( $can_edit_post && 'trash' != $post->post_status && 'archived' != $post->post_status ) {
-           $actions['edit'] = '<a href="' . get_edit_post_link( $post->ID, true ) . '" title="' . esc_attr( __( 'Edit this item' ) ) . '">' . __( 'Edit' ) . '</a>';
+           $actions['edit'] = '<a href="' . get_edit_post_link( $post->ID, true ) . '" title="' . esc_attr( __( 'Edit this item', WPI ) ) . '">' . __( 'Edit', WPI ) . '</a>';
           }
           
           if ( 'archived' == $post->post_status ) {
-            $actions['unarchive'] = '<a href="' . wp_nonce_url( admin_url( sprintf( $post_type_object->_edit_link . '&amp;action=unarchive', $post->ID ) ), 'unarchive-' . $post->post_type . '_' . $post->ID ) . '" title="' . esc_attr( __( 'Un-Archive this item' ) ) . '">' . __( 'Un-Archive' ) . '</a>';
+            $actions['unarchive'] = '<a href="' . wp_nonce_url( admin_url( sprintf( $post_type_object->_edit_link . '&amp;action=unarchive', $post->ID ) ), 'unarchive-' . $post->post_type . '_' . $post->ID ) . '" title="' . esc_attr( __( 'Un-Archive this item', WPI ) ) . '">' . __( 'Un-Archive', WPI ) . '</a>';
           } else if ( 'trash' != $post->post_status && 'pending' != $post->post_status ) {
-            $actions['archive'] = '<a href="' . wp_nonce_url( admin_url( sprintf( $post_type_object->_edit_link . '&amp;action=archive', $post->ID ) ), 'archive-' . $post->post_type . '_' . $post->ID ) . '" title="' . esc_attr( __( 'Archive this item' ) ) . '">' . __( 'Archive' ) . '</a>';
+            $actions['archive'] = '<a href="' . wp_nonce_url( admin_url( sprintf( $post_type_object->_edit_link . '&amp;action=archive', $post->ID ) ), 'archive-' . $post->post_type . '_' . $post->ID ) . '" title="' . esc_attr( __( 'Archive this item', WPI ) ) . '">' . __( 'Archive', WPI ) . '</a>';
           }
           
           if ( current_user_can( $post_type_object->cap->delete_post, $post->ID ) ) {
             if ( 'trash' == $post->post_status ) {
-              $actions['untrash'] = "<a title='" . esc_attr( __( 'Restore this item from the Trash' ) ) . "' href='" . wp_nonce_url( admin_url( sprintf( $post_type_object->_edit_link . '&amp;action=untrash', $post->ID ) ), 'untrash-' . $post->post_type . '_' . $post->ID ) . "'>" . __( 'Restore' ) . "</a>";
+              $actions['untrash'] = "<a title='" . esc_attr( __( 'Restore this item from the Trash', WPI ) ) . "' href='" . wp_nonce_url( admin_url( sprintf( $post_type_object->_edit_link . '&amp;action=untrash', $post->ID ) ), 'untrash-' . $post->post_type . '_' . $post->ID ) . "'>" . __( 'Restore', WPI ) . "</a>";
             } elseif ( EMPTY_TRASH_DAYS && 'pending' != $post->post_status ) {
-              $actions['trash'] = "<a class='submitdelete' title='" . esc_attr( __( 'Move this item to the Trash' ) ) . "' href='" . get_delete_post_link( $post->ID ) . "'>" . __( 'Trash' ) . "</a>";
+              $actions['trash'] = "<a class='submitdelete' title='" . esc_attr( __( 'Move this item to the Trash', WPI ) ) . "' href='" . get_delete_post_link( $post->ID ) . "'>" . __( 'Trash', WPI ) . "</a>";
             }
             
             if ( 'trash' == $post->post_status || !EMPTY_TRASH_DAYS ) {
-              $actions['delete'] = "<a class='submitdelete permanently' title='" . esc_attr( __( 'Delete this item permanently' ) ) . "' href='" . get_delete_post_link( $post->ID, '', true ) . "'>" . __( 'Delete Permanently' ) . "</a>";
+              $actions['delete'] = "<a class='submitdelete permanently' title='" . esc_attr( __( 'Delete this item permanently', WPI ) ) . "' href='" . get_delete_post_link( $post->ID, '', true ) . "'>" . __( 'Delete Permanently', WPI ) . "</a>";
             }
           }
           
           if ( 'trash' != $post->post_status && 'archived' != $post->post_status ) {
-            $actions['view'] = '<a target="_blank" href="' . get_invoice_permalink( $post->invoice_id ) . '" title="' . esc_attr( sprintf( __( 'View &#8220;%s&#8221;' ), $title ) ) . '" rel="permalink">' . __( 'View' ) . '</a>';
+            $actions['view'] = '<a target="_blank" href="' . get_invoice_permalink( $post->invoice_id ) . '" title="' . esc_attr( sprintf( __( 'View &#8220;%s&#8221;', WPI ), $title ) ) . '" rel="permalink">' . __( 'View', WPI ) . '</a>';
           }
           
           $actions = apply_filters( is_post_type_hierarchical( $post->post_type ) ? 'page_row_actions' : 'post_row_actions', $actions, $post );
@@ -204,7 +204,7 @@ class WPI_Object_List_Table extends WPI_List_Table {
           if ( !empty( $post->subtotal ) ) {
             if ( $post->type != 'single_payment' ) {
               $r .= (!empty($wpi_settings['currency']['symbol'][$post->default_currency_code])?$wpi_settings['currency']['symbol'][$post->default_currency_code]:'$') . wp_invoice_currency_format( !empty( $post->total_payments )?$post->total_payments:0 )
-                    ." <span style='color:#aaaaaa;'>of ".
+                    ." <span style='color:#aaaaaa;'>" . __('of', WPI) ." ".
                     (!empty($wpi_settings['currency']['symbol'][$post->default_currency_code])?$wpi_settings['currency']['symbol'][$post->default_currency_code]:'$') . wp_invoice_currency_format($post->subtotal-(!empty($post->total_discount)?$post->total_discount:0)+(!empty($post->total_tax)?$post->total_tax:0))
                     ."</span>";
             } else {

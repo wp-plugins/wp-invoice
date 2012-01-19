@@ -1,18 +1,18 @@
 <div class="wp_invoice_accordion_section">
-    <h3 id="paypalsetup"><a href="#" class="selector"><?php _e("PayPal") ?></a></h3>
+    <h3 id="paypalsetup"><a href="#" class="selector"><?php _e("PayPal", WPI) ?></a></h3>
     <div>
         <table class="form-table">
             <tr>
-                <th width="300"><?php _e("PayPal Username"); ?></th>
+                <th width="300"><?php _e("PayPal Username", WPI); ?></th>
                 <td><?php echo WPI_UI::draw_inputfield('wp_invoice_paypal_address',$wp_invoice_paypal_address); ?></td>
             </tr>
             <tr>
-                <th width="300"><?php _e("PayPal Pay Button URL"); ?></th>
+                <th width="300"><?php _e("PayPal Pay Button URL", WPI); ?></th>
                 <td><?php echo WPI_UI::draw_inputfield('wp_invoice_fe_paypal_link_url',$wp_invoice_fe_paypal_link_url); ?></td>
             </tr>
         </table>
     </div>
-    <h3 id="ccsetup"><a href="#" class="selector"><?php _e("Credit Card") ?></a></h3>
+    <h3 id="ccsetup"><a href="#" class="selector"><?php _e("Credit Card", WPI) ?></a></h3>
     <div>
     <table class="form-table">
             <tr class="gateway_info">
@@ -40,7 +40,7 @@
                     </td>
             </tr>
             <tr class="advanced_gateway_info">
-                    <th>Test / Live Mode:</th>
+                    <th><?php _e('Test / Live Mode:', WPI) ?></th>
                     <td><?php echo WPI_UI::draw_select('wp_invoice_gateway_test_mode',array("TRUE" => "Test - Do Not Process Transactions","FALSE" => "Live - Process Transactions"), $wp_invoice_gateway_test_mode); ?></td>
             </tr>
             <tr class="advanced_gateway_info">
@@ -57,7 +57,7 @@
             </tr>
             <tr class="advanced_gateway_info">
                     <th><?php _e('Email Customer (on success):', WPI); ?></th>
-                    <td><?php echo WPI_UI::draw_select('wp_invoice_gateway_email_customer',array("TRUE" => "Yes","FALSE" => "No"), $wp_invoice_gateway_test_mode); ?></td>
+                    <td><?php echo WPI_UI::draw_select('wp_invoice_gateway_email_customer',array("TRUE" => __("Yes", WPI),"FALSE" => __("No", WPI)), $wp_invoice_gateway_test_mode); ?></td>
             </tr>
             <tr class="advanced_gateway_info">
                     <th width="300"><?php _e('Customer Receipt Email Header', WPI); ?></th>
@@ -69,11 +69,11 @@
             </tr>
             <tr class="advanced_gateway_info">
                     <th><?php _e('Delim Data:', WPI); ?></th>
-                    <td><?php echo WPI_UI::draw_select('wp_invoice_gateway_delim_data',array("TRUE" => "True","FALSE" => "False"), $wp_invoice_gateway_delim_data); ?></td>
+                    <td><?php echo WPI_UI::draw_select('wp_invoice_gateway_delim_data',array("TRUE" => __("True", WPI),"FALSE" => __("False", WPI)), $wp_invoice_gateway_delim_data); ?></td>
             </tr>
             <tr class="">
                     <th width="300">&nbsp;</th>
-                    <td><span class="wp_invoice_click_me" onClick="jQuery('.advanced_gateway_info').toggle();">Toggle Advanced Options</span></td>
+                    <td><span class="wp_invoice_click_me" onClick="jQuery('.advanced_gateway_info').toggle();"><?php _e('Toggle Advanced Options', WPI); ?></span></td>
             </tr>
         </table>
     </div>

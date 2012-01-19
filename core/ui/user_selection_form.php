@@ -12,10 +12,10 @@
         <?php echo WPI_UI::input("name=wpi[new_invoice][invoice_id]&value=".rand(10000000, 90000000)."&type=hidden"); ?>
         <table class="form-table" id="get_user_info">
           <tr class="invoice_main">
-            <th><label for="wp_invoice_userlookup"><?php _e('E-mail Address:'); ?></label></th>
+            <th><label for="wp_invoice_userlookup"><?php _e('E-mail Address:', WPI); ?></label></th>
             <td>
               <?php WPI_UI::draw_user_auto_complete_field(); ?>
-              <input type="submit" class="button" id="wp_invoice_create_new_invoice" value="<?php _e('Create New', 'wpi'); ?>">
+              <input type="submit" class="button" id="wp_invoice_create_new_invoice" value="<?php esc_attr(_e('Create New', WPI)); ?>">
               <?php if($wpi_settings['total_invoice_count']) { ?>
                 <span id="wp_invoice_copy_invoice" class="wp_invoice_click_me">copy from another</span><br />
                 <div class="wp_invoice_copy_invoice">
@@ -33,7 +33,7 @@
                       <?php 
                         if( $invoice_obj->data['type'] == 'recurring' ) {
                       ?> 
-                      [Recurring] 
+                      <?php _e('[Recurring]', WPI) ?> 
                       <?php } ?> 
                       <?php 
                         echo $invoice_obj->data['post_title'] . " - " .$wpi_settings['currency']['symbol'][$invoice_obj->data['default_currency_code']] . wp_invoice_currency_format($invoice_obj->data['subtotal']); 
@@ -46,7 +46,7 @@
                     </option>
                     <?php endif; } ?>
                   </select>
-                  <input type="submit" class="button" value="New Invoice from Template">
+                  <input type="submit" class="button" value="<?php esc_attr(_e('New Invoice from Template', WPI)) ?>">
                   <span id="wp_invoice_copy_invoice_cancel" class="wp_invoice_click_me">cancel</span>
                 </div>
               <?php } ?>

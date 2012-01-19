@@ -20,14 +20,14 @@ class WPI_UI {
     /* Get capability required for this plugin's menu to be displayed to the user */
     $capability = self::get_capability_by_level($wpi_settings['user_level']);
     
-    $wpi_settings['pages']['main'] = add_object_page( __('Invoice'),  __('Invoice'), $capability, 'wpi_main', array('WPI_UI', 'page_loader'), WPI_URL . "/core/css/images/wp_invoice.png");
-    $wpi_settings['pages']['main'] = add_submenu_page('wpi_main', __('View All'), __('View All'), $capability, 'wpi_main',array('WPI_UI', 'page_loader'));
-    $wpi_settings['pages']['edit'] = add_submenu_page('wpi_main', __('Add New'), __('Add New'), $capability, 'wpi_page_manage_invoice',array('WPI_UI', 'page_loader'));
-    $wpi_settings['pages']['reports'] = add_submenu_page('wpi_main', __('Reports'), __('Reports'), $capability, 'wpi_page_reports',array('WPI_UI', 'page_loader'));
+    $wpi_settings['pages']['main'] = add_object_page( __('Invoice', WPI),  __('Invoice', WPI), $capability, 'wpi_main', array('WPI_UI', 'page_loader'), WPI_URL . "/core/css/images/wp_invoice.png");
+    $wpi_settings['pages']['main'] = add_submenu_page('wpi_main', __('View All', WPI), __('View All', WPI), $capability, 'wpi_main',array('WPI_UI', 'page_loader'));
+    $wpi_settings['pages']['edit'] = add_submenu_page('wpi_main', __('Add New', WPI), __('Add New', WPI), $capability, 'wpi_page_manage_invoice',array('WPI_UI', 'page_loader'));
+    $wpi_settings['pages']['reports'] = add_submenu_page('wpi_main', __('Reports', WPI), __('Reports', WPI), $capability, 'wpi_page_reports',array('WPI_UI', 'page_loader'));
 
     $wpi_settings['pages'] = apply_filters('wpi_pages', $wpi_settings['pages']);
 
-    $wpi_settings['pages']['settings'] = add_submenu_page('wpi_main', "Settings", "Settings", $capability, 'wpi_page_settings', array('WPI_UI', 'page_loader'));
+    $wpi_settings['pages']['settings'] = add_submenu_page('wpi_main', __('Settings', WPI), __('Settings', WPI), $capability, 'wpi_page_settings', array('WPI_UI', 'page_loader'));
     
     /* Update screens information */
     WPI_Settings::setOption('pages', $wpi_settings['pages']);
@@ -267,10 +267,10 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
        * and also check that the web_invoice_page is a real page
        */
       if ( empty( $wpi_settings['web_invoice_page'] ) ) {
-        echo '<div class="error"><p>Invoice page not selected. Visit <a href="admin.php?page=wpi_page_settings">settings page</a> to configure.</p></div>';
+        echo '<div class="error"><p>'. sprintf(__('Invoice page not selected. Visit <a href="%s">settings page</a> to configure.', WPI), 'admin.php?page=wpi_page_settings').'</p></div>';
       } else {
         if(!$wpdb->get_var("SELECT post_name FROM {$wpdb->posts} WHERE ID = {$wpi_settings['web_invoice_page'] }")) {
-        echo '<div class="error"><p>Selected invoice page does not exist. Visit <a href="admin.php?page=wpi_page_settings">settings page</a> to configure.</p></div>';
+        echo '<div class="error"><p>'. sprintf(__('Selected invoice page does not exist. Visit <a href="%s">settings page</a> to configure.', WPI), 'admin.php?page=wpi_page_settings').'</p></div>';
         }
       }
       $file_path = apply_filters('wpi_page_loader_path', WPI_Path . "/core/ui/{$current_screen->base}.php", $current_screen->base, WPI_Path . "/core/ui/");
@@ -279,7 +279,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
     if(file_exists($file_path))
       include $file_path;
     else
-      echo "<div class='wrap'><h2>Error</h2><p>Template not found:" . $file_path. "</p></div>";
+      echo "<div class='wrap'><h2>".__('Error', WPI)."</h2><p>".__('Template not found:', WPI) . $file_path. "</p></div>";
   }
 
   /**
@@ -357,15 +357,15 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
       $invoice_ids = str_replace(',', ', ', $_REQUEST['invoice_id']);
       // Add Messages
       if(isset($_REQUEST['trashed'])) {
-        WPI_Functions::add_message("Invoice(s) {$invoice_ids} trashed.");
+        WPI_Functions::add_message(sprintf(__('"Invoice(s) %s trashed."', WPI), $invoice_ids));
       } elseif(isset($_REQUEST['untrashed'])) {
-        WPI_Functions::add_message("Invoice(s) {$invoice_ids} untrashed.");
+        WPI_Functions::add_message(sprintf(__('"Invoice(s) %s untrashed."', WPI), $invoice_ids));
       } elseif(isset($_REQUEST['deleted'])) {
-        WPI_Functions::add_message("Invoice(s) {$invoice_ids} deleted.");
+        WPI_Functions::add_message(sprintf(__('"Invoice(s) %s deleted."', WPI), $invoice_ids));
       } elseif(isset($_REQUEST['unarchived'])) {
-        WPI_Functions::add_message("Invoice(s) {$invoice_ids} unarchived.");
+        WPI_Functions::add_message(sprintf(__('"Invoice(s) %s unarchived."', WPI), $invoice_ids));
       } elseif(isset($_REQUEST['archived'])) {
-        WPI_Functions::add_message("Invoice(s) {$invoice_ids} archived.");
+        WPI_Functions::add_message(sprintf(__('"Invoice(s) %s archived."', WPI), $invoice_ids));
       }
     }
   }
@@ -459,21 +459,22 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
   function admin_enqueue_scripts() {
     global $current_screen, $wp_properties;
 
-    // Include on all pages
+    /** Include on all pages */
 
-    //* Includes page-specific JS if it exists */
+    /** Includes page-specific JS if it exists */
     wp_enqueue_script('wpi-this-page-js');
 
-    // Load scripts on specific pages
+    /** Load scripts on specific pages */
 
     switch($current_screen->id)  {
 
-      //** Reports page */
+      /** Reports page */
       case 'invoice_page_wpi_page_reports':
         wp_enqueue_script('jsapi');
+        wp_enqueue_script('wp-invoice-events');
+        wp_enqueue_script('wp-invoice-functions');
       break;
 
-      case 'invoice_page_wpi_page_reports':
       case 'invoice_page_wpi_page_settings':
       case 'toplevel_page_wpi_main':
         wp_enqueue_script('jquery.ui.custom.wp-invoice');
@@ -501,7 +502,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         wp_enqueue_script('jquery.form');
         wp_enqueue_script('jquery.cookie');
 
-        // Add scripts and styles for Tiny MCE Editor (default WP Editor)
+        /** Add scripts and styles for Tiny MCE Editor (default WP Editor) */
         wp_enqueue_script(array('editor', 'thickbox', 'media-upload'));
         wp_enqueue_style('thickbox');
         
@@ -522,13 +523,13 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
 
     $overview_columns = apply_filters('wpi_overview_columns',  array(
       'cb' => '',
-      'post_title' => 'Title',
-      'total' => 'Total Collected',
-      'user_email' => 'Recipient',
-      'post_modified' => 'Date',
-      'post_status' => 'Status',
-      'type' => 'Type',
-      'invoice_id' => 'Invoice ID'
+      'post_title' => __('Title', WPI),
+      'total' => __('Total Collected', WPI),
+      'user_email' => __('Recipient', WPI),
+      'post_modified' => __('Date', WPI),
+      'post_status' => __('Status', WPI),
+      'type' => __('Type', WPI),
+      'invoice_id' => __('Invoice ID', WPI)
     ));
 
     /* We need to grab the columns from the class itself, so we instantiate a new temp object */
@@ -743,9 +744,9 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
           // Invoice editing page
           case $wpi_settings['pages']['edit']:
 
-          $return = "<h5>Creating New Invoice</h5>";
+          $return = "<h5>".__('Creating New Invoice', WPI)."</h5>";
           $return .= '<div class="metabox-prefs">';
-          $return .= "Begin typing the recipient's email into the input box, or double-click to view list of possible options.  For new prospects, type in a new email address.";
+          $return .= __("Begin typing the recipient's email into the input box, or double-click to view list of possible options.  For new prospects, type in a new email address.", WPI);
           $return .= '</div>';
           return $return;
 
@@ -753,36 +754,36 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
 
         case $wpi_settings['pages']['main']:
 
-          $help[] = "<h5>".__('Support')."</h5>";
-          $help[] = "<p>".__('Please visit <a href="http://usabilitydynamics.com/products/wp-invoice/forum/">WP-Invoice Support Forum</a> to ask questions regarding the plugin.')."</p>";
-          $help[] = "<p>".__('To suggest ideas please visit the <a href="http://feedback.twincitiestech.com/forums/9692-wp-invoice">WP-Invoice Feedback site</a>.')."</p>";
+          $help[] = "<h5>".__('Support', WPI)."</h5>";
+          $help[] = "<p>".__('Please visit <a href="http://usabilitydynamics.com/products/wp-invoice/forum/">WP-Invoice Support Forum</a> to ask questions regarding the plugin.', WPI)."</p>";
+          $help[] = "<p>".__('To suggest ideas please visit the <a href="http://feedback.twincitiestech.com/forums/9692-wp-invoice">WP-Invoice Feedback site</a>.', WPI)."</p>";
 
           $return = implode('', $help);
         break;
 
         case $wpi_settings['pages']['settings']:
 
-          $help[] = "<h5>".__('Main & Business Process')."</h5>";
+          $help[] = "<h5>".__('Main & Business Process', WPI)."</h5>";
           $help[] = "<p>".__('<b>Business Address</b> - This will display on the invoice page when printed for clients\' records.', WPI)."</p>";
 
-          $help[] = "<h5>".__('E-Mail Templates')."</h5>";
+          $help[] = "<h5>".__('E-Mail Templates', WPI)."</h5>";
           $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page. The following variables can be used within the Subject or the Content of the e-mail templates:', WPI)."</p>";
 
-          $email_vars['invoice_id'] = __('Invoice ID');
-          $email_vars['link'] = __('URL of invoice');
-          $email_vars['recipient'] = __('Name or business name of receipient');
-          $email_vars['amount'] = __('Due BalanceID');
-          $email_vars['subject'] = __('Invoice title');
-          $email_vars['description'] = __('Description of Invoice');
-          $email_vars['business_name'] = __('Business Name');
-          $email_vars['business_email'] = __('Business Email Address');
-          $email_vars['creator_name'] = __('Name of user who has created invoice');
-          $email_vars['creator_email'] = __('Email of user who has created invoice');
-          $email_vars['due_date'] = __('Invoice due date (if presented)');
+          $email_vars['invoice_id'] = __('Invoice ID', WPI);
+          $email_vars['link'] = __('URL of invoice', WPI);
+          $email_vars['recipient'] = __('Name or business name of receipient', WPI);
+          $email_vars['amount'] = __('Due BalanceID', WPI);
+          $email_vars['subject'] = __('Invoice title', WPI);
+          $email_vars['description'] = __('Description of Invoice', WPI);
+          $email_vars['business_name'] = __('Business Name', WPI);
+          $email_vars['business_email'] = __('Business Email Address', WPI);
+          $email_vars['creator_name'] = __('Name of user who has created invoice', WPI);
+          $email_vars['creator_email'] = __('Email of user who has created invoice', WPI);
+          $email_vars['due_date'] = __('Invoice due date (if presented)', WPI);
 
           $email_vars = apply_filters('wpi_email_template_vars', $email_vars);
 
-          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page..')."</p>";
+          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page..', WPI)."</p>";
 
           if(is_array($email_vars)) {
             $help[] = '<ul>';
@@ -827,8 +828,8 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
           //** Invoice editing page */
           case $wpi_settings['pages']['edit']:
 
-          $return = "<p>".__("Begin typing the recipient's email into the input box, or double-click to view list of possible options.")."</p>";
-          $return .= "<p>".__("For new prospects, type in a new email address.")."</p>";
+          $return = "<p>".__("Begin typing the recipient's email into the input box, or double-click to view list of possible options.", WPI)."</p>";
+          $return .= "<p>".__("For new prospects, type in a new email address.", WPI)."</p>";
           
           $screen->add_help_tab( array(
             'id'	=> $page_hook.'_my_help_tab',
@@ -840,14 +841,14 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
 
         case $wpi_settings['pages']['main']:
 
-          $help[] = "<p>".__('Please visit <a href="http://usabilitydynamics.com/products/wp-invoice/forum/">WP-Invoice Support Forum</a> to ask questions regarding the plugin.')."</p>";
-          $help[] = "<p>".__('To suggest ideas please visit the <a href="http://feedback.twincitiestech.com/forums/9692-wp-invoice">WP-Invoice Feedback site</a>.')."</p>";
+          $help[] = "<p>".__('Please visit <a href="http://usabilitydynamics.com/products/wp-invoice/forum/">WP-Invoice Support Forum</a> to ask questions regarding the plugin.', WPI)."</p>";
+          $help[] = "<p>".__('To suggest ideas please visit the <a href="http://feedback.twincitiestech.com/forums/9692-wp-invoice">WP-Invoice Feedback site</a>.', WPI)."</p>";
 
           $return = implode('', $help);
           
           $screen->add_help_tab( array(
             'id'	=> $page_hook.'_my_help_tab',
-            'title'	=> __('Support', 'wpi'),
+            'title'	=> __('Support', WPI),
             'content'	=> $return,
           ) );
           
@@ -867,21 +868,21 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
           $help = array();
           $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page. The following variables can be used within the Subject or the Content of the e-mail templates:', WPI)."</p>";
 
-          $email_vars['invoice_id'] = __('Invoice ID');
-          $email_vars['link'] = __('URL of invoice');
-          $email_vars['recipient'] = __('Name or business name of receipient');
-          $email_vars['amount'] = __('Due BalanceID');
-          $email_vars['subject'] = __('Invoice title');
-          $email_vars['description'] = __('Description of Invoice');
-          $email_vars['business_name'] = __('Business Name');
-          $email_vars['business_email'] = __('Business Email Address');
-          $email_vars['creator_name'] = __('Name of user who has created invoice');
-          $email_vars['creator_email'] = __('Email of user who has created invoice');
-          $email_vars['due_date'] = __('Invoice due date (if presented)');
+          $email_vars['invoice_id'] = __('Invoice ID', WPI);
+          $email_vars['link'] = __('URL of invoice', WPI);
+          $email_vars['recipient'] = __('Name or business name of receipient', WPI);
+          $email_vars['amount'] = __('Due BalanceID', WPI);
+          $email_vars['subject'] = __('Invoice title', WPI);
+          $email_vars['description'] = __('Description of Invoice', WPI);
+          $email_vars['business_name'] = __('Business Name', WPI);
+          $email_vars['business_email'] = __('Business Email Address', WPI);
+          $email_vars['creator_name'] = __('Name of user who has created invoice', WPI);
+          $email_vars['creator_email'] = __('Email of user who has created invoice', WPI);
+          $email_vars['due_date'] = __('Invoice due date (if presented)', WPI);
 
           $email_vars = apply_filters('wpi_email_template_vars', $email_vars);
 
-          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page..')."</p>";
+          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page..', WPI)."</p>";
 
           if(is_array($email_vars)) {
             $help[] = '<ul>';
@@ -1202,7 +1203,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
             }
         }
         if ($values == 'months') {
-            $values_array = array("" => "", "01" => "Jan", "02" => "Feb", "03" => "Mar", "04" => "Apr", "05" => "May", "06" => "Jun", "07" => "Jul", "08" => "Aug", "09" => "Sep", "10" => "Oct", "11" => "Nov", "12" => "Dec");
+            $values_array = array("" => "", "01" => __("Jan", WPI), "02" => __("Feb", WPI), "03" => __("Mar", WPI), "04" => __("Apr", WPI), "05" => __("May", WPI), "06" => __("Jun", WPI), "07" => __("Jul", WPI), "08" => __("Aug", WPI), "09" => __("Sep", WPI), "10" => __("Oct", WPI), "11" => __("Nov", WPI), "12" => __("Dec", WPI));
         }
         $output = "<select id='" . ($id ? $id : $class_from_name) . "' name='" . ($group ? $group . "[" . $name . "]" : $name) . "' class='$class_from_name " . ($group ? "group_$group" : '') . "'>";
         
@@ -1214,7 +1215,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
               $output .= ">$value</option>";
           }
         } else {
-          $output .= "<option>Values are empty</option>";
+          $output .= "<option>".__('Values are empty', WPI)."</option>";
         }
         $output .= "</select>";
         return $output;
@@ -1236,11 +1237,11 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
       // Determine if WP CRM is installed
       if ( class_exists( 'WP_CRM_Core' ) ) {
         
-        echo '<div class="wpi_crm_link"><a  class="button" target="_blank" href="'.admin_url('admin.php?page=wp_crm_add_new&user_id='.$user_id).'">Go to user\'s profile</a></div>';
+        echo '<div class="wpi_crm_link"><a  class="button" target="_blank" href="'.admin_url('admin.php?page=wp_crm_add_new&user_id='.$user_id).'">'.__('Go to user\'s profile', WPI).'</a></div>';
         
       } else {
         
-        echo '<div class="wpi_crm_link"><a target="_blank" href="'.admin_url('plugin-install.php?tab=search&type=term&s=WP-CRM').'">Get WP-CRM plugin to enhance user management.</a></div>';
+        echo '<div class="wpi_crm_link"><a target="_blank" href="'.admin_url('plugin-install.php?tab=search&type=term&s=WP-CRM').'">'.__('Get WP-CRM plugin to enhance user management.', WPI).'</a></div>';
         
       }
       
@@ -1310,18 +1311,18 @@ function wp_invoice_printYearDropdown($sel='') {
 
 function wp_invoice_printMonthDropdown($sel='') {
     $output = "<option value=''>--</option>";
-    $output .= "<option " . ($sel == 1 ? ' selected' : '') . " value='01'>01 - Jan</option>";
-    $output .= "<option " . ($sel == 2 ? ' selected' : '') . "  value='02'>02 - Feb</option>";
-    $output .= "<option " . ($sel == 3 ? ' selected' : '') . "  value='03'>03 - Mar</option>";
-    $output .= "<option " . ($sel == 4 ? ' selected' : '') . "  value='04'>04 - Apr</option>";
-    $output .= "<option " . ($sel == 5 ? ' selected' : '') . "  value='05'>05 - May</option>";
-    $output .= "<option " . ($sel == 6 ? ' selected' : '') . "  value='06'>06 - Jun</option>";
-    $output .= "<option " . ($sel == 7 ? ' selected' : '') . "  value='07'>07 - Jul</option>";
-    $output .= "<option " . ($sel == 8 ? ' selected' : '') . "  value='08'>08 - Aug</option>";
-    $output .= "<option " . ($sel == 9 ? ' selected' : '') . "  value='09'>09 - Sep</option>";
-    $output .= "<option " . ($sel == 10 ? ' selected' : '') . "  value='10'>10 - Oct</option>";
-    $output .= "<option " . ($sel == 11 ? ' selected' : '') . "  value='11'>11 - Nov</option>";
-    $output .= "<option " . ($sel == 12 ? ' selected' : '') . "  value='12'>12 - Doc</option>";
+    $output .= "<option " . ($sel == 1 ? ' selected' : '') . " value='01'>01 - ".__('Jan', WPI)."</option>";
+    $output .= "<option " . ($sel == 2 ? ' selected' : '') . "  value='02'>02 - ".__('Feb', WPI)."</option>";
+    $output .= "<option " . ($sel == 3 ? ' selected' : '') . "  value='03'>03 - ".__('Mar', WPI)."</option>";
+    $output .= "<option " . ($sel == 4 ? ' selected' : '') . "  value='04'>04 - ".__('Apr', WPI)."</option>";
+    $output .= "<option " . ($sel == 5 ? ' selected' : '') . "  value='05'>05 - ".__('May', WPI)."</option>";
+    $output .= "<option " . ($sel == 6 ? ' selected' : '') . "  value='06'>06 - ".__('Jun', WPI)."</option>";
+    $output .= "<option " . ($sel == 7 ? ' selected' : '') . "  value='07'>07 - ".__('Jul', WPI)."</option>";
+    $output .= "<option " . ($sel == 8 ? ' selected' : '') . "  value='08'>08 - ".__('Aug', WPI)."</option>";
+    $output .= "<option " . ($sel == 9 ? ' selected' : '') . "  value='09'>09 - ".__('Sep', WPI)."</option>";
+    $output .= "<option " . ($sel == 10 ? ' selected' : '') . "  value='10'>10 - ".__('Oct', WPI)."</option>";
+    $output .= "<option " . ($sel == 11 ? ' selected' : '') . "  value='11'>11 - ".__('Nov', WPI)."</option>";
+    $output .= "<option " . ($sel == 12 ? ' selected' : '') . "  value='12'>12 - ".__('Dec', WPI)."</option>";
     return($output);
 }
 

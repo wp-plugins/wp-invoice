@@ -1,19 +1,19 @@
 <div id="invoice_page" class="wpi_invoice_form wpi_payment_form clearfix">
     <div class="wpi_left_col">
-        <b class='wpi_greeting'>Welcome, <?php recipients_name(); ?>!</b>
+        <b class="wpi_greeting"><?php echo sprintf(__('Welcome, %s!', WPI), recipients_name(array('return'=>true))) ?></b>
  
         <div class="invoice_description">
           <div class="invoice_top_message">
             <?php if(is_quote()) : ?>
-              <p>We have sent you a quote in the amount of <?php balance_due(); ?>.</p>
+              <p><?php echo sprintf(__('We have sent you a quote in the amount of %s.', WPI), balance_due(array('return'=>true))) ?></p>
             <?php endif; ?>
 
             <?php if(!is_quote()) : ?>
-              <p>We have sent you invoice <?php invoice_id(); ?> with a balance of <?php balance_due(); ?>.</p>
+              <p><?php echo sprintf(__('We have sent you invoice %1s with a balance of %2s.', WPI), invoice_id(array('return'=>true)), balance_due(array('return'=>true))); ?></p>
             <?php endif; ?>
 
             <?php if(is_recurring()): ?>
-              <p>This is a recurring bill.</p>
+              <p><?php _e('This is a recurring bill.', WPI) ?></p>
             <?php endif; ?>
             
             </div>
@@ -22,7 +22,7 @@
             </div>
 
             <?php if(is_payment_made()): ?>
-                You've made payments, but still owe: <?php balance_due(); ?>
+                <?php _e("You've made payments, but still owe:", WPI) ?> <?php balance_due(); ?>
             <?php endif; ?>
         </div>
     
@@ -45,14 +45,14 @@
       <?php show_partial_payments(); ?>
     <?php endif; ?>
 
-		<?php show_payment_selection("Select your favorite way of paying"); ?>
+		<?php show_payment_selection(__('Select your favorite way of paying', WPI)); ?>
 
 		<?php
 				$method = !empty($invoice['default_payment_method']) ? $invoice['default_payment_method'] : 'manual';
         if ( $method == 'manual' ) {
 		?>
-					<p><strong>Manual Payment Information</strong></p>
-					<p><?php echo !empty( $wpi_settings['manual_payment_info'] )?$wpi_settings['manual_payment_info']:'Contact site Administrator for payment information please.'; ?></p>
+					<p><strong><?php _e('Manual Payment Information', WPI); ?></strong></p>
+					<p><?php echo !empty( $wpi_settings['manual_payment_info'] )?$wpi_settings['manual_payment_info']:__('Contact site Administrator for payment information please.', WPI); ?></p>
 		<?php
         } else {
           $wpi_settings['installed_gateways'][$method]['object']->frontend_display($invoice);

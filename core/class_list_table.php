@@ -117,7 +117,7 @@ class WPI_List_Table extends WP_List_Table  {
           "iDisplayLength" : <?php echo $this->_args['per_page']; ?>,
           "bAutoWidth": false,
           "oLanguage": {
-            "sLengthMenu": 'Display <select><option value="25">25 </option><option value="50">50 </option><option value="100">100</option><option value="-1">All </option></select> records',
+            "sLengthMenu": '<?php _e('Display', WPI) ?> <select><option value="25">25 </option><option value="50">50 </option><option value="100">100</option><option value="-1"><?php _e('All', WPI) ?> </option></select> <?php _e('records', WPI) ?>',
             "sProcessing": '<div class="ajax_loader_overview"></div>'
           },
           "iColumns": <?php echo count($this->aoColumnDefs); ?>,
@@ -295,7 +295,7 @@ class WPI_List_Table extends WP_List_Table  {
     
     ?>
     <select name="<?php echo $field_name; ?>">
-      <option<?php selected( $m, 0 ); ?> value='0'><?php _e( 'Show all dates' ); ?></option>
+      <option<?php selected( $m, 0 ); ?> value='0'><?php _e( 'Show all dates', WPI ); ?></option>
     <?php
     foreach ( $months as $arc_row ) {
       if ( 0 == $arc_row->year ) {

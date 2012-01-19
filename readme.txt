@@ -1,11 +1,11 @@
-=== WP-Invoice - Web Invoice and Billing === 
+=== WP-Invoice - Web Invoice and Billing ===
 Contributors: usability_dynamics, anton-korotkoff, andypotanin, jbrw
 Donate link: http://usabilitydynamics.com/products/wp-invoice/
 Tags: web invoice, bill, paypal, invoice, pay, online payment, send invoice, bill clients, authorize.net, credit cards, recurring billing, ARB
 Requires at least: 3.1
 Tested up to: 3.3
 Stable tag: trunk
-WP-Invoice lets you create and send web-invoices and setup recurring billing for your clients. 
+WP-Invoice lets you create and send web-invoices and setup recurring billing for your clients.
 
 == Description ==
 
@@ -17,7 +17,7 @@ http://vimeo.com/27887971
 
 WP-Invoice lets WordPress blog owners send itemized invoices to their clients. Ideal for web developers, SEO consultants, general contractors, or anyone with a WordPress blog and clients to bill. The plugin ties into WP's user management database to keep track of your clients and their information.
 
-Once an invoice is created from the WP admin section, an email with a brief description and a unique link is sent to client. Clients follow the link to your blog's special invoice page, view their invoice, and pay their bill using PayPal. The control panel is very user-friendly and intuitive. 
+Once an invoice is created from the WP admin section, an email with a brief description and a unique link is sent to client. Clients follow the link to your blog's special invoice page, view their invoice, and pay their bill using PayPal. The control panel is very user-friendly and intuitive.
 
 Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, or PayPal account.  For recurring billing we have integrated Authorize.net's ARB API that will allow you to setup payment schedules along with invoices.
 
@@ -36,7 +36,7 @@ Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, 
 * Customizable Invoice and Receipt Templates
 
 
-= More Features = 
+= More Features =
 
 * Create invoices from the WordPress control panel
 * Prefill customer information using the WordPress user list
@@ -62,7 +62,7 @@ Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, 
 3. Follow set-up steps on main Invoice page
 4. To create your first invoice navigate to Invoice -> New Invoice, and select the user who will be the recipient.
 
-Please see the [wp-invoice plugin home page](http://usabilitydynamics.com/products/wp-invoice/) for details. 
+Please see the [wp-invoice plugin home page](http://usabilitydynamics.com/products/wp-invoice/) for details.
 
 == Frequently Asked Questions ==
 
@@ -70,7 +70,7 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 == Screenshots ==
 
-1. Add can add custom payments and charges 
+1. Add can add custom payments and charges
 2. Insert pre-defined line items and discounts
 3. Quickly view invoice status and progression
 4. Easily filter and find invoices
@@ -89,18 +89,28 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 * Critical bugs fixed.
 
 = Version 3.04.0 =
-* Core plugin filename changed, plugin may require manual re-activation after upgrade. 
+* Core plugin filename changed, plugin may require manual re-activation after upgrade.
 
 = Version 3.01 =
-* Major fixes. 
+* Major fixes.
 
 = Version 3.00 =
 * Complete rewrite. Old invoice data is not deleted, please notify us if you have any upgrading issues.
 
 == Change Log ==
 
+= Version 3.04.5 =
+* Option 'Automatically increment the invoice's custom ID by one.' fixed.
+* 'First Time Setup' page fixed.
+* South African Rand currency added.
+* Fixed error when username is empty on invoice page.
+* Added proper signs for every currency.
+* Fixes for 'PDF Invoices and Receipts' Premium Feature.
+* Fixes for 'Single Page Checkout' Premium Feature.
+* Other simple improvements and UI fixes.
+
 = Version 3.04.4 =
-* Wordpress 3.3 compatibility.
+* WordPress 3.3 compatibility.
 * Reported bugs fixed.
 
 = Version 3.04.3 =
@@ -123,7 +133,7 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 = Version 3.04.0 =
 * WordPress Multi Site (MS) compatibility.
-* WP-CRM integration improvements. 
+* WP-CRM integration improvements.
 * Fix to allow IPN URL to be changed.
 * General improvements to Settings Page and Invoice Editor UI.
 
@@ -135,7 +145,7 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 * Fix to incorrect invoice total calculation when using a combination of discounts and taxes.
 * Added option to send invoice payment notification to invoice creator, as well as site admin.
 * Improved time formatting.
-* Added option to set global tax. 
+* Added option to set global tax.
 * Fix to negative balance if price quantity is negative.
 * Fix to tax amount not being displayed in line items on overview page.
 * Fix to discount field not working if discount name is blank.

@@ -7,23 +7,26 @@
 $logo = '<td rowspan="2" width="150"><img src="%logo%" width="150" /></td>';
 $header_width = 'width="442"';
 
-$due_date = '<tr><td align="right" width="50%"><strong>DUE DATE:</strong></td><td align="left" width="50%">%due_date%</td></tr>';
-$amount_due = '<tr><td align="right" width="50%"><strong>AMOUNT DUE:</strong></td><td align="left" width="50%"><span style="color: #198153">%amount_due%</span></td></tr>';
-$attn = '<tr><td align="right" width="50%"><strong>ATTN:</strong></td><td align="left" width="50%">%attn%</td></tr>';
-$bill_to = '<tr><td align="right" width="50%"><strong>BILL TO:</strong></td><td align="left" width="50%"><span style="color: #3e8eaf;">%bill_to%</span></td></tr>';
-$address = '<tr><td align="right" width="50%"><strong>ADDRESS:</strong></td><td align="left" width="50%">%address%</td></tr>';
-$telephone = '<tr><td align="right" width="50%"><strong>TELEPHONE:</strong></td><td align="left" width="50%">%telephone%</td></tr>';
+$due_date = '<tr><td align="right" width="50%"><strong>' . __('DUE DATE', WPI) . ':</strong></td><td align="left" width="50%">%due_date%</td></tr>';
+$amount_due = '<tr><td align="right" width="50%"><strong>' . __('AMOUNT DUE', WPI) . ':</strong></td><td align="left" width="50%"><span style="color: #198153">%amount_due%</span></td></tr>';
+$attn = '<tr><td align="right" width="50%"><strong>' . __('ATTN', WPI) . ':</strong></td><td align="left" width="50%">%attn%</td></tr>';
+$bill_to = '<tr><td align="right" width="50%"><strong>' . __('BILL TO', WPI) . ':</strong></td><td align="left" width="50%"><span style="color: #3e8eaf;">%bill_to%</span></td></tr>';
+$address = '<tr><td align="right" width="50%"><strong>' . __('ADDRESS', WPI) . ':</strong></td><td align="left" width="50%">%address%</td></tr>';
+$telephone = '<tr><td align="right" width="50%"><strong>' . __('TELEPHONE', WPI) . ':</strong></td><td align="left" width="50%">%telephone%</td></tr>';
 
 //** Display Subtotal */
-$subtotal = '<strong>TOTAL: <span style="color: #198556">%subtotal%</span></strong><br>';
+$subtotal = '<strong>' . __('TOTAL', WPI) . ': <span style="color: #198556">%subtotal%</span></strong><br>';
 
 //** Display Tax value if it is greater then 0 */
-$total_tax = '<strong>TAX: <span style="color: #198556">%total_tax%</span></strong><br>';
+$total_tax = '<strong>' . __('TAX', WPI) . ': <span style="color: #198556">%total_tax%</span></strong><br>';
 
 //** Display Discount value if it is greater then 0 */
-$total_discount = '<strong>DISCOUNT: <span style="color: #198556">%total_discount%</span></strong><br>';
+$total_discount = '<strong>' . __('DISCOUNT', WPI) . ': <span style="color: #198556">%total_discount%</span></strong><br>';
 
-$tax_th = '<td width="100">TAX</td>';
+//** Display Balance value if it is greater then 0 */
+$grand_total = '<strong>' . __('BALANCE', WPI) . ': <span style="color: #bc4873">%grand_total%</span></strong><br>';
+
+$tax_th = '<td width="100">' . __('TAX', WPI) . '</td>';
 $tax_td = '<td bgcolor="#f0f0f0"><b><span style="color: #1b8d5b">%line_total_tax%</span></b></td>';
 
 $name_and_address = '
@@ -39,15 +42,15 @@ $name_and_address = '
 $description_table = '
   <table border="0" cellspacing="0" cellpadding="3">
     <tr>
-      <td width="%desc_width%">DESCRIPTION</td>
-      <td width="100">QUANTITY</td>
-      <td width="100">AMOUNT</td>
+      <td width="%desc_width%">' . __('DESCRIPTION', WPI) . '</td>
+      <td width="100">' . __('QUANTITY', WPI) . '</td>
+      <td width="100">' . __('AMOUNT', WPI) . '</td>
       %tax_th%
     </tr>
     %description_row%
   </table><table border="0" cellspacing="0" cellpadding="3">
     <tr>
-      <td style="border-top: 1px solid #cdcdcd;border-bottom: 1px solid #cdcdcd;" align="right">%subtotal%%total_tax%%total_discount%<strong>BALANCE: <span style="color: #bc4873">%grand_total%</span></strong>
+      <td style="border-top: 1px solid #cdcdcd;border-bottom: 1px solid #cdcdcd;" align="right">%subtotal%%total_tax%%total_discount%%grand_total%
       </td>
     </tr>
   </table>
@@ -69,7 +72,7 @@ $terms_n_conditions = '
     <td>
       <table border="0" cellspacing="5" cellpadding="5" width="100%">
         <tr>
-          <td style="color: #474747;">TERMS &amp; CONDITIONS</td>
+          <td style="color: #474747;">' . __('TERMS &amp; CONDITIONS', WPI) . '</td>
         </tr>
         <tr>
           <td style="color: #474747; font-size: 0.8em;">%terms_n_conditions_text%</td>
@@ -84,7 +87,7 @@ $notes = '
     <td>
       <table border="0" cellspacing="5" cellpadding="5" width="100%">
         <tr>
-          <td style="color: #474747;">NOTES</td>
+          <td style="color: #474747;">' . __('NOTES', WPI) . '</td>
         </tr>
         <tr>
           <td style="color: #474747; font-size: 0.8em;">%notes_text%</td>

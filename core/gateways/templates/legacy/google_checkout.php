@@ -6,12 +6,12 @@ add_filter('wpi_billing_method', 'wpi_billing_google_checkout', 0, 2);
 function wpi_billing_google_checkout($billing, $invoice_detail = false) {
 
     // Add Google Checkout    
-    $billing['google_checkout']['name'] = "Google Checkout";
+    $billing['google_checkout']['name'] = __("Google Checkout", WPI);
     $billing['google_checkout']['allow'] = true; // Check the allowed payment box or not
 
 
     // Admin Form Settings
-    $billing['google_checkout']['settings']['pay_to_email']['label'] = 'Payment Address';
+    $billing['google_checkout']['settings']['pay_to_email']['label'] = __('Payment Address', WPI);
     $billing['google_checkout']['settings']['pay_to_email']['value'] = 'me@moneybookers.com';
     $billing['google_checkout']['settings']['button_url']['label'] = 'Button URL';
     $billing['google_checkout']['settings']['button_url']['value'] = 'http://acitykiosks.com/images/moneybookers.gif';
@@ -44,7 +44,7 @@ function wpi_billing_google_checkout_form($invoice) { ?>
       <input type="hidden" name="tax_rate" value="0.0875"/>
       <input type="hidden" name="tax_us_state" value="NY"/>
       <input type="hidden" name="_charset_"/>
-      <input type="image" name="Google Checkout" alt="Fast checkout through Google" src="http://checkout.google.com/buttons/checkout.gif?merchant_id=1234567890&w=180&h=46&style=white&variant=text&loc=en_US" height="46" width="180"/>
+      <input type="image" name="<?php _e('Google Checkout', WPI) ?>" alt="<?php _e('Fast checkout through Google', WPI) ?>" src="http://checkout.google.com/buttons/checkout.gif?merchant_id=1234567890&w=180&h=46&style=white&variant=text&loc=en_US" height="46" width="180"/>
     </form>
     <?php 
 } 

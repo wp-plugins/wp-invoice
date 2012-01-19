@@ -23,7 +23,7 @@ class wpi_paypal extends wpi_gateway_base {
 	 */
   var $options = array(
     'name' => 'PayPal',
-    'allow' => true,
+    'allow' => '',
     'default_option' => '',
     'settings' => array(
       'paypal_address' => array(
@@ -116,14 +116,14 @@ class wpi_paypal extends wpi_gateway_base {
         'type'   => 'text',
         'class'  => 'text-input',
         'name'   => 'state',
-        'label'  => 'State'
+        'label'  => 'State/Province'
       ),
       
       'zip'         => array(
         'type'  => 'text',
         'class' => 'text-input',
         'name'  => 'zip',
-        'label' => 'Zip'
+        'label' => 'Zip/Postal Code'
       ),
       
       'country'     => array(
@@ -291,7 +291,7 @@ class wpi_paypal extends wpi_gateway_base {
    */
   function server_callback(){
     
-    if ( empty( $_POST ) ) die('Direct access not allowed');
+    if ( empty( $_POST ) ) die(__('Direct access not allowed', WPI));
     
     $invoice = new WPI_Invoice();
     $invoice->load_invoice("id={$_POST['invoice']}");
@@ -310,13 +310,13 @@ class wpi_paypal extends wpi_gateway_base {
 
         case 'Completed':
           // Add payment amount
-          $event_note = WPI_Functions::currency_format(abs($_POST['mc_gross']), $_POST['invoice'])." paid via PayPal";
+          $event_note = sprintf(__('%s paid via PayPal', WPI), WPI_Functions::currency_format(abs($_POST['mc_gross']), $_POST['invoice']));
           $event_amount = (float)$_POST['mc_gross'];
           $event_type   = 'add_payment';
           // Log balance changes
           $invoice->add_entry("attribute=balance&note=$event_note&amount=$event_amount&type=$event_type");
           // Log payer email
-          $payer_email = "PayPal Payer email: {$_POST['payer_email']}";
+          $payer_email = sprintf(__("PayPal Payer email: %s", WPI), $_POST['payer_email']);
           $invoice->add_entry("attribute=invoice&note=$payer_email&type=update");
           $invoice->save_invoice();
           // ... and mark invoice as paid

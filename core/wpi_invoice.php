@@ -97,15 +97,15 @@ class WPI_Invoice {
     if ( version_compare($wp_version, '3.3', '>=') ) {
       
       if($user_id = get_user_by('ID', $user_id)->data->ID) {
-        WPI_Functions::console_log('Loaded user from passed ID.');
+        WPI_Functions::console_log(__('Loaded user from passed ID.', WPI));
         $new_user = false;
 
       } elseif (!empty($email) && $user_id = get_user_by('email', $email)->data->ID) {
-        WPI_Functions::console_log('Loaded user from e-mail.');
+        WPI_Functions::console_log(__('Loaded user from e-mail.', WPI));
         $new_user = false;
 
       } else {
-        WPI_Functions::console_log('User info not, found - assuming new user.');
+        WPI_Functions::console_log(__('User info not, found - assuming new user.', WPI));
         $new_user = true;
 
       }
@@ -122,15 +122,15 @@ class WPI_Invoice {
     } else {
       
       if($user_id = get_user_by('ID', $user_id)->ID) {
-        WPI_Functions::console_log('Loaded user from passed ID.');
+        WPI_Functions::console_log(__('Loaded user from passed ID.', WPI));
         $new_user = false;
 
       } elseif (!empty($email) && $user_id = get_user_by('email', $email)->ID) {
-        WPI_Functions::console_log('Loaded user from e-mail.');
+        WPI_Functions::console_log(__('Loaded user from e-mail.', WPI));
         $new_user = false;
 
       } else {
-        WPI_Functions::console_log('User info not, found - assuming new user.');
+        WPI_Functions::console_log(__('User info not, found - assuming new user.', WPI));
         $new_user = true;
 
       }
@@ -287,11 +287,11 @@ class WPI_Invoice {
     if($new_invoice || count($invoice_data) < 1) {
       $this->error = true;
       $this->new_invoice = true;
-      WPI_Functions::console_log('WPI_Invoice::load_invoice() function executed, no invoice ID found, assuming new invoice.');
+      WPI_Functions::console_log('WPI_Invoice::load_invoice() '.__('function executed, no invoice ID found, assuming new invoice.', WPI));
       return;
     }
 
-    WPI_Functions::console_log('WPI_Invoice::load_invoice() function executed, invoice_id: ' . $id);
+    WPI_Functions::console_log('WPI_Invoice::load_invoice() '.__('function executed, invoice_id: ', WPI) . $id);
 
     $object_meta = get_post_custom($id);
 
@@ -333,7 +333,7 @@ class WPI_Invoice {
     }
 
     if(empty($this->data['user_data'])) {
-      WPI_Functions::console_log('Warning: no user information loaded for this invoice.');
+      WPI_Functions::console_log(__('Warning: no user information loaded for this invoice.', WPI));
     }
 
     if(!is_array($this->data)) {
@@ -773,7 +773,7 @@ There can only be one, so deletes any other schedule.
         $this->data['subtotal'] > 0 &&
         $this->data['net'] <= 0) {
           $data['post_status'] = 'paid';
-          $this->add_entry("type=update&amount=paid&note=Status of invoice was changed to 'Paid'.");
+          $this->add_entry("type=update&amount=paid&note=".__("Status of invoice was changed to 'Paid'.", WPI));
     } else {
       $data['post_status'] = (!empty($this->data['post_status']) ? $this->data['post_status'] : 'active');
     }
@@ -783,7 +783,7 @@ There can only be one, so deletes any other schedule.
     }
 
     if(empty($data['post_title'])) {
-      wpi_log_event("Error saving invoice. Subject (Title) can not be empty.");
+      wpi_log_event(__("Error saving invoice. Subject (Title) can not be empty.", WPI));
       return false;
     }
 
@@ -791,30 +791,30 @@ There can only be one, so deletes any other schedule.
     if(empty($data['ID'])) {
       $creator = '';
       if ( !empty( $this->data['created_by'] ) ) {
-        $creator = "Created from {$this->data['created_by']}";
+        $creator = __("Created from ", WPI).$this->data['created_by'];
       } else {
         $current_user = wp_get_current_user();
-        $creator = "Created by {$current_user->display_name}";
+        $creator = __("Created by ", WPI).$current_user->display_name;
       }
       $this->data['ID'] = wp_insert_post($data);
       $this->add_entry("type=create&note=".$creator);
     } else {
       $this->data['ID'] = wp_update_post($data);
       if (!empty($this->is_recurring) && $this->is_recurring) {
-        $this->add_entry("attribute=invoice&type=update&note=Recurring invoice updated.");
+        $this->add_entry("attribute=invoice&type=update&note=".__("Recurring invoice updated.", WPI));
       } else if (!empty($this->is_quote) && $this->is_quote) {
-        $this->add_entry("attribute=quote&type=update&note=Quote updated.");
+        $this->add_entry("attribute=quote&type=update&note=".__("Quote updated.", WPI));
       } else {
         if ( $this->data['type'] == 'single_payment' ) {
 
         } else {
-          $this->add_entry("type=update&note=Updated.");
+          $this->add_entry("type=update&note=".__("Updated.", WPI));
         }
       }
     }
 
     if(empty($this->data['ID']) || $this->data['ID'] == 0) {
-      wpi_log_event("Error saving invoice. Query used: {$wpdb->last_query}");
+      wpi_log_event(__("Error saving invoice. Query used: ", WPI).$wpdb->last_query);
       return false;
     }
 
@@ -843,6 +843,7 @@ There can only be one, so deletes any other schedule.
     }
 
     // Remove old postmeta data which is not used anymore
+    $meta_keys = apply_filters('wpi_custom_meta', $meta_keys);
     if(!empty($meta_keys)) {
       $wpdb->query("
         DELETE FROM {$wpdb->postmeta}

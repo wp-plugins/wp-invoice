@@ -65,7 +65,7 @@ function show_payment_forms($args = "") {
 function show_itemized_table($args = '') {
     global $invoice, $wpi_settings;
 
-    $defaults = array('return' => false, 'item_heading' => "Item", 'cost_heading' => "Cost", 'show_quantities' => false, 'quantity_heading' => 'Quantity');
+    $defaults = array('return' => false, 'item_heading' => __("Item", WPI), 'cost_heading' => __("Cost", WPI), 'show_quantities' => false, 'quantity_heading' => __('Quantity', WPI));
 
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
 
@@ -154,7 +154,7 @@ function show_itemized_table($args = '') {
                     set_pay_button_value();
                   });
                 } else {
-                  alert( "Partial payment is not available because of an error.\nContact Administirator for more information." );
+                  alert( "<?php _e('Partial payment is not available because of an error.\nContact Administirator for more information.', WPI) ?>" );
                 }
               });
             </script>
@@ -191,7 +191,7 @@ function show_itemized_table($args = '') {
           <?php endif; ?>
           <?php if ( isset($invoice['itemized_charges']) && is_array($invoice['itemized_charges']) ): ?>
             <tr>
-              <th class='title_column'><?php _e('Charges') ?></th>
+              <th class='title_column'><?php _e('Charges', WPI) ?></th>
               <?php if($show_quantities): ?>
               <th class='quantity_column'></th>
               <?php endif; ?>
@@ -222,7 +222,7 @@ function show_itemized_table($args = '') {
           ?>
               <tr class="wpi_subtotal">
                 <td class="bottom_line_title" <?php echo $colspan; ?>>
-                  Subtotal:
+                  <?php _e('Subtotal:', WPI) ?>
                 </td>
                 <td class="wpi_money">
                   <?php echo $currency_symbol . wp_invoice_currency_format($invoice['subtotal']); ?></td>
@@ -230,31 +230,31 @@ function show_itemized_table($args = '') {
             <?php endif; ?>
             <?php if(!empty($invoice['total_tax'])): ?>
               <tr class="wpi_subtotal">
-                  <td class="bottom_line_title" <?php echo $colspan; ?>>Tax:</td>
+                  <td class="bottom_line_title" <?php echo $colspan; ?>><?php _e('Tax:', WPI) ?></td>
                   <td class="wpi_money"><?php echo $currency_symbol . wp_invoice_currency_format($invoice['total_tax']); ?></td>
               </tr>
             <?php endif; ?>
             <?php if(!empty($invoice['total_discount'])): ?>
               <tr class="wpi_subtotal">
-                  <td class="bottom_line_title" <?php echo $colspan; ?>>Discounts:</td>
+                  <td class="bottom_line_title" <?php echo $colspan; ?>><?php _e('Discounts:', WPI) ?></td>
                   <td class="wpi_money"><?php echo $currency_symbol . wp_invoice_currency_format($invoice['total_discount']); ?></td>
               </tr>
             <?php endif; ?>
             <?php if($invoice['post_status']!='paid' && !empty($invoice['adjustments'])): ?>
               <tr class="wpi_subtotal">
-                  <td class="bottom_line_title" <?php echo $colspan; ?>>Adjustments:</td>
+                  <td class="bottom_line_title" <?php echo $colspan; ?>><?php _e('Adjustments:', WPI) ?></td>
                   <td class="wpi_money"><?php echo $currency_symbol . wp_invoice_currency_format($invoice['adjustments']); ?></td>
               </tr>
             <?php endif; ?>
             <?php if($invoice['post_status']=='paid' && !empty($invoice['total_payments'])): ?>
               <tr class="wpi_subtotal">
-                  <td class="bottom_line_title" <?php echo $colspan; ?>>Recieved Payment:</td>
+                  <td class="bottom_line_title" <?php echo $colspan; ?>><?php _e('Recieved Payment:', WPI) ?></td>
                   <td class="wpi_money"><?php echo $currency_symbol . wp_invoice_currency_format($invoice['total_payments']); ?></td>
               </tr>
             <?php endif; ?>
             <?php if(!empty($invoice['net'])): ?>
             <tr class="wpi_subtotal">
-                <td class="bottom_line_title" <?php echo $colspan; ?>>Balance:</td>
+                <td class="bottom_line_title" <?php echo $colspan; ?>><?php _e('Balance:', WPI) ?></td>
                 <td class="wpi_money"><?php echo $currency_symbol . wp_invoice_currency_format($invoice['net']); ?></td>
             </tr>
             <?php endif;
@@ -280,8 +280,8 @@ function show_invoice_history() {
     <table class="invoice_history">
       <thead>
         <tr>
-          <th><?php _e('Time'); ?></th>
-          <th><?php _e('Event'); ?></th>
+          <th><?php _e('Time', WPI); ?></th>
+          <th><?php _e('Event', WPI); ?></th>
         </tr>
       </thead>
 
@@ -317,7 +317,7 @@ function show_invoice_history() {
     </table>
     <?php
   } else {
-    echo 'There are no any actions';
+    echo __('There are no any actions', WPI);
   }
 }
 
@@ -355,22 +355,22 @@ function show_partial_payments($args = '') {
     <div class="wpi_checkout_partial_payment wpi_checkout_payment_box">
       <ul class="wpi_checkout_block">
 
-        <li class="section_title"><?php _e('Payment Amount'); ?></li>
+        <li class="section_title"><?php _e('Payment Amount', WPI); ?></li>
 
         <li class="wpi_checkout_row">
-          <label for="wpi_minimum_amount_option"><?php _e("Min. Payment Due:"); ?></label>
+          <label for="wpi_minimum_amount_option"><?php _e("Min. Payment Due:", WPI); ?></label>
           <input type="radio" name="payment_amount" id="wpi_minimum_amount_option" value="<?php echo wp_invoice_currency_format($invoice['deposit_amount']); ?>" />
           <span><?php echo $currency_symbol . wp_invoice_currency_format($invoice['deposit_amount']); ?></span>
         </li>
 
         <li class="wpi_checkout_row">
-          <label for="wpi_full_amount_option"><?php _e("Statement Balance:"); ?></label>
+          <label for="wpi_full_amount_option"><?php _e("Statement Balance:", WPI); ?></label>
           <input checked="checked" type="radio" name="payment_amount" id="wpi_full_amount_option" value="<?php echo wp_invoice_currency_format($invoice['net']); ?>" />
           <span><?php echo $currency_symbol . wp_invoice_currency_format($invoice['net']); ?></span>
         </li>
 
         <li class="wpi_checkout_row">
-          <label for="wpi_custom_amount_option"><?php _e("Other"); ?></label>
+          <label for="wpi_custom_amount_option"><?php _e("Other", WPI); ?></label>
           <input type="radio" name="payment_amount" id="wpi_custom_amount_option"  value="<?php echo wp_invoice_currency_format($invoice['net']); ?>" />
 
           <span id="wpi_custom_amount_option_field_wrapper"><?php echo $currency_symbol; ?>
@@ -379,7 +379,7 @@ function show_partial_payments($args = '') {
         </li>
 
       </ul>
-      <small class="notice"><?php _e('This invoice allows partial payments, please select the amount you would like to pay.'); ?></small>
+      <small class="notice"><?php _e('This invoice allows partial payments, please select the amount you would like to pay.', WPI); ?></small>
     </div>
   </form>
   <?php endif;
@@ -394,7 +394,7 @@ function show_payment_selection($args = '') {
 
     $defaults = array(
       'return' => false,
-      'title' => "Payment Method",
+      'title' => __("Payment Method", WPI),
       'output' => "select"
     );
 
@@ -427,7 +427,7 @@ function show_payment_selection($args = '') {
     ?>
 			<div class="wpi_checkout_payment_box">
 				<ul class="wpi_checkout_block wpi_checkout_method_selection">
-					<li class="section_title">Payment Method</li>
+					<li class="section_title"><?php _e('Payment Method', WPI) ?></li>
 		<?php if($output=='select'):?>
 					<li class="wpi_checkout_row">
 							<label for="wp_invoice_select_payment_method_selector"><?php echo $title; ?></label>
@@ -456,7 +456,7 @@ function show_payment_selection($args = '') {
 					</li>
 					<script type="text/javascript">
 							jQuery("#_wpi_payment_method input[type=radio]").click(function(){
-									jQuery("#_wpi_payment_form").html('<img src="<?=WPI_URL?>/core/css/images/processing-ajax.gif" height="32" width="32" style="margin: 0pt auto; display: block; clear: both;" alt="loading"/>');
+									jQuery("#_wpi_payment_form").html('<img src="<?=WPI_URL?>/core/css/images/processing-ajax.gif" height="32" width="32" style="margin: 0pt auto; display: block; clear: both;" alt="<?php _e('loading', WPI) ?>"/>');
 									slug = jQuery(this).val();
 									jQuery.post('<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php', {action: 'wpi_payment_select', slug: slug, invoice: '<?php echo $invoice['invoice_id'] ?>'}, function(data){
 											jQuery("#_wpi_payment_form").html(data);
@@ -477,7 +477,7 @@ function show_payment_selection($args = '') {
 					</li>
 			<script type="text/javascript">
 					jQuery("#_wpi_payment_method ul li a").click(function(){
-							jQuery("#_wpi_payment_form").html('<img src="<?php echo WPI_URL?>/core/css/images/processing-ajax.gif" height="32" width="32" style="margin: 0pt auto; display: block; clear: both;" alt="loading"/>');
+							jQuery("#_wpi_payment_form").html('<img src="<?php echo WPI_URL?>/core/css/images/processing-ajax.gif" height="32" width="32" style="margin: 0pt auto; display: block; clear: both;" alt="<?php _e('loading', WPI) ?>"/>');
 							slug = jQuery(this).attr('id');
 							jQuery.post('<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php', {action: 'wpi_payment_select', slug: slug, invoice: '<?php echo $invoice['invoice_id'] ?>'}, function(data){
 									jQuery("#_wpi_payment_form").html(data);
@@ -608,6 +608,15 @@ function invoice_id($args = '') {
     $defaults = array('return' => false);
     
     extract( wp_parse_args( $args, $defaults ), EXTR_SKIP );
+    
+    /** If display name exists, return it */
+    if ( !empty( $invoice['user_data']['display_name'] ) ) {
+      if( $return ) {
+        return $invoice['user_data']['display_name'];
+      }
+      echo $invoice['user_data']['display_name'];
+      return;
+    }
 
     $user = get_userdata( $invoice['user_data']['ID'] );
 

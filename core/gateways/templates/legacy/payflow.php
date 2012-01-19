@@ -30,7 +30,7 @@
                     echo '</li>';
                     break;
                 case 'input_field':
-                    echo '<li id="state_field"><label for="state">State</label>';                
+                    echo '<li id="state_field"><label for="state">'. __('State', WPI) . '</label>';                
                     echo "<input name='STATE' value='{$invoice['user_data']['state']}' />";
                     echo '</li>';
                     break;
@@ -51,15 +51,15 @@
             </li>
             
             <li>
-                <label>The form of payment</label>
+                <label><?php _e('The form of payment', WPI); ?></label>
                 <select name="METHOD" size="1">
-                    <option selected value="CC">Credit Card</option>
+                    <option selected value="CC"><?php _e('Credit Card', WPI); ?></option>
                 </select>
             </li>
             
             <li>
                 <label for="submit">&nbsp;</label>
-                <input type="image"  src="<?php echo $invoice['billing']['payflow']['settings']['button_url']['value']; ?>" class="payflow_button" name="submit" alt="Pay with Payflow">
+                <input type="image"  src="<?php echo $invoice['billing']['payflow']['settings']['button_url']['value']; ?>" class="payflow_button" name="submit" alt="<?php _e('Pay with Payflow', WPI) ?>">
             </li>
 
             <br class="cb" />

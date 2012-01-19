@@ -16,7 +16,7 @@ function get_invoice($args) {
     $invoice->load_invoice("id=$invoice_id");
     
     if(!empty($invoice->error) && $invoice->error) {
-      return "Invoice $invoice_id not found.";
+      return sprintf(__("Invoice %s not found.", WPI), $invoice_id);
     }
     
     if(!empty($return_class) && $return_class) {
@@ -44,7 +44,7 @@ function get_invoice($args) {
                 $this_invoice = new WPI_Invoice();
                 $this_invoice->load_invoice("id=$single_invoice_id");
                 $this_invoice->set("status=archive");
-                $this_invoice->add_entry("Archived.");
+                $this_invoice->add_entry(__("Archived.", WPI));
                 if($this_invoice->save_invoice())
                     $counter++;
             }
@@ -53,7 +53,7 @@ function get_invoice($args) {
             $this_invoice = new WPI_Invoice();
             $this_invoice->load_invoice("id=$invoice_id");
             $this_invoice->set("status=archive");
-            $this_invoice->add_entry("Archived.");
+            $this_invoice->add_entry(__("Archived.", WPI));
             if($this_invoice->save_invoice())
                 return __('Successfully archived.', WPI);
         }
@@ -66,8 +66,8 @@ function get_invoice($args) {
     function wp_invoice_lookup($args = '') {
         global $wpi_settings;
         $defaults = array (
-            'message' => 'Enter Invoice ID',
-            'button' => 'Lookup',
+            'message' => __('Enter Invoice ID', WPI),
+            'button' => __('Lookup', WPI),
             'return' => false
         );
         extract(wp_parse_args($args, $defaults), EXTR_SKIP);

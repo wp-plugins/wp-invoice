@@ -10,7 +10,7 @@
 <div style="margin: 5px 0 15px 0;"><?php _e("Thank you for installing WP-Invoice.  Please provide the necessary information to complete the first-time setup.", WPI) ?></div>
 <div id="first_time_setup_accordion" class="">
   <div class="wp_invoice_accordion_section">
-    <h3 id="basic_setup"><a href="#" class="selector"><?php _e("Basic Setup") ?></a></h3>
+    <h3 id="basic_setup"><a href="#" class="selector"><?php _e("Basic Setup", WPI) ?></a></h3>
     <div>
       <table class="form-table">
         <tr>
@@ -41,8 +41,8 @@
         <tr>
           <th> <a class="wp_invoice_tooltip"  title="<?php _e('Select whether to overwrite all page content, insert at the bottom of the content, or to look for the [wp-invoice] tag.', WPI); ?>"><?php _e('How to Insert Invoice:', WPI); ?></a></th>
           <td>
-          <?php echo WPI_UI::select("name=where_to_display&group=wpi_settings&values=".serialize(array("overwrite" => "Overwrite All Page Content", "below_content" => "Place Below Content","above_content" => "Above Content","replace_tag" => "Replace [wp-invoice] Tag"))."&current_value={$wpi_settings['where_to_display']}"); ?>
-          If using the tag, place <span class="wp_invoice_explanation">[wp-invoice]</span> somewhere within your page content.
+          <?php echo WPI_UI::select("name=where_to_display&group=wpi_settings&values=".serialize(array("overwrite" => __("Overwrite All Page Content", WPI), "below_content" => __("Place Below Content", WPI),"above_content" => __("Above Content", WPI),"replace_tag" => __("Replace [wp-invoice] Tag", WPI)))."&current_value={$wpi_settings['where_to_display']}"); ?>
+          <?php _e('If using the tag, place <span class="wp_invoice_explanation">[wp-invoice]</span> somewhere within your page content.', WPI) ?>
           </td>
         </tr>
     
@@ -53,18 +53,18 @@
       ?>
       
   <tr class="column-payment-method-default">
-  <th><?php _e("Default Payment Method:") ?></th> 
+  <th><?php _e("Default Payment Method:", WPI) ?></th> 
     <td >
       <select id="wp_invoice_payment_method">
       <?php foreach ($wpi_settings['billing'] as $key => $payment_option) {   ?>
-      <option value="<?php echo $key; ?>" <?php if(!empty($payment_option['default'])) { echo "SELECTED"; } ?>><?php echo $payment_option['name']; ?></option>
+      <option value="<?php echo $key; ?>"><?php echo $payment_option['name']; ?></option>
       <?php } ?>
       </select>
     </td>
   </tr>  
 
   <tr class="column-payment-method-change-method">
-    <th><?php _e("Client can change payment method:") ?></th>
+    <th><?php _e("Client can change payment method:", WPI) ?></th>
       <td>
       <?php echo WPI_UI::select("name=wpi_settings[globals][client_change_payment_method]&id=wpi_invoice_client_change_payment_method&values=yon&current_value={$wpi_settings['globals']['client_change_payment_method']}"); ?>        
     </td>
@@ -72,10 +72,10 @@
   
   <?php foreach($wpi_settings['billing'] as $key => $value) { ?>
   <tr class='wpi-payment-setting column-paymenth-method-<?php echo $key; ?>'>
-    <th><?php _e("Accept ") ?><?php echo $value['name']; ?>?</th>
+    <th><?php _e("Accept ", WPI) ?><?php echo $value['name']; ?>?</th>
     <td>
-      <?php echo WPI_UI::input("type=checkbox&name=wpi_settings[billing][{$key}][allow]&id={$key}&value=true&label=Yes&class=wpi_billing_section_show&special=".($value['allow'] ? 'checked=true ' : ''))?>
-      <div class="wpi_notice"><?php _e("Notice the ") ?> <span onClick="wpi_focus_payment_method('<?php echo $key; ?>');"><u><?php echo $value['name']; ?> <?php _e(" Tab ") ?></u></span> <?php _e(" below. ") ?></div>
+      <?php echo WPI_UI::input("type=checkbox&name=wpi_settings[billing][{$key}][allow]&id={$key}&value=true&label=".__('Yes', WPI)."&class=wpi_billing_section_show&special=".($value['allow'] ? 'checked=true ' : ''))?>
+      <div class="wpi_notice"><?php _e("Notice the ", WPI) ?> <span onClick="wpi_focus_payment_method('<?php echo $key; ?>');"><u><?php echo $value['name']; ?> <?php _e(" Tab ", WPI) ?></u></span> <?php _e(" below. ", WPI) ?></div>
     </td>
   </tr>
   <?php } ?>
@@ -142,7 +142,7 @@
       <div class="inside">
         <div id="major-publishing-actions">
           <div id="publishing-action">
-            <input type="submit" value="Save All Settings" class="button-primary">
+            <input type="submit" value="<?php esc_attr(_e('Save All Settings', WPI)) ?>" class="button-primary">
           </div>
           <div class="clear"></div>
         </div>

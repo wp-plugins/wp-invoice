@@ -172,18 +172,18 @@ class WPI_Ajax {
       
       if($event_type == 'add_payment' && !empty($event_amount)) {
         $event_amount = $event_amount;
-        $event_note = WPI_Functions::currency_format(abs($event_amount), $invoice_id)." paid in - $event_note";
+        $event_note = WPI_Functions::currency_format(abs($event_amount), $invoice_id)." " . __('paid in', WPI) . " - $event_note";
       }
 
       if($event_type == 'add_charge' && !empty($event_amount)) {
         $name = $event_note;
-        $event_note = "".WPI_Functions::currency_format($event_amount, $invoice_id)." charge added - $event_note";
+        $event_note = "".WPI_Functions::currency_format($event_amount, $invoice_id)."  " . __('charge added', WPI) . " - $event_note";
         $core = WPI_Core::getInstance();
         $charge_item = $core->Functions->add_itemized_charge( $invoice_id, $name, $event_amount, $event_tax );
       }
 
       if($event_type == 'do_adjustment' && !empty($event_amount)) {
-        $event_note = WPI_Functions::currency_format($event_amount, $invoice_id)." adjusted - $event_note";
+        $event_note = WPI_Functions::currency_format($event_amount, $invoice_id)."  " . __('adjusted', WPI) . " - $event_note";
       }
 
       $invoice = new WPI_Invoice();
@@ -212,8 +212,10 @@ class WPI_Ajax {
      * @global array $wpi_settings 
      */
     function get_notification_email() {
-      global $wpdb, $wpi_settings;
+      global $wpdb, $wpi_settings, $invoice;
 
+      require_once WPI_Path.'/core/wpi_template_functions.php';
+      
       $template_id = intval($_REQUEST['template_id']);
       $invoice_id = intval($_REQUEST['wpi_invoiceid']);
 
@@ -226,7 +228,7 @@ class WPI_Ajax {
       
       //** Due Date */
       $due_date = get_due_date( $invoice );
-      $due_date = $due_date ? $due_date : __('Due date is not set');
+      $due_date = $due_date ? $due_date : __('Due date is not set', WPI);
       
       //** Load Templates */
       $template_array = apply_filters('wpi_email_templates', $wpi_settings['notification']);
@@ -241,11 +243,11 @@ class WPI_Ajax {
       $ary['NotificationContent'] = str_replace("%invoice_id%", $invoice_id, $ary['NotificationContent']);
 
       //** Format description */
-      $desc = (!empty($invoice['post_content']) ? strip_tags( $invoice['post_content'] ) : "No description given.");
+      $desc = (!empty($invoice['post_content']) ? strip_tags( $invoice['post_content'] ) : __("No description given.", WPI));
       $ary['NotificationContent'] = str_replace("%description%", $desc, $ary['NotificationContent']);
 
       //** Recipient name */
-      $ary['NotificationContent'] = str_replace("%recipient%", $invoice['user_data']['display_name'], $ary['NotificationContent']);
+      $ary['NotificationContent'] = str_replace("%recipient%", recipients_name(array('return'=>true)), $ary['NotificationContent']);
 
       //** Invoice link */
       $ary['NotificationContent'] = str_replace("%link%", get_invoice_permalink($invoice['invoice_id']), $ary['NotificationContent']);
@@ -312,16 +314,16 @@ class WPI_Ajax {
 
     //** Validate for empty fields data */
     if(empty($to) || empty($subject) || empty($message)) {
-      die(json_encode(array("status" => 500, "msg" => "The fields should not be empty. Please, check the fields data and try to send notification again.")));
+      die(json_encode(array("status" => 500, "msg" => __("The fields should not be empty. Please, check the fields data and try to send notification again.", WPI))));
     }
 
     if (wp_mail($to, $subject, $message, $headers)) {
       $pretty_time = date(get_option('time_format') . " " . get_option('date_format'));
-      $text = "Notification Sent".(isset($_REQUEST['template']) && !empty($_REQUEST['template']) ? " (".$_REQUEST['template'].")" : "")." to {$to} at {$pretty_time}.";
+      $text = __("Notification Sent", WPI).(isset($_REQUEST['template']) && !empty($_REQUEST['template']) ? " (".$_REQUEST['template'].")" : "")." ".__('to', WPI)." {$to} ".__('at', WPI)." {$pretty_time}.";
       WPI_Functions::log_event(wpi_invoice_id_to_post_id($_REQUEST['invoice_id']), 'invoice', 'notification', '', $text, time());
-      die(json_encode(array("status" => 200, "msg" => "Successfully sent the invoice notification!")));
+      die(json_encode(array("status" => 200, "msg" => __("Successfully sent the invoice notification!", WPI))));
     }
-    die(json_encode(array("status" => 500, "msg" => "Unable to send the e-mail. Please, try again later.")));
+    die(json_encode(array("status" => 500, "msg" => __("Unable to send the e-mail. Please, try again later.", WPI))));
   }
 
   /**
@@ -330,9 +332,9 @@ class WPI_Ajax {
   function save_invoice() {
     $invoice_id = WPI_Functions::save_invoice($_REQUEST['wpi_invoice']);
     if ($invoice_id) {
-      echo "Saved. <a target='_blank' href='" . get_invoice_permalink($invoice_id) . "'>View Invoice</a>. Invoice id #<span id='new_invoice_id'>$invoice_id</span>.";
+      echo sprintf(__("Saved. <a target='_blank' href='%s'>View Invoice</a>", WPI), get_invoice_permalink($invoice_id)).". ".__('Invoice id #', WPI)."<span id='new_invoice_id'>$invoice_id</span>.";
     } else {
-      echo "There was a problem with saving the invoice. Reference the log for troubleshooting.";
+      echo __("There was a problem with saving the invoice. Reference the log for troubleshooting.", WPI);
     }
     die();
   }
@@ -395,7 +397,7 @@ class WPI_Ajax {
   */
   function debug_get_invoice(){
     global $wpi_settings;
-    if(!isset($_REQUEST['invoice_id'])) die("Please enter an invoice id.");
+    if(!isset($_REQUEST['invoice_id'])) die(__("Please enter an invoice id.", WPI));
     $this_invoice = new WPI_Invoice();
     $this_invoice->load_invoice("id=".$_REQUEST['invoice_id']);
     echo WPI_Functions::pretty_print_r($this_invoice->data);

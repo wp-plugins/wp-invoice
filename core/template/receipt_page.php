@@ -1,12 +1,12 @@
 <div id="invoice_page" class="wpi_invoice_form wpi_payment_form clearfix">
   <div class="wpi_left_col">
-    <b class="wpi_greeting">Payment Receipt</b>
+    <b class="wpi_greeting"><?php _e('Payment Receipt', WPI) ?></b>
 
     <div class="invoice_description">
       <div class="invoice_top_message">
 
         <?php if(is_invoice()) : ?>
-          <p>We have sent you invoice <?php invoice_id(); ?>. <?php paid_amount(); ?> was paid.</p>
+          <p><?php _e('We have sent you invoice', WPI) ?> <?php invoice_id(); ?>. <?php paid_amount(); ?> <?php _e('was paid.', WPI) ?></p>
         <?php endif; ?>
 
         </div>
@@ -15,7 +15,7 @@
         </div>
 
         <?php if(is_payment_made()): ?>
-            You've made payments, but still owe: <?php balance_due(); ?>
+            <?php _e("You've made payments, but still owe:", WPI) ?> <?php balance_due(); ?>
         <?php endif; ?>
     </div>
 

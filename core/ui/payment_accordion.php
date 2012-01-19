@@ -1,15 +1,15 @@
 <div class="wp_invoice_accordion_section paypalsetup <?php if (get_option('wp_invoice_paypal_allow') != "yes") {
     echo " hidden ";
 } ?>">
-    <h3 id="paypalsetup"><a href="#"><?php _e("PayPal Setup") ?></a></h3>
+    <h3 id="paypalsetup"><a href="#"><?php _e("PayPal Setup", WPI) ?></a></h3>
     <div>
         <table class="form-table">
             <tr>
-                <th width="300"><?php _e("PayPal Username"); ?></th>
+                <th width="300"><?php _e("PayPal Username", WPI); ?></th>
                 <td><?php echo WPI_UI::draw_inputfield('wp_invoice_paypal_address', get_option('wp_invoice_paypal_address')); ?></td>
             </tr>
             <tr>
-                <th width="300"><?php _e("PayPal Pay Button URL"); ?></th>
+                <th width="300"><?php _e("PayPal Pay Button URL", WPI); ?></th>
                 <td><?php echo WPI_UI::draw_inputfield('wp_invoice_fe_paypal_link_url', get_option('wp_invoice_fe_paypal_link_url')); ?></td>
             </tr>
         </table>
@@ -18,7 +18,7 @@
 <div class="wp_invoice_accordion_section ccsetup  <?php if (get_option('wp_invoice_cc_allow') != "yes") {
     echo " hidden ";
 } ?>">
-    <h3 id="ccsetup"><a href="#"><?php _e("Credit Card Setup") ?></a></h3>
+    <h3 id="ccsetup"><a href="#"><?php _e("Credit Card Setup", WPI) ?></a></h3>
     <div>
         <table class="form-table">
             <tr class="gateway_info">

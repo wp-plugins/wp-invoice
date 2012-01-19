@@ -1,35 +1,40 @@
 <?php
-// Load all WP-Invoice settings from get_option( 'wpi_options' )
-// InitOptions are default settings, and loaded if wpi_options is not set. 
-// All these settings are also stored in a global variable ($wpi_settings) for easy access
+/**
+ * Load all WP-Invoice settings from get_option( 'wpi_options' )
+ * InitOptions are default settings, and loaded if wpi_options is not set. 
+ * All these settings are also stored in a global variable ($wpi_settings) for easy access
+ */
 
 class WPI_Settings {
 
   var $Core;
   var $data;
-  
-  /*
-   * Constructor
+
+  /**
+   * Cunstruct
+   * 
+   * @param object $Core
    */
   function WPI_Settings(&$Core) {
     $this->Core = $Core;
     $this->LoadOptions();
   }
-  
-  /*
+
+  /**
+   * Initialize options
    * 
+   * @global bool $wp_invoice_debug
    */
   function InitOptions() {
     global $wp_invoice_debug;
     
     if(isset($Core) && $Core) 
       $this->options['version'] = $this->Core->version;
-      //$this->options[time_difference]                = WPI_Functions::time_difference(); /** Calculate time difference between server and user based on WP settings */
       
-      /* Invoice Types */
+      /** Default Invoice Types */
       $this->options['types'] = array(
-        'invoice' => array('label' => 'Invoice'),
-        'recurring' => array('label' => 'Recurring')
+        'invoice' => array('label'   => __('Invoice', WPI)),
+        'recurring' => array('label' => __('Recurring', WPI))
       );
       
       $this->options['debug'] = $wp_invoice_debug;
@@ -38,377 +43,387 @@ class WPI_Settings {
         $this->options['developer_mode'] = 'true';
       }
       
-      // Localization Labels
-      $this->options['custom_label_tax'] = "Tax";
+      /** Localization Labels */
+      $this->options['custom_label_tax'] = __("Tax", WPI);
       
-      // WP-Invoice Lookup
-      $this->options['lookup_text'] = "Pay Your Invoice";
-      $this->options['lookup_submit'] = "Lookup";
+      /** WP-Invoice Lookup */
+      $this->options['lookup_text']   = __("Pay Your Invoice", WPI);
+      $this->options['lookup_submit'] = __("Lookup", WPI);
       
-      // Frontend Customization
+      /** Frontend Customization */
       $this->options['use_custom_templates'] = "false";
-      $this->options['state_selection'] = "Dropdown";
+      $this->options['state_selection']      = __("Dropdown", WPI);
       
-      $this->options['email_address'] = get_bloginfo('admin_email');
-      $this->options['business_name']  = get_bloginfo('blogname');
-      $this->options['business_address']  = '';
-      $this->options['business_phone']  = '';
+      $this->options['email_address']    = get_bloginfo('admin_email');
+      $this->options['business_name']    = get_bloginfo('blogname');
+      $this->options['business_address'] = '';
+      $this->options['business_phone']   = '';
       
-      $this->options['user_level']  = 8;
+      $this->options['user_level'] = 8;
       
       $this->options['web_invoice_page'] = '';
       $this->options['where_to_display'] = 'overwrite';
       
-      /* Advanced Settings */
+      /** Advanced Settings */
       $this->options['allow_deposits'] = 'true';
         
-      /* Payment */
+      /** Payment */
       $this->options['client_change_payment_method'] = 'false';
         
-        // Basic Settings
-        $this->options['replace_page_title_with_subject'] = 'true';
-        $this->options['using_godaddy'] = 'no';
-        $this->options['use_wp_users'] = 'true';
-        $this->options['first_time_setup_ran'] = 'false';
-        $this->options['increment_invoice_id'] = 'false';
-        $this->options['do_not_load_theme_specific_css'] = 'false';
-        $this->options['cc_thank_you_email']  = 'false';
-        $this->options['send_invoice_creator_email']  = 'false';
-        $this->options['replace_page_heading_with_subject']  = 'false';
-        $this->options['hide_page_title']  = 'false';
-        $this->options['terms_acceptance_required'] = 'false';
-        
-        $this->options['use_css'] = 'yes';
-        $this->options['force_https'] = 'false';
-        $this->options['send_thank_you_email'] = 'no';
-        $this->options['show_recurring_billing'] = 'true';
-        $this->options['global_tax'] = '0';
-        
-        $this->options['user_meta']['required']['first_name'] = 'First Name';
-        $this->options['user_meta']['required']['last_name'] = 'Last Name';
-        $this->options['user_meta']['custom']['company_name'] = 'Company Name';
-        $this->options['user_meta']['custom']['phonenumber'] = 'Phone Number';
-        $this->options['user_meta']['custom']['streetaddress'] = 'Street Address';
-        $this->options['user_meta']['custom']['city'] = 'City';
-        $this->options['user_meta']['custom']['state'] = 'State';
-        $this->options['user_meta']['custom']['zip'] = 'ZIP';
-        
-        // Invoice statuses. Filter: wpi_invoice_statuses
-        $this->options['invoice_statuses']['active'] = "Active";
-        $this->options['invoice_statuses']['archive'] = "Archived";
-        $this->options['invoice_statuses']['trash'] = "Trashed";
-        $this->options['invoice_statuses']['paid'] = "Paid";
-        
-        $this->options['countries']['US'] = "United States";
-        $this->options['countries']['AL'] = "Albania";
-        $this->options['countries']['DZ'] = "Algeria";
-        $this->options['countries']['AD'] = "Andorra";
-        $this->options['countries']['AO'] = "Angola";
-        $this->options['countries']['AI'] = "Anguilla";
-        $this->options['countries']['AG'] = "Antigua and Barbuda";
-        $this->options['countries']['AR'] = "Argentina";
-        $this->options['countries']['AM'] = "Armenia";
-        $this->options['countries']['AW'] = "Aruba";
-        $this->options['countries']['AU'] = "Australia";
-        $this->options['countries']['AT'] = "Austria";
-        $this->options['countries']['AZ'] = "Azerbaijan Republic";
-        $this->options['countries']['BS'] = "Bahamas";
-        $this->options['countries']['BH'] = "Bahrain";
-        $this->options['countries']['BB'] = "Barbados";
-        $this->options['countries']['BE'] = "Belgium";
-        $this->options['countries']['BZ'] = "Belize";
-        $this->options['countries']['BJ'] = "Benin";
-        $this->options['countries']['BM'] = "Bermuda";
-        $this->options['countries']['BT'] = "Bhutan";
-        $this->options['countries']['BO'] = "Bolivia";
-        $this->options['countries']['BA'] = "Bosnia and Herzegovina";
-        $this->options['countries']['BW'] = "Botswana";
-        $this->options['countries']['BR'] = "Brazil";
-        $this->options['countries']['VG'] = "British Virgin Islands";
-        $this->options['countries']['BN'] = "Brunei";
-        $this->options['countries']['BG'] = "Bulgaria";
-        $this->options['countries']['BF'] = "Burkina Faso";
-        $this->options['countries']['BI'] = "Burundi";
-        $this->options['countries']['KH'] = "Cambodia";
-        $this->options['countries']['CA'] = "Canada";
-        $this->options['countries']['CV'] = "Cape Verde";
-        $this->options['countries']['KY'] = "Cayman Islands";
-        $this->options['countries']['TD'] = "Chad";
-        $this->options['countries']['CL'] = "Chile";
-        $this->options['countries']['C2'] = "China";
-        $this->options['countries']['CO'] = "Colombia";
-        $this->options['countries']['KM'] = "Comoros";
-        $this->options['countries']['CK'] = "Cook Islands";
-        $this->options['countries']['CR'] = "Costa Rica";
-        $this->options['countries']['HR'] = "Croatia";
-        $this->options['countries']['CY'] = "Cyprus";
-        $this->options['countries']['CZ'] = "Czech Republic";
-        $this->options['countries']['CD'] = "Democratic Republic of the Congo";
-        $this->options['countries']['DK'] = "Denmark";
-        $this->options['countries']['DJ'] = "Djibouti";
-        $this->options['countries']['DM'] = "Dominica";
-        $this->options['countries']['DO'] = "Dominican Republic";
-        $this->options['countries']['EC'] = "Ecuador";
-        $this->options['countries']['SV'] = "El Salvador";
-        $this->options['countries']['ER'] = "Eritrea";
-        $this->options['countries']['EE'] = "Estonia";
-        $this->options['countries']['ET'] = "Ethiopia";
-        $this->options['countries']['FK'] = "Falkland Islands";
-        $this->options['countries']['FO'] = "Faroe Islands";
-        $this->options['countries']['FM'] = "Federated States of Micronesia";
-        $this->options['countries']['FJ'] = "Fiji";
-        $this->options['countries']['FI'] = "Finland";
-        $this->options['countries']['FR'] = "France";
-        $this->options['countries']['GF'] = "French Guiana";
-        $this->options['countries']['PF'] = "French Polynesia";
-        $this->options['countries']['GA'] = "Gabon Republic";
-        $this->options['countries']['GM'] = "Gambia";
-        $this->options['countries']['DE'] = "Germany";
-        $this->options['countries']['GI'] = "Gibraltar";
-        $this->options['countries']['GR'] = "Greece";
-        $this->options['countries']['GL'] = "Greenland";
-        $this->options['countries']['GD'] = "Grenada";
-        $this->options['countries']['GP'] = "Guadeloupe";
-        $this->options['countries']['GT'] = "Guatemala";
-        $this->options['countries']['GN'] = "Guinea";
-        $this->options['countries']['GW'] = "Guinea Bissau";
-        $this->options['countries']['GY'] = "Guyana";
-        $this->options['countries']['HN'] = "Honduras";
-        $this->options['countries']['HK'] = "Hong Kong";
-        $this->options['countries']['HU'] = "Hungary";
-        $this->options['countries']['IS'] = "Iceland";
-        $this->options['countries']['IN'] = "India";
-        $this->options['countries']['ID'] = "Indonesia";
-        $this->options['countries']['IE'] = "Ireland";
-        $this->options['countries']['IL'] = "Israel";
-        $this->options['countries']['IT'] = "Italy";
-        $this->options['countries']['JM'] = "Jamaica";
-        $this->options['countries']['JP'] = "Japan";
-        $this->options['countries']['JO'] = "Jordan";
-        $this->options['countries']['KZ'] = "Kazakhstan";
-        $this->options['countries']['KE'] = "Kenya";
-        $this->options['countries']['KI'] = "Kiribati";
-        $this->options['countries']['KW'] = "Kuwait";
-        $this->options['countries']['KG'] = "Kyrgyzstan";
-        $this->options['countries']['LA'] = "Laos";
-        $this->options['countries']['LV'] = "Latvia";
-        $this->options['countries']['LS'] = "Lesotho";
-        $this->options['countries']['LI'] = "Liechtenstein";
-        $this->options['countries']['LT'] = "Lithuania";
-        $this->options['countries']['LU'] = "Luxembourg";
-        $this->options['countries']['MG'] = "Madagascar";
-        $this->options['countries']['MW'] = "Malawi";
-        $this->options['countries']['MY'] = "Malaysia";
-        $this->options['countries']['MV'] = "Maldives";
-        $this->options['countries']['ML'] = "Mali";
-        $this->options['countries']['MT'] = "Malta";
-        $this->options['countries']['MH'] = "Marshall Islands";
-        $this->options['countries']['MQ'] = "Martinique";
-        $this->options['countries']['MR'] = "Mauritania";
-        $this->options['countries']['MU'] = "Mauritius";
-        $this->options['countries']['YT'] = "Mayotte";
-        $this->options['countries']['MX'] = "Mexico";
-        $this->options['countries']['MN'] = "Mongolia";
-        $this->options['countries']['MS'] = "Montserrat";
-        $this->options['countries']['MA'] = "Morocco";
-        $this->options['countries']['MZ'] = "Mozambique";
-        $this->options['countries']['NA'] = "Namibia";
-        $this->options['countries']['NR'] = "Nauru";
-        $this->options['countries']['NP'] = "Nepal";
-        $this->options['countries']['NL'] = "Netherlands";
-        $this->options['countries']['AN'] = "Netherlands Antilles";
-        $this->options['countries']['NC'] = "New Caledonia";
-        $this->options['countries']['NZ'] = "New Zealand";
-        $this->options['countries']['NI'] = "Nicaragua";
-        $this->options['countries']['NE'] = "Niger";
-        $this->options['countries']['NU'] = "Niue";
-        $this->options['countries']['NF'] = "Norfolk Island";
-        $this->options['countries']['NO'] = "Norway";
-        $this->options['countries']['OM'] = "Oman";
-        $this->options['countries']['PW'] = "Palau";
-        $this->options['countries']['PA'] = "Panama";
-        $this->options['countries']['PG'] = "Papua New Guinea";
-        $this->options['countries']['PE'] = "Peru";
-        $this->options['countries']['PH'] = "Philippines";
-        $this->options['countries']['PN'] = "Pitcairn Islands";
-        $this->options['countries']['PL'] = "Poland";
-        $this->options['countries']['PT'] = "Portugal";
-        $this->options['countries']['QA'] = "Qatar";
-        $this->options['countries']['CG'] = "Republic of the Congo";
-        $this->options['countries']['RE'] = "Reunion";
-        $this->options['countries']['RO'] = "Romania";
-        $this->options['countries']['RU'] = "Russia";
-        $this->options['countries']['RW'] = "Rwanda";
-        $this->options['countries']['VC'] = "Saint Vincent and the Grenadines";
-        $this->options['countries']['WS'] = "Samoa";
-        $this->options['countries']['SM'] = "San Marino";
-        $this->options['countries']['ST'] = "Sao Tome and Principe";
-        $this->options['countries']['SA'] = "Saudi Arabia";
-        $this->options['countries']['SN'] = "Senegal";
-        $this->options['countries']['SC'] = "Seychelles";
-        $this->options['countries']['SL'] = "Sierra Leone";
-        $this->options['countries']['SG'] = "Singapore";
-        $this->options['countries']['SK'] = "Slovakia";
-        $this->options['countries']['SI'] = "Slovenia";
-        $this->options['countries']['SB'] = "Solomon Islands";
-        $this->options['countries']['SO'] = "Somalia";
-        $this->options['countries']['ZA'] = "South Africa";
-        $this->options['countries']['KR'] = "South Korea";
-        $this->options['countries']['ES'] = "Spain";
-        $this->options['countries']['LK'] = "Sri Lanka";
-        $this->options['countries']['SH'] = "St. Helena";
-        $this->options['countries']['KN'] = "St. Kitts and Nevis";
-        $this->options['countries']['LC'] = "St. Lucia";
-        $this->options['countries']['PM'] = "St. Pierre and Miquelon";
-        $this->options['countries']['SR'] = "Suriname";
-        $this->options['countries']['SJ'] = "Svalbard and Jan Mayen Islands";
-        $this->options['countries']['SZ'] = "Swaziland";
-        $this->options['countries']['SE'] = "Sweden";
-        $this->options['countries']['CH'] = "Switzerland";
-        $this->options['countries']['TW'] = "Taiwan";
-        $this->options['countries']['TJ'] = "Tajikistan";
-        $this->options['countries']['TZ'] = "Tanzania";
-        $this->options['countries']['TH'] = "Thailand";
-        $this->options['countries']['TG'] = "Togo";
-        $this->options['countries']['TO'] = "Tonga";
-        $this->options['countries']['TT'] = "Trinidad and Tobago";
-        $this->options['countries']['TN'] = "Tunisia";
-        $this->options['countries']['TR'] = "Turkey";
-        $this->options['countries']['TM'] = "Turkmenistan";
-        $this->options['countries']['TC'] = "Turks and Caicos Islands";
-        $this->options['countries']['TV'] = "Tuvalu";
-        $this->options['countries']['UG'] = "Uganda";
-        $this->options['countries']['UA'] = "Ukraine";
-        $this->options['countries']['AE'] = "United Arab Emirates";
-        $this->options['countries']['GB'] = "United Kingdom";
-        $this->options['countries']['UY'] = "Uruguay";
-        $this->options['countries']['VU'] = "Vanuatu";
-        $this->options['countries']['VA'] = "Vatican City State";
-        $this->options['countries']['VE'] = "Venezuela";
-        $this->options['countries']['VN'] = "Vietnam";
-        $this->options['countries']['WF'] = "Wallis and Futuna Islands";
-        $this->options['countries']['YE'] = "Yemen";
-        $this->options['countries']['ZM'] = "Zambia";
-        
-        $this->options['states']['AL'] = "Alabama";
-        $this->options['states']['AK'] = "Alaska";
-        $this->options['states']['AS'] = "American Samoa";
-        $this->options['states']['AZ'] = "Arizona";
-        $this->options['states']['AR'] = "Arkansas";
-        $this->options['states']['CA'] = "California";
-        $this->options['states']['CO'] = "Colorado";
-        $this->options['states']['CT'] = "Connecticut";
-        $this->options['states']['DE'] = "Delaware";
-        $this->options['states']['DC'] = "District of Columbia";
-        $this->options['states']['FM'] = "Federated States of Micronesia";
-        $this->options['states']['FL'] = "Florida";
-        $this->options['states']['GA'] = "Georgia";
-        $this->options['states']['GU'] = "Guam";
-        $this->options['states']['HI'] = "Hawaii";
-        $this->options['states']['ID'] = "Idaho";
-        $this->options['states']['IL'] = "Illinois";
-        $this->options['states']['IN'] = "Indiana";
-        $this->options['states']['IA'] = "Iowa";
-        $this->options['states']['KS'] = "Kansas";
-        $this->options['states']['KY'] = "Kentucky";
-        $this->options['states']['LA'] = "Louisiana";
-        $this->options['states']['ME'] = "Maine";
-        $this->options['states']['MH'] = "Marshall Islands";
-        $this->options['states']['MD'] = "Maryland";
-        $this->options['states']['MA'] = "Massachusetts";
-        $this->options['states']['MI'] = "Michigan";
-        $this->options['states']['MN'] = "Minnesota";
-        $this->options['states']['MS'] = "Mississippi";
-        $this->options['states']['MO'] = "Missouri";
-        $this->options['states']['MT'] = "Montana";
-        $this->options['states']['NE'] = "Nebraska";
-        $this->options['states']['NV'] = "Nevada";
-        $this->options['states']['NH'] = "New Hampshire";
-        $this->options['states']['NJ'] = "New Jersey";
-        $this->options['states']['NM'] = "New Mexico";
-        $this->options['states']['NY'] = "New York";
-        $this->options['states']['NC'] = "North Carolina";
-        $this->options['states']['ND'] = "North Dakota";
-        $this->options['states']['MP'] = "Northern Mariana Islands";
-        $this->options['states']['OH'] = "Ohio";
-        $this->options['states']['OK'] = "Oklahoma";
-        $this->options['states']['OR'] = "Oregon";
-        $this->options['states']['PW'] = "Palau";
-        $this->options['states']['PA'] = "Pennsylvania";
-        $this->options['states']['PR'] = "Puerto Rico";
-        $this->options['states']['RI'] = "Rhode Island";
-        $this->options['states']['SC'] = "South Carolina";
-        $this->options['states']['SD'] = "South Dakota";
-        $this->options['states']['TN'] = "Tennessee";
-        $this->options['states']['TX'] = "Texas";
-        $this->options['states']['UT'] = "Utah";
-        $this->options['states']['VT'] = "Vermont";
-        $this->options['states']['VI'] = "Virgin Islands";
-        $this->options['states']['VA'] = "Virginia";
-        $this->options['states']['WA'] = "Washington";
-        $this->options['states']['WV'] = "West Virginia";
-        $this->options['states']['WI'] = "Wisconsin";
-        $this->options['states']['WY'] = "Wyoming";
-        $this->options['states']['AB'] = "Alberta";
-        $this->options['states']['BC'] = "British Columbia";
-        $this->options['states']['MB'] = "Manitoba";
-        $this->options['states']['NB'] = "New Brunswick";
-        $this->options['states']['NF'] = "Newfoundland";
-        $this->options['states']['NW'] = "Northwest Territory";
-        $this->options['states']['NS'] = "Nova Scotia";
-        $this->options['states']['ON'] = "Ontario";
-        $this->options['states']['PE'] = "Prince Edward Island";
-        $this->options['states']['QU'] = "Quebec";
-        $this->options['states']['SK'] = "Saskatchewan";
-        $this->options['states']['YT'] = "Yukon Territory";
+      /** Basic Settings */
+      $this->options['replace_page_title_with_subject']   = 'true';
+      $this->options['using_godaddy']                     = 'no';
+      $this->options['use_wp_users']                      = 'true';
+      $this->options['first_time_setup_ran']              = 'false';
+      $this->options['increment_invoice_id']              = 'false';
+      $this->options['do_not_load_theme_specific_css']    = 'false';
+      $this->options['cc_thank_you_email']                = 'false';
+      $this->options['send_invoice_creator_email']        = 'false';
+      $this->options['replace_page_heading_with_subject'] = 'false';
+      $this->options['hide_page_title']                   = 'false';
+      $this->options['terms_acceptance_required']         = 'false';
 
-        $this->options['currency']['types']['AUD'] = "Australian Dollars";
-        $this->options['currency']['types']['CAD'] = "Canadian Dollars";
-        $this->options['currency']['types']['EUR'] = "Euros";
-        $this->options['currency']['types']['GBP'] = "Pounds Sterling";
-        $this->options['currency']['types']['JPY'] = "Yen";
-        $this->options['currency']['types']['USD'] = "U.S. Dollars";
-        $this->options['currency']['types']['NZD'] = "New Zealand Dollar";
-        $this->options['currency']['types']['CHF'] = "Swiss Franc";
-        $this->options['currency']['types']['HKD'] = "Hong Kong Dollar";
-        $this->options['currency']['types']['SGD'] = "Singapore Dollar";
-        $this->options['currency']['types']['SEK'] = "Swedish Krona";
-        $this->options['currency']['types']['DKK'] = "Danish Krone";
-        $this->options['currency']['types']['PLN'] = "Polish Zloty";
-        $this->options['currency']['types']['NOK'] = "Norwegian Krone";
-        $this->options['currency']['types']['HUF'] = "Hungarian Forint";
-        $this->options['currency']['types']['CZK'] = "Czech Koruna";
-        $this->options['currency']['types']['ILS'] = "Israeli Shekel";
-        $this->options['currency']['types']['MXN'] = "Mexican Peso";
-        
-        $this->options['currency']['symbol']['USD'] = "$";
-        $this->options['currency']['symbol']['CAD'] = "$";
-        $this->options['currency']['symbol']['EUR'] = "&#8364;";
-        $this->options['currency']['symbol']['GBP'] = "&pound;";
-        $this->options['currency']['symbol']['JPY'] = "&yen;";
-        
-        $this->options['currency']['default_currency_code'] = 'USD';
-        
-        // Favorite Countries are now stored in CSV format (Nov 25 09 - Potanin)
-        //$this->options['globals']['favorite_countries'] = 'US,CA,RU';
-        //$this->options['globals']['favorite_states']  = 'AL,AK,AS,AZ,AR,CA,CO,CT,DE,DC,FM,FL,GA,GU,HI,ID,IL,IN,IA,KS,KY,LA,ME,MH,MD,MA,MI,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,MP,OH,OK,OR,PW,PA,PR,RI,SC,SD,TN,TX,UT,VT,VI,VA,WA,WV,WI,WY,AB,BC,MB,NB,NF,NW,NS,ON,PE,QU,SK,YT';
-        $this->options['globals']['client_change_payment_method'] = 'true';
-        $this->options['globals']['show_business_address'] = 'false';
-        $this->options['globals']['show_quantities'] = 'false';
-        
-        //** Mail - Notification */
-        $this->options['notification'][1]['name']    = "New Invoice";
-        $this->options['notification'][1]['subject'] = "[New Invoice] %subject%";
-        $this->options['notification'][1]['content'] = "Dear %recipient%, \n\n%business_name% has sent you a %recurring% invoice in the amount of %amount%. \n\n%description% \n\nYou may pay, view and print the invoice online by visiting the following link: \n%link% \n\nBest regards, \n%business_name% (%business_email%)";
-        
-        $this->options['notification'][2]['name']    = "Reminder";
-        $this->options['notification'][2]['subject'] = "[Reminder] %subject%";
-        $this->options['notification'][2]['content'] = "Dear %recipient%, \n\n%business_name% has sent you a reminder for the %recurring% invoice in the amount of %amount%. \n\n%description% \n\nYou may pay, view and print the invoice online by visiting the following link: \n%link%. \n\nBest regards, \n%business_name% (%business_email%)";
-        
-        $this->options['notification'][3]['name']    = 'Send Receipt';
-        $this->options['notification'][3]['subject'] = "[Payment Received] %subject%";
-        $this->options['notification'][3]['content'] = "Dear %recipient%, \n\n%business_name% has received your payment for the %recurring% invoice in the amount of %amount%. \n\nThank you very much for your patronage. \n\nBest regards, \n%business_name% (%business_email%)";
+      $this->options['use_css']                = 'yes';
+      $this->options['force_https']            = 'false';
+      $this->options['send_thank_you_email']   = 'no';
+      $this->options['show_recurring_billing'] = 'true';
+      $this->options['global_tax']             = '0';
 
+      $this->options['user_meta']['required']['first_name']  = __('First Name', WPI);
+      $this->options['user_meta']['required']['last_name']   = __('Last Name', WPI);
+      $this->options['user_meta']['custom']['company_name']  = __('Company Name', WPI);
+      $this->options['user_meta']['custom']['phonenumber']   = __('Phone Number', WPI);
+      $this->options['user_meta']['custom']['streetaddress'] = __('Street Address', WPI);
+      $this->options['user_meta']['custom']['city']          = __('City', WPI);
+      $this->options['user_meta']['custom']['state']         = __('State', WPI);
+      $this->options['user_meta']['custom']['zip']           = __('ZIP', WPI);
+
+      /** Invoice statuses. Filter: wpi_invoice_statuses */
+      $this->options['invoice_statuses']['active']  = __("Active", WPI);
+      $this->options['invoice_statuses']['archive'] = __("Archived", WPI);
+      $this->options['invoice_statuses']['trash']   = __("Trashed", WPI);
+      $this->options['invoice_statuses']['paid']    = __("Paid", WPI);
+
+      $this->options['countries']['US'] = __("United States", WPI);
+      $this->options['countries']['AL'] = __("Albania", WPI);
+      $this->options['countries']['DZ'] = __("Algeria", WPI);
+      $this->options['countries']['AD'] = __("Andorra", WPI);
+      $this->options['countries']['AO'] = __("Angola", WPI);
+      $this->options['countries']['AI'] = __("Anguilla", WPI);
+      $this->options['countries']['AG'] = __("Antigua and Barbuda", WPI);
+      $this->options['countries']['AR'] = __("Argentina", WPI);
+      $this->options['countries']['AM'] = __("Armenia", WPI);
+      $this->options['countries']['AW'] = __("Aruba", WPI);
+      $this->options['countries']['AU'] = __("Australia", WPI);
+      $this->options['countries']['AT'] = __("Austria", WPI);
+      $this->options['countries']['AZ'] = __("Azerbaijan Republic", WPI);
+      $this->options['countries']['BS'] = __("Bahamas", WPI);
+      $this->options['countries']['BH'] = __("Bahrain", WPI);
+      $this->options['countries']['BB'] = __("Barbados", WPI);
+      $this->options['countries']['BE'] = __("Belgium", WPI);
+      $this->options['countries']['BZ'] = __("Belize", WPI);
+      $this->options['countries']['BJ'] = __("Benin", WPI);
+      $this->options['countries']['BM'] = __("Bermuda", WPI);
+      $this->options['countries']['BT'] = __("Bhutan", WPI);
+      $this->options['countries']['BO'] = __("Bolivia", WPI);
+      $this->options['countries']['BA'] = __("Bosnia and Herzegovina", WPI);
+      $this->options['countries']['BW'] = __("Botswana", WPI);
+      $this->options['countries']['BR'] = __("Brazil", WPI);
+      $this->options['countries']['VG'] = __("British Virgin Islands", WPI);
+      $this->options['countries']['BN'] = __("Brunei", WPI);
+      $this->options['countries']['BG'] = __("Bulgaria", WPI);
+      $this->options['countries']['BF'] = __("Burkina Faso", WPI);
+      $this->options['countries']['BI'] = __("Burundi", WPI);
+      $this->options['countries']['KH'] = __("Cambodia", WPI);
+      $this->options['countries']['CA'] = __("Canada", WPI);
+      $this->options['countries']['CV'] = __("Cape Verde", WPI);
+      $this->options['countries']['KY'] = __("Cayman Islands", WPI);
+      $this->options['countries']['TD'] = __("Chad", WPI);
+      $this->options['countries']['CL'] = __("Chile", WPI);
+      $this->options['countries']['C2'] = __("China", WPI);
+      $this->options['countries']['CO'] = __("Colombia", WPI);
+      $this->options['countries']['KM'] = __("Comoros", WPI);
+      $this->options['countries']['CK'] = __("Cook Islands", WPI);
+      $this->options['countries']['CR'] = __("Costa Rica", WPI);
+      $this->options['countries']['HR'] = __("Croatia", WPI);
+      $this->options['countries']['CY'] = __("Cyprus", WPI);
+      $this->options['countries']['CZ'] = __("Czech Republic", WPI);
+      $this->options['countries']['CD'] = __("Democratic Republic of the Congo", WPI);
+      $this->options['countries']['DK'] = __("Denmark", WPI);
+      $this->options['countries']['DJ'] = __("Djibouti", WPI);
+      $this->options['countries']['DM'] = __("Dominica", WPI);
+      $this->options['countries']['DO'] = __("Dominican Republic", WPI);
+      $this->options['countries']['EC'] = __("Ecuador", WPI);
+      $this->options['countries']['SV'] = __("El Salvador", WPI);
+      $this->options['countries']['ER'] = __("Eritrea", WPI);
+      $this->options['countries']['EE'] = __("Estonia", WPI);
+      $this->options['countries']['ET'] = __("Ethiopia", WPI);
+      $this->options['countries']['FK'] = __("Falkland Islands", WPI);
+      $this->options['countries']['FO'] = __("Faroe Islands", WPI);
+      $this->options['countries']['FM'] = __("Federated States of Micronesia", WPI);
+      $this->options['countries']['FJ'] = __("Fiji", WPI);
+      $this->options['countries']['FI'] = __("Finland", WPI);
+      $this->options['countries']['FR'] = __("France", WPI);
+      $this->options['countries']['GF'] = __("French Guiana", WPI);
+      $this->options['countries']['PF'] = __("French Polynesia", WPI);
+      $this->options['countries']['GA'] = __("Gabon Republic", WPI);
+      $this->options['countries']['GM'] = __("Gambia", WPI);
+      $this->options['countries']['DE'] = __("Germany", WPI);
+      $this->options['countries']['GI'] = __("Gibraltar", WPI);
+      $this->options['countries']['GR'] = __("Greece", WPI);
+      $this->options['countries']['GL'] = __("Greenland", WPI);
+      $this->options['countries']['GD'] = __("Grenada", WPI);
+      $this->options['countries']['GP'] = __("Guadeloupe", WPI);
+      $this->options['countries']['GT'] = __("Guatemala", WPI);
+      $this->options['countries']['GN'] = __("Guinea", WPI);
+      $this->options['countries']['GW'] = __("Guinea Bissau", WPI);
+      $this->options['countries']['GY'] = __("Guyana", WPI);
+      $this->options['countries']['HN'] = __("Honduras", WPI);
+      $this->options['countries']['HK'] = __("Hong Kong", WPI);
+      $this->options['countries']['HU'] = __("Hungary", WPI);
+      $this->options['countries']['IS'] = __("Iceland", WPI);
+      $this->options['countries']['IN'] = __("India", WPI);
+      $this->options['countries']['ID'] = __("Indonesia", WPI);
+      $this->options['countries']['IE'] = __("Ireland", WPI);
+      $this->options['countries']['IL'] = __("Israel", WPI);
+      $this->options['countries']['IT'] = __("Italy", WPI);
+      $this->options['countries']['JM'] = __("Jamaica", WPI);
+      $this->options['countries']['JP'] = __("Japan", WPI);
+      $this->options['countries']['JO'] = __("Jordan", WPI);
+      $this->options['countries']['KZ'] = __("Kazakhstan", WPI);
+      $this->options['countries']['KE'] = __("Kenya", WPI);
+      $this->options['countries']['KI'] = __("Kiribati", WPI);
+      $this->options['countries']['KW'] = __("Kuwait", WPI);
+      $this->options['countries']['KG'] = __("Kyrgyzstan", WPI);
+      $this->options['countries']['LA'] = __("Laos", WPI);
+      $this->options['countries']['LV'] = __("Latvia", WPI);
+      $this->options['countries']['LS'] = __("Lesotho", WPI);
+      $this->options['countries']['LI'] = __("Liechtenstein", WPI);
+      $this->options['countries']['LT'] = __("Lithuania", WPI);
+      $this->options['countries']['LU'] = __("Luxembourg", WPI);
+      $this->options['countries']['MG'] = __("Madagascar", WPI);
+      $this->options['countries']['MW'] = __("Malawi", WPI);
+      $this->options['countries']['MY'] = __("Malaysia", WPI);
+      $this->options['countries']['MV'] = __("Maldives", WPI);
+      $this->options['countries']['ML'] = __("Mali", WPI);
+      $this->options['countries']['MT'] = __("Malta", WPI);
+      $this->options['countries']['MH'] = __("Marshall Islands", WPI);
+      $this->options['countries']['MQ'] = __("Martinique", WPI);
+      $this->options['countries']['MR'] = __("Mauritania", WPI);
+      $this->options['countries']['MU'] = __("Mauritius", WPI);
+      $this->options['countries']['YT'] = __("Mayotte", WPI);
+      $this->options['countries']['MX'] = __("Mexico", WPI);
+      $this->options['countries']['MN'] = __("Mongolia", WPI);
+      $this->options['countries']['MS'] = __("Montserrat", WPI);
+      $this->options['countries']['MA'] = __("Morocco", WPI);
+      $this->options['countries']['MZ'] = __("Mozambique", WPI);
+      $this->options['countries']['NA'] = __("Namibia", WPI);
+      $this->options['countries']['NR'] = __("Nauru", WPI);
+      $this->options['countries']['NP'] = __("Nepal", WPI);
+      $this->options['countries']['NL'] = __("Netherlands", WPI);
+      $this->options['countries']['AN'] = __("Netherlands Antilles", WPI);
+      $this->options['countries']['NC'] = __("New Caledonia", WPI);
+      $this->options['countries']['NZ'] = __("New Zealand", WPI);
+      $this->options['countries']['NI'] = __("Nicaragua", WPI);
+      $this->options['countries']['NE'] = __("Niger", WPI);
+      $this->options['countries']['NU'] = __("Niue", WPI);
+      $this->options['countries']['NF'] = __("Norfolk Island", WPI);
+      $this->options['countries']['NO'] = __("Norway", WPI);
+      $this->options['countries']['OM'] = __("Oman", WPI);
+      $this->options['countries']['PW'] = __("Palau", WPI);
+      $this->options['countries']['PA'] = __("Panama", WPI);
+      $this->options['countries']['PG'] = __("Papua New Guinea", WPI);
+      $this->options['countries']['PE'] = __("Peru", WPI);
+      $this->options['countries']['PH'] = __("Philippines", WPI);
+      $this->options['countries']['PN'] = __("Pitcairn Islands", WPI);
+      $this->options['countries']['PL'] = __("Poland", WPI);
+      $this->options['countries']['PT'] = __("Portugal", WPI);
+      $this->options['countries']['QA'] = __("Qatar", WPI);
+      $this->options['countries']['CG'] = __("Republic of the Congo", WPI);
+      $this->options['countries']['RE'] = __("Reunion", WPI);
+      $this->options['countries']['RO'] = __("Romania", WPI);
+      $this->options['countries']['RU'] = __("Russia", WPI);
+      $this->options['countries']['RW'] = __("Rwanda", WPI);
+      $this->options['countries']['VC'] = __("Saint Vincent and the Grenadines", WPI);
+      $this->options['countries']['WS'] = __("Samoa", WPI);
+      $this->options['countries']['SM'] = __("San Marino", WPI);
+      $this->options['countries']['ST'] = __("Sao Tome and Principe", WPI);
+      $this->options['countries']['SA'] = __("Saudi Arabia", WPI);
+      $this->options['countries']['SN'] = __("Senegal", WPI);
+      $this->options['countries']['SC'] = __("Seychelles", WPI);
+      $this->options['countries']['SL'] = __("Sierra Leone", WPI);
+      $this->options['countries']['SG'] = __("Singapore", WPI);
+      $this->options['countries']['SK'] = __("Slovakia", WPI);
+      $this->options['countries']['SI'] = __("Slovenia", WPI);
+      $this->options['countries']['SB'] = __("Solomon Islands", WPI);
+      $this->options['countries']['SO'] = __("Somalia", WPI);
+      $this->options['countries']['ZA'] = __("South Africa", WPI);
+      $this->options['countries']['KR'] = __("South Korea", WPI);
+      $this->options['countries']['ES'] = __("Spain", WPI);
+      $this->options['countries']['LK'] = __("Sri Lanka", WPI);
+      $this->options['countries']['SH'] = __("St. Helena", WPI);
+      $this->options['countries']['KN'] = __("St. Kitts and Nevis", WPI);
+      $this->options['countries']['LC'] = __("St. Lucia", WPI);
+      $this->options['countries']['PM'] = __("St. Pierre and Miquelon", WPI);
+      $this->options['countries']['SR'] = __("Suriname", WPI);
+      $this->options['countries']['SJ'] = __("Svalbard and Jan Mayen Islands", WPI);
+      $this->options['countries']['SZ'] = __("Swaziland", WPI);
+      $this->options['countries']['SE'] = __("Sweden", WPI);
+      $this->options['countries']['CH'] = __("Switzerland", WPI);
+      $this->options['countries']['TW'] = __("Taiwan", WPI);
+      $this->options['countries']['TJ'] = __("Tajikistan", WPI);
+      $this->options['countries']['TZ'] = __("Tanzania", WPI);
+      $this->options['countries']['TH'] = __("Thailand", WPI);
+      $this->options['countries']['TG'] = __("Togo", WPI);
+      $this->options['countries']['TO'] = __("Tonga", WPI);
+      $this->options['countries']['TT'] = __("Trinidad and Tobago", WPI);
+      $this->options['countries']['TN'] = __("Tunisia", WPI);
+      $this->options['countries']['TR'] = __("Turkey", WPI);
+      $this->options['countries']['TM'] = __("Turkmenistan", WPI);
+      $this->options['countries']['TC'] = __("Turks and Caicos Islands", WPI);
+      $this->options['countries']['TV'] = __("Tuvalu", WPI);
+      $this->options['countries']['UG'] = __("Uganda", WPI);
+      $this->options['countries']['UA'] = __("Ukraine", WPI);
+      $this->options['countries']['AE'] = __("United Arab Emirates", WPI);
+      $this->options['countries']['GB'] = __("United Kingdom", WPI);
+      $this->options['countries']['UY'] = __("Uruguay", WPI);
+      $this->options['countries']['VU'] = __("Vanuatu", WPI);
+      $this->options['countries']['VA'] = __("Vatican City State", WPI);
+      $this->options['countries']['VE'] = __("Venezuela", WPI);
+      $this->options['countries']['VN'] = __("Vietnam", WPI);
+      $this->options['countries']['WF'] = __("Wallis and Futuna Islands", WPI);
+      $this->options['countries']['YE'] = __("Yemen", WPI);
+      $this->options['countries']['ZM'] = __("Zambia", WPI);
+
+      $this->options['states']['AL'] = __("Alabama", WPI);
+      $this->options['states']['AK'] = __("Alaska", WPI);
+      $this->options['states']['AS'] = __("American Samoa", WPI);
+      $this->options['states']['AZ'] = __("Arizona", WPI);
+      $this->options['states']['AR'] = __("Arkansas", WPI);
+      $this->options['states']['CA'] = __("California", WPI);
+      $this->options['states']['CO'] = __("Colorado", WPI);
+      $this->options['states']['CT'] = __("Connecticut", WPI);
+      $this->options['states']['DE'] = __("Delaware", WPI);
+      $this->options['states']['DC'] = __("District of Columbia", WPI);
+      $this->options['states']['FM'] = __("Federated States of Micronesia", WPI);
+      $this->options['states']['FL'] = __("Florida", WPI);
+      $this->options['states']['GA'] = __("Georgia", WPI);
+      $this->options['states']['GU'] = __("Guam", WPI);
+      $this->options['states']['HI'] = __("Hawaii", WPI);
+      $this->options['states']['ID'] = __("Idaho", WPI);
+      $this->options['states']['IL'] = __("Illinois", WPI);
+      $this->options['states']['IN'] = __("Indiana", WPI);
+      $this->options['states']['IA'] = __("Iowa", WPI);
+      $this->options['states']['KS'] = __("Kansas", WPI);
+      $this->options['states']['KY'] = __("Kentucky", WPI);
+      $this->options['states']['LA'] = __("Louisiana", WPI);
+      $this->options['states']['ME'] = __("Maine", WPI);
+      $this->options['states']['MH'] = __("Marshall Islands", WPI);
+      $this->options['states']['MD'] = __("Maryland", WPI);
+      $this->options['states']['MA'] = __("Massachusetts", WPI);
+      $this->options['states']['MI'] = __("Michigan", WPI);
+      $this->options['states']['MN'] = __("Minnesota", WPI);
+      $this->options['states']['MS'] = __("Mississippi", WPI);
+      $this->options['states']['MO'] = __("Missouri", WPI);
+      $this->options['states']['MT'] = __("Montana", WPI);
+      $this->options['states']['NE'] = __("Nebraska", WPI);
+      $this->options['states']['NV'] = __("Nevada", WPI);
+      $this->options['states']['NH'] = __("New Hampshire", WPI);
+      $this->options['states']['NJ'] = __("New Jersey", WPI);
+      $this->options['states']['NM'] = __("New Mexico", WPI);
+      $this->options['states']['NY'] = __("New York", WPI);
+      $this->options['states']['NC'] = __("North Carolina", WPI);
+      $this->options['states']['ND'] = __("North Dakota", WPI);
+      $this->options['states']['MP'] = __("Northern Mariana Islands", WPI);
+      $this->options['states']['OH'] = __("Ohio", WPI);
+      $this->options['states']['OK'] = __("Oklahoma", WPI);
+      $this->options['states']['OR'] = __("Oregon", WPI);
+      $this->options['states']['PW'] = __("Palau", WPI);
+      $this->options['states']['PA'] = __("Pennsylvania", WPI);
+      $this->options['states']['PR'] = __("Puerto Rico", WPI);
+      $this->options['states']['RI'] = __("Rhode Island", WPI);
+      $this->options['states']['SC'] = __("South Carolina", WPI);
+      $this->options['states']['SD'] = __("South Dakota", WPI);
+      $this->options['states']['TN'] = __("Tennessee", WPI);
+      $this->options['states']['TX'] = __("Texas", WPI);
+      $this->options['states']['UT'] = __("Utah", WPI);
+      $this->options['states']['VT'] = __("Vermont", WPI);
+      $this->options['states']['VI'] = __("Virgin Islands", WPI);
+      $this->options['states']['VA'] = __("Virginia", WPI);
+      $this->options['states']['WA'] = __("Washington", WPI);
+      $this->options['states']['WV'] = __("West Virginia", WPI);
+      $this->options['states']['WI'] = __("Wisconsin", WPI);
+      $this->options['states']['WY'] = __("Wyoming", WPI);
+      $this->options['states']['AB'] = __("Alberta", WPI);
+      $this->options['states']['BC'] = __("British Columbia", WPI);
+      $this->options['states']['MB'] = __("Manitoba", WPI);
+      $this->options['states']['NB'] = __("New Brunswick", WPI);
+      $this->options['states']['NF'] = __("Newfoundland", WPI);
+      $this->options['states']['NW'] = __("Northwest Territory", WPI);
+      $this->options['states']['NS'] = __("Nova Scotia", WPI);
+      $this->options['states']['ON'] = __("Ontario", WPI);
+      $this->options['states']['PE'] = __("Prince Edward Island", WPI);
+      $this->options['states']['QU'] = __("Quebec", WPI);
+      $this->options['states']['SK'] = __("Saskatchewan", WPI);
+      $this->options['states']['YT'] = __("Yukon Territory", WPI);
+
+      $this->options['currency']['types']['AUD'] = __("Australian Dollars", WPI);
+      $this->options['currency']['types']['CAD'] = __("Canadian Dollars", WPI);
+      $this->options['currency']['types']['EUR'] = __("Euros", WPI);
+      $this->options['currency']['types']['GBP'] = __("Pounds Sterling", WPI);
+      $this->options['currency']['types']['JPY'] = __("Yen", WPI);
+      $this->options['currency']['types']['USD'] = __("U.S. Dollars", WPI);
+      $this->options['currency']['types']['NZD'] = __("New Zealand Dollar", WPI);
+      $this->options['currency']['types']['CHF'] = __("Swiss Franc", WPI);
+      $this->options['currency']['types']['HKD'] = __("Hong Kong Dollar", WPI);
+      $this->options['currency']['types']['SGD'] = __("Singapore Dollar", WPI);
+      $this->options['currency']['types']['SEK'] = __("Swedish Krona", WPI);
+      $this->options['currency']['types']['DKK'] = __("Danish Krone", WPI);
+      $this->options['currency']['types']['PLN'] = __("Polish Zloty", WPI);
+      $this->options['currency']['types']['NOK'] = __("Norwegian Krone", WPI);
+      $this->options['currency']['types']['HUF'] = __("Hungarian Forint", WPI);
+      $this->options['currency']['types']['CZK'] = __("Czech Koruna", WPI);
+      $this->options['currency']['types']['ILS'] = __("Israeli Shekel", WPI);
+      $this->options['currency']['types']['MXN'] = __("Mexican Peso", WPI);
+      $this->options['currency']['types']['ZAR'] = __("South African Rand", WPI);
+
+      $this->options['currency']['symbol']['AUD'] = "$";
+      $this->options['currency']['symbol']['CAD'] = "$";
+      $this->options['currency']['symbol']['EUR'] = "&#8364;";
+      $this->options['currency']['symbol']['GBP'] = "&pound;";
+      $this->options['currency']['symbol']['JPY'] = "&yen;";
+      $this->options['currency']['symbol']['USD'] = "$";
+      $this->options['currency']['symbol']['NZD'] = "$";
+      $this->options['currency']['symbol']['CHF'] = "Fr.";
+      $this->options['currency']['symbol']['HKD'] = "$";
+      $this->options['currency']['symbol']['SGD'] = "$";
+      $this->options['currency']['symbol']['SEK'] = "kr";
+      $this->options['currency']['symbol']['DKK'] = "kr";
+      $this->options['currency']['symbol']['PLN'] = "zł";
+      $this->options['currency']['symbol']['NOK'] = "kr";
+      $this->options['currency']['symbol']['HUF'] = "Ft";
+      $this->options['currency']['symbol']['CZK'] = "Kč";
+      $this->options['currency']['symbol']['ILS'] = "₪";
+      $this->options['currency']['symbol']['MXN'] = "$";
+      $this->options['currency']['symbol']['ZAR'] = "R";
+
+      $this->options['currency']['default_currency_code']       = 'USD';
+      $this->options['globals']['client_change_payment_method'] = 'true';
+      $this->options['globals']['show_business_address']        = 'false';
+      $this->options['globals']['show_quantities']              = 'false';
+
+      /** Mail - Notification */
+      $this->options['notification'][1]['name']    = __("New Invoice", WPI);
+      $this->options['notification'][1]['subject'] = __("[New Invoice] %subject%", WPI);
+      $this->options['notification'][1]['content'] = __("Dear %recipient%, \n\n%business_name% has sent you %recurring% invoice in the amount of %amount%. \n\n%description% \n\nYou may pay, view and print the invoice online by visiting the following link: \n%link% \n\nBest regards, \n%business_name% (%business_email%)", WPI);
+
+      $this->options['notification'][2]['name']    = __("Reminder", WPI);
+      $this->options['notification'][2]['subject'] = __("[Reminder] %subject%", WPI);
+      $this->options['notification'][2]['content'] = __("Dear %recipient%, \n\n%business_name% has sent you a reminder for the %recurring% invoice in the amount of %amount%. \n\n%description% \n\nYou may pay, view and print the invoice online by visiting the following link: \n%link%. \n\nBest regards, \n%business_name% (%business_email%)", WPI);
+
+      $this->options['notification'][3]['name']    = __('Send Receipt', WPI);
+      $this->options['notification'][3]['subject'] = __("[Payment Received] %subject%", WPI);
+      $this->options['notification'][3]['content'] = __("Dear %recipient%, \n\n%business_name% has received your payment for the %recurring% invoice in the amount of %amount%. \n\nThank you very much for your patronage. \n\nBest regards, \n%business_name% (%business_email%)", WPI);
     }
 
     function SaveSettings($new_settings) {
@@ -429,12 +444,12 @@ class WPI_Settings {
         
         //** Process Special Settings */
         //** Default predefined services */
-        $this->options['predefined_services'][0]['name'] = "Web Design Services";
+        $this->options['predefined_services'][0]['name']     = __("Web Design Services", WPI);
         $this->options['predefined_services'][0]['quantity'] = 1;
-        $this->options['predefined_services'][0]['price'] = 30;
-        $this->options['predefined_services'][1]['name'] = "Web Development Services";
+        $this->options['predefined_services'][0]['price']    = 30;
+        $this->options['predefined_services'][1]['name']     = __("Web Development Services", WPI);
         $this->options['predefined_services'][1]['quantity'] = 1;
-        $this->options['predefined_services'][1]['price'] = 30;
+        $this->options['predefined_services'][1]['price']    = 30;
         
         $this->options['predefined_services'] = ( isset($new_settings['predefined_services']) ? $new_settings['predefined_services'] : $this->options['predefined_services'] );
 
@@ -545,7 +560,7 @@ class WPI_Settings {
                 delete_option($entry->option_name);
                 $counter++;
             }
-            echo "$counter old options found, converted into new format, and deleted.";
+            echo "$counter ".__('old options found, converted into new format, and deleted.', WPI);
             $this->SaveOptions;
         }
         

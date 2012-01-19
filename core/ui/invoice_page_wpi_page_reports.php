@@ -69,7 +69,7 @@ class WPI_Reports_page {
           data.addRows([<?php echo @implode(',', $overall_satus_array); ?>]);
  
           var options = {
-          'title':'Collected and Uncollected Funds',
+          'title':'<?php _e('Collected and Uncollected Funds', WPI) ?>',
           'is3D': true,
           'legend': 'none',
           'width': (wpi_graph_wrapper.width / wpi_num_up),
@@ -107,7 +107,7 @@ class WPI_Reports_page {
           data.addRows([<?php echo @implode(',', $mvcs_array); ?>]);
 
           var options = {
-          'title':'Top 10 Most Valuable Clients',
+          'title':'<?php _e('Top 10 Most Valuable Clients', WPI) ?>',
           'is3D': true,
           'legend': 'none',
           'width': (wpi_graph_wrapper.width / wpi_num_up),
@@ -155,7 +155,7 @@ class WPI_Reports_page {
           data.addRows([<?php echo @implode(',', $line_items_array); ?>]);
 
           var options = {
-          'title':'Top Grossing Line Items',
+          'title':'<?php _e('Top Grossing Line Items', WPI) ?>',
           'is3D': true,
           'legend': 'none',
           'width': (wpi_graph_wrapper.width / wpi_num_up),
@@ -172,7 +172,7 @@ class WPI_Reports_page {
 
     </script>
 
-    <h3 class="section_header"><?php _e('Invoice Statistics'); ?></h3>
+    <h3 class="section_header"><?php _e('Invoice Statistics', WPI); ?></h3>
     <div class="wpi_graph_wrapper">
       <div id="wpi_overall_status" class="wpi_report_block"></div>
       <div id="wpi_mvcs" class="wpi_report_block"></div>
@@ -192,7 +192,7 @@ class WPI_Reports_page {
 </script>
 
 <div class="wrap">
-  <h2><?php _e('Reports'); ?></h2>
+  <h2><?php _e('Reports', WPI); ?></h2>
   <?php WPI_Functions::print_messages(); ?>
 
   <div id="wpi_report_page" class="wpi_sectioned_content">
@@ -204,7 +204,7 @@ class WPI_Reports_page {
         if(is_callable($tab['callback'])) {
           call_user_func($tab['callback'], $wpi_settings);
         } else {
-          echo __('Warning:') . ' ' . implode(':', $tab['callback']) .' ' .  __('not found') . '.';
+          echo __('Warning:', WPI) . ' ' . implode(':', $tab['callback']) .' ' .  __('not found', WPI) . '.';
         }
         ?>
       </div>

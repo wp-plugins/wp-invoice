@@ -22,7 +22,7 @@ class wpi_authorize extends wpi_gateway_base {
   var $options = array(
       'name' => 'Credit Card',
       'public_name' => 'Credit Card',
-      'allow' => '',
+      'allow' => true,
       'default_option' => '',
       'settings' => array(
           'gateway_username' => array(
@@ -478,17 +478,17 @@ class wpi_authorize extends wpi_gateway_base {
 
         if ($arb->isSuccessful()) {
           update_post_meta($post_id, 'subscription_id', $arb->getSubscriberID());
-          WPI_Functions::log_event($post_id, 'invoice', 'update', '', 'Subscription initiated, Subcription ID - ' . $arb->getSubscriberID());
+          WPI_Functions::log_event($post_id, 'invoice', 'update', '', __('Subscription initiated, Subcription ID', WPI).' - ' . $arb->getSubscriberID());
           $data['messages'][] = "Recurring Billing Subscription initiated";
           $response['success'] = true;
           $response['error'] = false;
         }
 
         if ($arb->isError()) {
-          $data['messages'][] = 'One-time credit card payment is processed successfully. However, recurring billing setup failed. ' . $arb->getResponse();
+          $data['messages'][] = __('One-time credit card payment is processed successfully. However, recurring billing setup failed. ', WPI) . $arb->getResponse();
           $response['success'] = false;
           $response['error'] = true;
-          WPI_Functions::log_event($post_id, 'invoice', 'update', '', 'Response Code: ' . $arb->getResponseCode() . ' | Subscription error - ' . $arb->getResponse());
+          WPI_Functions::log_event($post_id, 'invoice', 'update', '', __('Response Code: ', WPI) . $arb->getResponseCode() . ' | '.__('Subscription error', WPI).' - ' . $arb->getResponse());
         }
       }
     } else {
@@ -546,7 +546,7 @@ class wpi_authorize extends wpi_gateway_base {
 
       // Complete subscription if last payment done
       if ($invoice_obj->data['recurring']['cycles'] <= $paynum) {
-        WPI_Functions::log_event(wpi_invoice_id_to_post_id($invoice_id), 'invoice', 'update', '', 'Subscription completely paid');
+        WPI_Functions::log_event(wpi_invoice_id_to_post_id($invoice_id), 'invoice', 'update', '', __('Subscription completely paid', WPI));
         wp_invoice_mark_as_paid($invoice_id);
       }
 
