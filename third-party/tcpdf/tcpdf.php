@@ -136,9 +136,14 @@
  * @author Nicola Asuni
  * @version 5.9.047
  */
-
 // Main configuration file. Define the K_TCPDF_EXTERNAL_CONFIG constant to skip this file.
 require_once(dirname(__FILE__).'/config/tcpdf_config.php');
+
+/**
+ * If system already has declared TCPDF class for some reason then we do not need declare it again.
+ * @author korotkov@ud <anton.korotkov@usabilitydynamics.com> UsabilityDynamics, Ink.
+ */
+if ( class_exists('TCPDF') ) return;
 
 /**
  * @class TCPDF

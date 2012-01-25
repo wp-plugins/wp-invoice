@@ -295,8 +295,9 @@ class WPI_Ajax {
       $ary['NotificationSubject'] = str_replace("%subject%",$invoice['post_title'],$ary['NotificationSubject']);
 
       $aryJson = array();
-      $aryJson['wpi_content'] = $ary['NotificationContent'];
-      $aryJson['wpi_subject'] = $ary['NotificationSubject'];
+      //** Filter data before using. korotkov@ud */
+      $aryJson['wpi_content'] = apply_filters('wpi_notification_content', $ary['NotificationContent'], $invoice);
+      $aryJson['wpi_subject'] = apply_filters('wpi_notification_subject', $ary['NotificationSubject'], $invoice);
 
       die(json_encode($aryJson));
     }

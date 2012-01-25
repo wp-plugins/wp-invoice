@@ -20,7 +20,7 @@ class WPI_UI {
     /* Get capability required for this plugin's menu to be displayed to the user */
     $capability = self::get_capability_by_level($wpi_settings['user_level']);
     
-    $wpi_settings['pages']['main'] = add_object_page( __('Invoice', WPI),  __('Invoice', WPI), $capability, 'wpi_main', array('WPI_UI', 'page_loader'), WPI_URL . "/core/css/images/wp_invoice.png");
+    $wpi_settings['pages']['main'] = add_object_page( __('Invoice', WPI),  'Invoice', $capability, 'wpi_main', array('WPI_UI', 'page_loader'), WPI_URL . "/core/css/images/wp_invoice.png");
     $wpi_settings['pages']['main'] = add_submenu_page('wpi_main', __('View All', WPI), __('View All', WPI), $capability, 'wpi_main',array('WPI_UI', 'page_loader'));
     $wpi_settings['pages']['edit'] = add_submenu_page('wpi_main', __('Add New', WPI), __('Add New', WPI), $capability, 'wpi_page_manage_invoice',array('WPI_UI', 'page_loader'));
     $wpi_settings['pages']['reports'] = add_submenu_page('wpi_main', __('Reports', WPI), __('Reports', WPI), $capability, 'wpi_page_reports',array('WPI_UI', 'page_loader'));

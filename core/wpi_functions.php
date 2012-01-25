@@ -2594,7 +2594,31 @@ function get_due_date( $invoice ) {
 }
 
 /**
- * @author Anton Korotkov
+ * Find a full diff between two arrays.
+ * 
+ * @param array $array1
+ * @param array $array2
+ * @return array 
+ * @author korotkov@ud
+ */
+function wpi_multi_array_diff($array1, $array2) {
+    $ret = array();
+    foreach ($array1 as $k => $v) {
+        if (!isset($array2[$k])) $ret[$k] = $v;
+        else if (is_array($v) && is_array($array2[$k])) {
+          $u = wpi_multi_array_diff($v, $array2[$k]);
+          if ( !empty($u) ) {
+            $ret[$k] = $u;
+          }
+        } else if ( $v != $array2[$k] ) {
+          $ret[$k] = $v;
+        }
+    }
+    return $ret;
+}
+
+/**
+ * @author korotkov@ud
  * @param array $data
  * <b>Example:</b><br>
  * <pre>

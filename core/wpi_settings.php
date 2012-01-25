@@ -389,9 +389,9 @@ class WPI_Settings {
 
       $this->options['currency']['symbol']['AUD'] = "$";
       $this->options['currency']['symbol']['CAD'] = "$";
-      $this->options['currency']['symbol']['EUR'] = "&#8364;";
-      $this->options['currency']['symbol']['GBP'] = "&pound;";
-      $this->options['currency']['symbol']['JPY'] = "&yen;";
+      $this->options['currency']['symbol']['EUR'] = "€";
+      $this->options['currency']['symbol']['GBP'] = "£";
+      $this->options['currency']['symbol']['JPY'] = "¥";
       $this->options['currency']['symbol']['USD'] = "$";
       $this->options['currency']['symbol']['NZD'] = "$";
       $this->options['currency']['symbol']['CHF'] = "Fr.";
@@ -426,8 +426,14 @@ class WPI_Settings {
       $this->options['notification'][3]['content'] = __("Dear %recipient%, \n\n%business_name% has received your payment for the %recurring% invoice in the amount of %amount%. \n\nThank you very much for your patronage. \n\nBest regards, \n%business_name% (%business_email%)", WPI);
     }
 
+    /**
+     * Saves passed settings
+     * 
+     * @global array $wpi_settings
+     * @param array $new_settings 
+     */
     function SaveSettings($new_settings) {
-        global $wpi_settings;
+      global $wpi_settings;
         
         //** Set 'first_time_setup_ran' as 'true' to avoid loading First Time Setup Page in future */
         $new_settings['first_time_setup_ran'] = 'true';
@@ -480,26 +486,46 @@ class WPI_Settings {
         $wpi_settings['notification'] = $this->options['notification'];
         wpi_gateway_base::sync_billing_objects();
     }
-    
+
+    /**
+     * Load options from DB or from initial array
+     */
     function LoadOptions() {
-        //** Options concept taken from Theme My Login (http://webdesign.jaedub.com) */
-        $this->InitOptions();
-        $storedoptions = get_option( 'wpi_options' );
-        
-        if ( $storedoptions && is_array( $storedoptions ) ) {
-            foreach ( $storedoptions as $key => $value ) {
-                $this->options[$key] = $value;
-            }
-        } else update_option( 'wpi_options', $this->options);
-        
+      //** Options concept taken from Theme My Login (http://webdesign.jaedub.com) */
+      $this->InitOptions();
+      $storedoptions = get_option( 'wpi_options' );
+      /** @todo Currency are constants. [korotkov@ud] */
+      $currency = $this->options['currency']['symbol'];
+      
+      if ( $storedoptions && is_array( $storedoptions ) ) {
+        //** Merge initial options and stored options to make sure array will has newly added options. */ 
+        $this->options = WPI_Functions::array_merge_recursive_distinct($this->options, $storedoptions);
+        //** We dont need currencies to be updated. [korotkov@ud] */
+        $this->options['currency']['symbol'] = $currency;
+      } else update_option( 'wpi_options', $this->options);
     }
-    
+
+    /**
+     * Get an option value from options array.
+     * 
+     * @param string $key
+     * @return string|null 
+     */
     function GetOption( $key ) {
       if ( array_key_exists( $key, $this->options ) ) {
         return $this->options[$key];
       } else return null;
     }
-    
+
+    /**
+     * Set an option value into DB
+     * 
+     * @global array $wpi_settings
+     * @param string $key
+     * @param string $value
+     * @param bool $group
+     * @return bool 
+     */
     function setOption( $key, $value, $group = false) {
       global $wpi_settings;
       
@@ -533,23 +559,30 @@ class WPI_Settings {
           return true;
         } 
       }
-      
-      
     }
-    
+
+    /**
+     * Commits options.
+     * 
+     * @return bool
+     */
     function CommitUpdates() {
-        $oldvalue = get_option( 'wpi_options' );
-				
-        if( $oldvalue == $this->options )
-            return false;
-        else 
-            return update_option( 'wpi_options', $this->options );
+      $oldvalue = get_option( 'wpi_options' );
+      if( $oldvalue == $this->options )
+        return false;
+      else 
+        return update_option( 'wpi_options', $this->options );
     }
-    
+
+    /**
+     * Converts old options to new.
+     * 
+     * @global object $wpdb 
+     */
     function ConvertPre20Options() {
-        global $wpdb;
-        
-        // Take all old wp_invoice options and convert them put them into a single option
+      global $wpdb;
+
+      // Take all old wp_invoice options and convert them put them into a single option
         // DOESN"T WORK WITH BILLING OPTIONS SINCE THEY ARE NOW HELD IN MULTIMENSIONAL ARRAY
         $load_all_options = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}options WHERE option_name LIKE 'wp_invoice%'");
         
