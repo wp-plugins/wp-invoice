@@ -101,7 +101,7 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 = Version 3.04.7.1 =
 * Urgent fix to settings system.
-* Fix to currecy symbols with unsupported encoding.
+* Fix to currency symbols with unsupported encoding.
 
 = Version 3.04.7 =
 * Ability to use PDF link tag in notification templates if 'PDF Invoices and Receipts' Premium Feature installed.
