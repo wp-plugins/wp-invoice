@@ -389,9 +389,10 @@ class WPI_Settings {
 
       $this->options['currency']['symbol']['AUD'] = "$";
       $this->options['currency']['symbol']['CAD'] = "$";
-      $this->options['currency']['symbol']['EUR'] = "€";
-      $this->options['currency']['symbol']['GBP'] = "£";
-      $this->options['currency']['symbol']['JPY'] = "¥";
+      /** Letters for now. Will find another way later */
+      $this->options['currency']['symbol']['EUR'] = "EUR";
+      $this->options['currency']['symbol']['GBP'] = "GBP";
+      $this->options['currency']['symbol']['JPY'] = "JPY";
       $this->options['currency']['symbol']['USD'] = "$";
       $this->options['currency']['symbol']['NZD'] = "$";
       $this->options['currency']['symbol']['CHF'] = "Fr.";
@@ -498,8 +499,9 @@ class WPI_Settings {
       $currency = $this->options['currency']['symbol'];
       
       if ( $storedoptions && is_array( $storedoptions ) ) {
-        //** Merge initial options and stored options to make sure array will has newly added options. */ 
-        $this->options = WPI_Functions::array_merge_recursive_distinct($this->options, $storedoptions);
+        foreach ( $storedoptions as $key => $value ) {
+          $this->options[$key] = $value;
+        }
         //** We dont need currencies to be updated. [korotkov@ud] */
         $this->options['currency']['symbol'] = $currency;
       } else update_option( 'wpi_options', $this->options);
