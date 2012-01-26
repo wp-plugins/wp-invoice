@@ -99,6 +99,9 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 
 == Change Log ==
 
+= Version 3.04.7.2 =
+* Fix to encoding of unsupported characters for non-UTF databases.
+
 = Version 3.04.7.1 =
 * Urgent fix to settings system.
 * Fix to currency symbols with unsupported encoding.

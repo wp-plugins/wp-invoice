@@ -400,11 +400,11 @@ class WPI_Settings {
       $this->options['currency']['symbol']['SGD'] = "$";
       $this->options['currency']['symbol']['SEK'] = "kr";
       $this->options['currency']['symbol']['DKK'] = "kr";
-      $this->options['currency']['symbol']['PLN'] = "zł";
+      $this->options['currency']['symbol']['PLN'] = "zl";
       $this->options['currency']['symbol']['NOK'] = "kr";
       $this->options['currency']['symbol']['HUF'] = "Ft";
-      $this->options['currency']['symbol']['CZK'] = "Kč";
-      $this->options['currency']['symbol']['ILS'] = "₪";
+      $this->options['currency']['symbol']['CZK'] = "Kc";
+      $this->options['currency']['symbol']['ILS'] = "NIS";
       $this->options['currency']['symbol']['MXN'] = "$";
       $this->options['currency']['symbol']['ZAR'] = "R";
 
