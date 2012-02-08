@@ -274,7 +274,7 @@ class WPI_Ajax {
       $ary['NotificationContent'] = str_replace("%due_date%", $due_date, $ary['NotificationContent']);
 
       //** @todo: Recurring */
-      $ary['NotificationContent'] = str_replace("%recurring%", '', $ary['NotificationContent']);
+      $ary['NotificationContent'] = str_replace("%recurring%", __("recurring", WPI), $ary['NotificationContent']);
 
       $ary['NotificationSubject'] = $template_array[$template_id]['subject'];
 

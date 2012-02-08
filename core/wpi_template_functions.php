@@ -704,7 +704,10 @@ function is_invoice() {
 function is_recurring() {
   global $invoice;
 
-  if(!empty($invoice['is_recurring'])) {
+  if( !empty( $invoice['type'] ) && 
+      $invoice['type'] == 'recurring' && 
+      !empty( $invoice['recurring']['active'] ) && 
+      $invoice['recurring']['active'] == 'on' ) {
     return true;
   }
 

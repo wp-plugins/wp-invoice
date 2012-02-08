@@ -662,7 +662,6 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
       $this_invoice->load_invoice("id={$ID}");
 
     }
-    
 
     add_meta_box('postbox_payment_methods', __('Payment Settings',WPI), 'postbox_payment_methods', $screen_id, 'normal', 'high');
     
@@ -951,102 +950,95 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
   }
 
   /**
-     * Renders invoice in the content.
-     *
-     *  Invoice object already loaded into $wpi_invoice_object at template_redirect()
-     *
-     */
-    function the_content($content) {
-        global $post, $invoice, $invoice_id, $wpi_settings, $wpi_invoice_object;
+   * Renders invoice in the content.
+   *
+   * Invoice object already loaded into $wpi_invoice_object at template_redirect()
+   *
+   */
+  function the_content($content) {
+    global $post, $invoice, $invoice_id, $wpi_settings, $wpi_invoice_object;
 
-        $invoice = $wpi_invoice_object->data;
+    $invoice = $wpi_invoice_object->data;
 
-        // Mark invoice as viewed if not by admin
-        if (!current_user_can('manage_options')) {
-          
-          // Prevent duplicating of 'viewed' item.
-          // 1 time per $hours
-          $hours = 12;
-          
-          $viewed_today_from_cur_ip = false;
-          
-          foreach ( $invoice['log'] as $key => $value ) {
-            if ( $value['user_id'] == '0' ) {
-              if ( strstr( strtolower( $value['text'] ), "viewed by {$_SERVER['REMOTE_ADDR']}" ) ) {
-                $time_dif = time() - $value['time'];
-                if ( $time_dif < $hours*60*60 ) {
-                  $viewed_today_from_cur_ip = true;
-                }
-              }
+    /** Mark invoice as viewed if not by admin */
+    if (!current_user_can('manage_options')) {
+
+      /** Prevent duplicating of 'viewed' item. */
+      /** 1 time per $hours */
+      $hours = 12;
+
+      $viewed_today_from_cur_ip = false;
+
+      foreach ( $invoice['log'] as $key => $value ) {
+        if ( $value['user_id'] == '0' ) {
+          if ( strstr( strtolower( $value['text'] ), "viewed by {$_SERVER['REMOTE_ADDR']}" ) ) {
+            $time_dif = time() - $value['time'];
+            if ( $time_dif < $hours*60*60 ) {
+              $viewed_today_from_cur_ip = true;
             }
           }
-          
-          if ( !$viewed_today_from_cur_ip ) {
-            $wpi_invoice_object->add_entry("note=Viewed by {$_SERVER['REMOTE_ADDR']}");
-          }
         }
-
-        //WPI_Functions::qc($invoice);
-        // Include our template functions
-        include_once('wpi_template_functions.php');
-
-        ob_start();
-        
-        if($invoice['post_status'] == 'paid') {
-          
-          if (WPI_Functions::wpi_use_custom_template('receipt_page.php')) {
-              include($wpi_settings['frontend_template_path'] . 'receipt_page.php');
-          } else {
-              include($wpi_settings['default_template_path'] . 'receipt_page.php');
-          }          
-          
-        } else {
-          
-          if (WPI_Functions::wpi_use_custom_template('invoice_page.php')) {
-              include($wpi_settings['frontend_template_path'] . 'invoice_page.php');
-          } else {
-              include($wpi_settings['default_template_path'] . 'invoice_page.php');
-          }
-          
-        }
-
-        $result .= ob_get_contents();
-        ob_end_clean();
-
-        switch ($wpi_settings['where_to_display']) {
-            case 'overwrite':
-                return $result;
-                break;
-            case 'below_content':
-                return $content . $result;
-                break;
-            case 'above_content':
-                return $result . $content;
-                break;
-            default:
-                return $content;
-                break;
-        }
-    }
-
-    function the_content_shortcode() {
-      global $post, $invoice, $invoice_id, $wpi_settings, $wpi_invoice_object;
-
-      $invoice = $wpi_invoice_object->data;
-
-      include_once('wpi_template_functions.php');
-
-      ob_start();
-      if (WPI_Functions::wpi_use_custom_template('invoice_page.php')) {
-          include($wpi_settings['frontend_template_path'] . 'invoice_page.php');
-      } else {
-          include($wpi_settings['default_template_path'] . 'invoice_page.php');
       }
 
-      $result .= ob_get_contents();
-      ob_end_clean();
-      return $result;
+      if ( !$viewed_today_from_cur_ip ) {
+        $wpi_invoice_object->add_entry("note=Viewed by {$_SERVER['REMOTE_ADDR']}");
+      }
     }
+
+    /** Include our template functions */
+    include_once('wpi_template_functions.php');
+
+    ob_start();
+    if($invoice['post_status'] == 'paid') {
+      if (WPI_Functions::wpi_use_custom_template('receipt_page.php')) {
+        include($wpi_settings['frontend_template_path'] . 'receipt_page.php');
+      } else {
+        include($wpi_settings['default_template_path'] . 'receipt_page.php');
+      }          
+    } else {
+      if (WPI_Functions::wpi_use_custom_template('invoice_page.php')) {
+        include($wpi_settings['frontend_template_path'] . 'invoice_page.php');
+      } else {
+        include($wpi_settings['default_template_path'] . 'invoice_page.php');
+      } 
+    }
+    $result .= ob_get_contents();
+    ob_end_clean();
+
+    switch ($wpi_settings['where_to_display']) {
+      case 'overwrite':
+        return $result;
+        break;
+      case 'below_content':
+        return $content . $result;
+        break;
+      case 'above_content':
+        return $result . $content;
+        break;
+      default:
+        return $content;
+        break;
+    }
+  }
+
+  function the_content_shortcode() {
+    global $post, $invoice, $invoice_id, $wpi_settings, $wpi_invoice_object;
+
+    $invoice = $wpi_invoice_object->data;
+
+    include_once('wpi_template_functions.php');
+
+    ob_start();
+    if (WPI_Functions::wpi_use_custom_template('invoice_page.php')) {
+        include($wpi_settings['frontend_template_path'] . 'invoice_page.php');
+    } else {
+        include($wpi_settings['default_template_path'] . 'invoice_page.php');
+    }
+
+    $result .= ob_get_contents();
+    ob_end_clean();
+    return $result;
+  }
 
   /**
    * Validation is already passed, this is the wp_head filter
@@ -1207,7 +1199,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         }
         $output = "<select id='" . ($id ? $id : $class_from_name) . "' name='" . ($group ? $group . "[" . $name . "]" : $name) . "' class='$class_from_name " . ($group ? "group_$group" : '') . "'>";
         
-        if ( !empty( $values_array ) ) {
+        if ( !empty( $values_array ) && is_array( $values_array ) ) {
           foreach ($values_array as $key => $value) {
               $output .= "<option value='$key'";
               if ($key == $current_value)

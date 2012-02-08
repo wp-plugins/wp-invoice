@@ -1135,7 +1135,7 @@ class WPI_Functions {
     if (!function_exists('wp_https_redirect')) {
       session_start();
       if (!isset($_SESSION['https'])) {
-        if ($wpi_settings['force_https'] == 'true' && (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on")) {
+        if ( $wpi_settings['force_https'] == 'true' && (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on")) {
           $_SESSION['https'] = 1;
           header("Location: https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
           @session_destroy();
@@ -2492,7 +2492,7 @@ function wp_invoice_send_creator_notification($invoice) {
 
 
 /**
- * Sends required notifications korotkov@UD
+ * Sends required notifications
  * @global array $wpi_settings
  * @param array $invoice
  * @author korotkov@UD

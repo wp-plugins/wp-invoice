@@ -536,7 +536,13 @@
 
         $services_string = serialize($services_array);
 
-        echo WPI_UI::select("id=wpi_predefined_services&values=$services_string&current_value=");
+        $select_data = array(
+            'id'            => 'wpi_predefined_services',
+            'values'        => $services_string,
+            'current_value' => ''
+        );
+        
+        echo WPI_UI::select($select_data);
 
       }
 

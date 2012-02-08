@@ -1,5 +1,5 @@
 === WP-Invoice - Web Invoice and Billing ===
-Contributors: usability_dynamics, anton-korotkoff, andypotanin, jbrw
+Contributors: usability_dynamics, Anton Korotkoff, andypotanin, jbrw
 Donate link: http://usabilitydynamics.com/products/wp-invoice/
 Tags: web invoice, bill, paypal, invoice, pay, online payment, send invoice, bill clients, authorize.net, credit cards, recurring billing, ARB
 Requires at least: 3.1
@@ -98,6 +98,15 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 * Complete rewrite. Old invoice data is not deleted, please notify us if you have any upgrading issues.
 
 == Change Log ==
+
+= Version 3.05.0 =
+* PayPal Subscriptions integrations added.
+* Fixed slash issue on premium features page.
+* Simple fixes to Authorize.net recurring billing.
+* Fix to Single Page Checkout SSL option.
+* Fixed PHP Warning on settings page.
+* Fixes to PDF logo function.
+* Fix to ampersand in line item description.
 
 = Version 3.04.7.2 =
 * Fix to encoding of unsupported characters for non-UTF databases.

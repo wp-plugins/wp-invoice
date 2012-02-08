@@ -437,15 +437,15 @@ class wpi_authorize extends wpi_gateway_base {
         $arb = new WP_Invoice_AuthnetARB($invoice);
         // Customer Info
         $arb->setParameter('customerId', "WP User - " . $invoice['user_data']['ID']);
-        $arb->setParameter('firstName', $cc_data['first_name']);
-        $arb->setParameter('lastName', $cc_data['last_name']);
-        $arb->setParameter('address', $cc_data['streetaddress']);
-        $arb->setParameter('city', $cc_data['city']);
-        $arb->setParameter('state', $cc_data['state']);
-        $arb->setParameter('zip', $cc_data['zip']);
-        $arb->setParameter('country', $cc_data['country']);
-        $arb->setParameter('customerEmail', $cc_data['user_email']);
-        $arb->setParameter('customerPhoneNumber', $cc_data['phonenumber']);
+        $arb->setParameter('firstName', !empty( $cc_data['first_name'] )?$cc_data['first_name']:'-');
+        $arb->setParameter('lastName', !empty( $cc_data['last_name'] )?$cc_data['last_name']:'-');
+        $arb->setParameter('address', !empty( $cc_data['streetaddress'] )?$cc_data['streetaddress']:'-');
+        $arb->setParameter('city', !empty( $cc_data['city'] )?$cc_data['city']:'-');
+        $arb->setParameter('state', !empty( $cc_data['state'] )?$cc_data['state']:'-');
+        $arb->setParameter('zip', !empty( $cc_data['zip'] )?$cc_data['zip']:'-');
+        $arb->setParameter('country', !empty( $cc_data['country'] )?$cc_data['country']:'-');
+        $arb->setParameter('customerEmail', !empty( $cc_data['user_email'] )?$cc_data['user_email']:'-');
+        $arb->setParameter('customerPhoneNumber', !empty( $cc_data['phonenumber'] )?$cc_data['phonenumber']:'-');
 
         // Billing Info
         $arb->setParameter('amount', $invoice['net']);

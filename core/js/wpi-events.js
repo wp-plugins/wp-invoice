@@ -195,13 +195,7 @@ jQuery(document).ready(function(){
   jQuery("#wpi_wpi_invoice_recurring_unit_").live("change", function(e){
     wpi_validate_recurring_units( ".wpi_bill_every_length" );
   });
-  jQuery(".wpi_bill_every_length").live("keyup", function(e){
-    wpi_validate_recurring_units( e.target );
-  });
-  jQuery(".wpi_bill_every_length").live("blur", function(e){
-    wpi_validate_recurring_units( e.target );
-  });
-  jQuery(".wpi_bill_every_length").live("focus", function(e){
+  jQuery(".wpi_bill_every_length").live("change", function(e){
     wpi_validate_recurring_units( e.target );
   });
   

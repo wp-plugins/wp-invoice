@@ -600,20 +600,20 @@ class WPI_Settings_page {
         </thead>
         <?php if(!empty($wpi_settings['available_features'])) :
           foreach($wpi_settings['available_features'] as $plugin_slug => $plugin_data): ?>
-        <input type="hidden" name="wpi_settings[available_features][<?php echo $plugin_slug; ?>][title]" value="<?php echo $plugin_data['title']; ?>" />
-        <input type="hidden" name="wpi_settings[available_features][<?php echo $plugin_slug; ?>][tagline]" value="<?php echo $plugin_data['tagline']; ?>" />
-        <input type="hidden" name="wpi_settings[available_features][<?php echo $plugin_slug; ?>][image]" value="<?php echo $plugin_data['image']; ?>" />
-        <input type="hidden" name="wpi_settings[available_features][<?php echo $plugin_slug; ?>][description]" value="<?php echo $plugin_data['description']; ?>" />
+        <input type="hidden" name="wpi_settings[available_features][<?php echo $plugin_slug; ?>][title]" value="<?php echo esc_attr( stripslashes($plugin_data['title'])); ?>" />
+        <input type="hidden" name="wpi_settings[available_features][<?php echo $plugin_slug; ?>][tagline]" value="<?php echo esc_attr( stripslashes($plugin_data['tagline'])); ?>" />
+        <input type="hidden" name="wpi_settings[available_features][<?php echo $plugin_slug; ?>][image]" value="<?php echo esc_attr( stripslashes($plugin_data['image'])); ?>" />
+        <input type="hidden" name="wpi_settings[available_features][<?php echo $plugin_slug; ?>][description]" value="<?php echo esc_attr( stripslashes( $plugin_data['description'] ) ); ?>" />
 
         <?php $installed = WPI_Functions::check_premium($plugin_slug); ?>
         <?php $active = (@$wpi_settings['installed_features'][$plugin_slug]['disabled'] != 'false' ? true : false); ?>
 
         <?php if($installed): ?>
         <?php /* Do this to preserve settings after page save. */ ?>
-        <input type="hidden" name="wpi_settings[installed_features][<?php echo $plugin_slug; ?>][disabled]" value="<?php echo $wpi_settings['installed_features'][$plugin_slug]['disabled']; ?>" />
-        <input type="hidden" name="wpi_settings[installed_features][<?php echo $plugin_slug; ?>][name]" value="<?php echo $wpi_settings['installed_features'][$plugin_slug]['name']; ?>" />
-        <input type="hidden" name="wpi_settings[installed_features][<?php echo $plugin_slug; ?>][version]" value="<?php echo $wpi_settings['installed_features'][$plugin_slug]['version']; ?>" />
-        <input type="hidden" name="wpi_settings[installed_features][<?php echo $plugin_slug; ?>][description]" value="<?php echo $wpi_settings['installed_features'][$plugin_slug]['description']; ?>" />
+        <input type="hidden" name="wpi_settings[installed_features][<?php echo $plugin_slug; ?>][disabled]" value="<?php echo esc_attr( stripslashes($wpi_settings['installed_features'][$plugin_slug]['disabled'])); ?>" />
+        <input type="hidden" name="wpi_settings[installed_features][<?php echo $plugin_slug; ?>][name]" value="<?php echo esc_attr( stripslashes($wpi_settings['installed_features'][$plugin_slug]['name'])); ?>" />
+        <input type="hidden" name="wpi_settings[installed_features][<?php echo $plugin_slug; ?>][version]" value="<?php echo esc_attr( stripslashes($wpi_settings['installed_features'][$plugin_slug]['version'])); ?>" />
+        <input type="hidden" name="wpi_settings[installed_features][<?php echo $plugin_slug; ?>][description]" value="<?php echo esc_attr( stripslashes( $wpi_settings['installed_features'][$plugin_slug]['description'] )); ?>" />
         <?php endif; ?>
         <tr class="wpi_premium_feature_block">
 
@@ -631,7 +631,7 @@ class WPI_Settings_page {
               </p>
             </div>
             <div class="wpi_box_content">
-              <p><?php echo $plugin_data['description']; ?></p>
+              <p><?php echo stripslashes($plugin_data['description']); ?></p>
             </div>
 
             <div class="wpi_box_footer clearfix">

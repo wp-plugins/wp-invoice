@@ -290,44 +290,133 @@ class wpi_paypal extends wpi_gateway_base {
    * Full callback URL: http://domain/wp-admin/admin-ajax.php?action=wpi_gateway_server_callback&type=wpi_paypal
    */
   function server_callback(){
-    
+
     if ( empty( $_POST ) ) die(__('Direct access not allowed', WPI));
-    
+
     $invoice = new WPI_Invoice();
     $invoice->load_invoice("id={$_POST['invoice']}");
 
+    /** Verify callback request */
     if ( $this->_ipn_verified( $invoice ) ) {
 
-      switch( $_POST['payment_status'] ) {
-
-        case 'Pending':
-
-					// Mark invoice as Pending
+      switch ( $_POST['txn_type'] ) {
+        /** New PayPal Subscription */
+        case 'subscr_signup':
+          /** PayPal Subscription created */
+          WPI_Functions::log_event(wpi_invoice_id_to_post_id($_POST['invoice']), 'invoice', 'update', '', __('PayPal Subscription created', WPI));
           wp_invoice_mark_as_pending( $_POST['invoice'] );
-					do_action( 'wpi_paypal_pending_ipn', $_POST );
-					
+          do_action( 'wpi_paypal_subscr_signup_ipn', $_POST );
           break;
 
-        case 'Completed':
-          // Add payment amount
-          $event_note = sprintf(__('%s paid via PayPal', WPI), WPI_Functions::currency_format(abs($_POST['mc_gross']), $_POST['invoice']));
-          $event_amount = (float)$_POST['mc_gross'];
-          $event_type   = 'add_payment';
-          // Log balance changes
-          $invoice->add_entry("attribute=balance&note=$event_note&amount=$event_amount&type=$event_type");
-          // Log payer email
-          $payer_email = sprintf(__("PayPal Payer email: %s", WPI), $_POST['payer_email']);
-          $invoice->add_entry("attribute=invoice&note=$payer_email&type=update");
-          $invoice->save_invoice();
-          // ... and mark invoice as paid
-          wp_invoice_mark_as_paid( $_POST['invoice'], $check = true );
-					send_notification( $invoice->data );
-					do_action( 'wpi_paypal_complete_ipn', $_POST );
-					
+        case 'subscr_cancel':
+          /** PayPal Subscription cancelled */
+          WPI_Functions::log_event(wpi_invoice_id_to_post_id($_POST['invoice']), 'invoice', 'update', '', __('PayPal Subscription cancelled', WPI));
+          do_action( 'wpi_paypal_subscr_cancel_ipn', $_POST );
           break;
 
-        default: break;
+        case 'subscr_failed':
+          /** PayPal Subscription failed */
+          WPI_Functions::log_event(wpi_invoice_id_to_post_id($_POST['invoice']), 'invoice', 'update', '', __('PayPal Subscription payment failed', WPI));
+          do_action( 'wpi_paypal_subscr_failed_ipn', $_POST );
+          break;
 
+        case 'subscr_payment':
+          /** Payment of Subscription */
+          switch ( $_POST['payment_status'] ) {
+            case 'Completed':
+              /** Add payment amount */
+              $event_note = sprintf(__('%1s paid for subscription %2s', WPI), WPI_Functions::currency_format(abs($_POST['mc_gross']), $_POST['invoice']), $_POST['subscr_id']);
+              $event_amount = (float)$_POST['mc_gross'];
+              $event_type   = 'add_payment';
+              /** Log balance changes */
+              $invoice->add_entry("attribute=balance&note=$event_note&amount=$event_amount&type=$event_type");
+              $invoice->save_invoice();
+              send_notification( $invoice->data );
+              break;
+
+            default:
+              break;
+          }
+          do_action( 'wpi_paypal_subscr_payment_ipn', $_POST );
+          break;
+
+        case 'subscr_eot':
+          /** PayPal Subscription end of term */
+          WPI_Functions::log_event(wpi_invoice_id_to_post_id($_POST['invoice']), 'invoice', 'update', '', __('PayPal Subscription term is finished', WPI));
+          wp_invoice_mark_as_paid( $_POST['invoice'], $check = false );
+          do_action( 'wpi_paypal_subscr_eot_ipn', $_POST );
+          break;
+
+        case 'subscr_modify':
+          /** PayPal Subscription modified */
+          WPI_Functions::log_event(wpi_invoice_id_to_post_id($_POST['invoice']), 'invoice', 'update', '', __('PayPal Subscription modified', WPI));
+          do_action( 'wpi_paypal_subscr_modify_ipn', $_POST );
+          break;
+
+        case 'web_accept':
+          /** PayPal simple button */
+          switch( $_POST['payment_status'] ) {
+          
+            case 'Pending':
+              /** Mark invoice as Pending */
+              wp_invoice_mark_as_pending( $_POST['invoice'] );
+              do_action( 'wpi_paypal_pending_ipn', $_POST );
+              break;
+            
+            case 'Completed':
+              /** Add payment amount */
+              $event_note = sprintf(__('%s paid via PayPal', WPI), WPI_Functions::currency_format(abs($_POST['mc_gross']), $_POST['invoice']));
+              $event_amount = (float)$_POST['mc_gross'];
+              $event_type   = 'add_payment';
+              /** Log balance changes */
+              $invoice->add_entry("attribute=balance&note=$event_note&amount=$event_amount&type=$event_type");
+              /** Log payer email */
+              $payer_email = sprintf(__("PayPal Payer email: %s", WPI), $_POST['payer_email']);
+              $invoice->add_entry("attribute=invoice&note=$payer_email&type=update");
+              $invoice->save_invoice();
+              /** ... and mark invoice as paid */
+              wp_invoice_mark_as_paid( $_POST['invoice'], $check = true );
+              send_notification( $invoice->data );
+              do_action( 'wpi_paypal_complete_ipn', $_POST );
+              break;
+
+            default: break;
+
+          }
+          break;
+        
+        case 'cart':
+          /** PayPal Cart. Used for SPC */
+          switch( $_POST['payment_status'] ) {
+            case 'Pending':
+              /** Mark invoice as Pending */
+              wp_invoice_mark_as_pending( $_POST['invoice'] );
+              do_action( 'wpi_paypal_pending_ipn', $_POST );
+              break;
+            case 'Completed':
+              /** Add payment amount */
+              $event_note = sprintf(__('%s paid via PayPal', WPI), WPI_Functions::currency_format(abs($_POST['mc_gross']), $_POST['invoice']));
+              $event_amount = (float)$_POST['mc_gross'];
+              $event_type   = 'add_payment';
+              /** Log balance changes */
+              $invoice->add_entry("attribute=balance&note=$event_note&amount=$event_amount&type=$event_type");
+              /** Log payer email */
+              $payer_email = sprintf(__("PayPal Payer email: %s", WPI), $_POST['payer_email']);
+              $invoice->add_entry("attribute=invoice&note=$payer_email&type=update");
+              $invoice->save_invoice();
+              /** ... and mark invoice as paid */
+              wp_invoice_mark_as_paid( $_POST['invoice'], $check = true );
+              send_notification( $invoice->data );
+              do_action( 'wpi_paypal_complete_ipn', $_POST );
+              break;
+
+            default: break;
+
+          }
+          break;
+        
+        default:
+          break;
       }
 
     }

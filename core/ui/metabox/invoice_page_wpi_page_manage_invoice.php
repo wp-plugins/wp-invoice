@@ -75,7 +75,7 @@ function postbox_overview($this_invoice) {
    ?>
     <tr>
       <th>
-        <?php _e('Invoice ID', WPI) ?>
+        <?php _e('Invoice ID', WPI); ?>
       </th>
       <td>
         <?php echo $this_invoice['invoice_id']; ?>
@@ -89,7 +89,7 @@ function postbox_overview($this_invoice) {
     ?>
       <tr>
         <th>
-          <?php _e($title, WPI) ?>
+          <?php _e($title, WPI); ?>
         </th>
         <td>
           <?php echo $value; ?>
@@ -140,8 +140,9 @@ function postbox_publish($this_invoice) {
         <?php } ?>
 
         <?php if ($wpi_settings['show_recurring_billing'] == 'true') { ?>
-          <li class="wpi_turn_off_recurring wpi_not_for_quote"><?php echo WPI_UI::checkbox("name=wpi_invoice[recurring][active]&value=true&label=Recurring Bill", (!empty($this_invoice['recurring']) ? $this_invoice['recurring']['active'] : false)) ?></li>
-          
+          <li class="wpi_turn_off_recurring wpi_not_for_quote">
+            <?php echo WPI_UI::checkbox("name=wpi_invoice[recurring][active]&value=true&label=".__('Recurring Bill', WPI), (!empty($this_invoice['recurring']) ? $this_invoice['recurring']['active'] : false)); ?>
+          </li>
           <li class="wpi_recurring_bill_settings <?php if (!empty($this_invoice['recurring']) && $this_invoice['recurring']['active'] != 'on') {
             ?>hidden<?php } ?>">
             <table class="wpi_recurring_bill_settings">
@@ -149,7 +150,7 @@ function postbox_publish($this_invoice) {
                 <th><?php _e("Bill Every", WPI) ?></th>
                 <td>
                   <?php echo WPI_UI::input("name=wpi_invoice[recurring][length]&value=" . (!empty($this_invoice['recurring']) ? $this_invoice['recurring']['length'] : '') . "&class=wpi_small wpi_bill_every_length"); ?>
-                  <?php echo WPI_UI::select("name=wpi_invoice[recurring][unit]&values=" . serialize(apply_filters('wpi_schedule_units', array("months" => __("Month(s)", WPI), "days" => __("Day(s)", WPI)))) . "&current_value=" . (!empty($this_invoice['recurring']) ? $this_invoice['recurring']['unit'] : '')); ?>
+                  <?php echo WPI_UI::select("name=wpi_invoice[recurring][unit]&values=" . serialize(apply_filters('wpi_schedule_units', array( "days" => __("Day(s)", WPI), "weeks" => __("Week(s) [PayPal only]", WPI), "months" => __("Month(s)", WPI), "years" => __("Year(s) [PayPal only]", WPI)))) . "&current_value=" . (!empty($this_invoice['recurring']) ? $this_invoice['recurring']['unit'] : '')); ?>
                 </td>
               </tr>
               <tr>
@@ -172,6 +173,7 @@ function postbox_publish($this_invoice) {
                     <?php echo WPI_UI::input("id=r_start_date_aa&name=wpi_invoice[recurring][start_date][year]&value=" . (!empty($this_invoice['recurring']) ? $this_invoice['recurring']['start_date']['year'] : '') . "&special=size='2' maxlength='4' autocomplete='off'") ?><br />
                     <span onclick="wp_invoice_add_time('r_start_date', 7);" class="wp_invoice_click_me"><?php _e('In One Week', WPI); ?></span> | <span onclick="wp_invoice_add_time('r_start_date', 30);" class="wp_invoice_click_me"><?php _e('In 30 Days', WPI); ?></span> | <span onclick="wp_invoice_add_time('r_start_date', 'clear');" class="wp_invoice_click_me"><?php _e('Clear', WPI); ?></span>
                   </div>
+                  <small><?php _e('Applicable only to Authorize.net', WPI); ?></small>
                 </td>
               </tr>
             </table>

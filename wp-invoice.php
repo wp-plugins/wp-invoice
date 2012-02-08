@@ -4,7 +4,7 @@
   Plugin URI: http://usabilitydynamics.com/products/wp-invoice/
   Description: Send itemized web-invoices directly to your clients.  Credit card payments may be accepted via Authorize.net, MerchantPlus NaviGate, or PayPal account. Recurring billing is also available via Authorize.net's ARB. Visit <a href="admin.php?page=wpi_page_settings">WP-Invoice Settings Page</a> to setup.
   Author: UsabilityDynamics.com
-  Version: 3.04.7.2
+  Version: 3.05.0
   Author URI: http://UsabilityDynamics.com/
   Copyright 2011  Usability Dynamics, Inc.   (email : andy.potanin@UsabilityDynamics.com)
 
@@ -32,7 +32,7 @@ define('WPI_Path', WP_PLUGIN_DIR . '/wp-invoice');
 /** Path for front-end links */
 define('WPI_URL', WP_PLUGIN_URL . '/wp-invoice');
 
-define("WP_INVOICE_VERSION_NUM", "3.04.7.2");
+define("WP_INVOICE_VERSION_NUM", "3.05.0");
 define("WPI", "wp-invoice");
  
 /** Directory paths */
@@ -448,35 +448,35 @@ if (!class_exists('WPI_Core')) {
      */
     function template_redirect() {
       global $wpdb, $invoice_id, $wpi_user_id, $wpi_settings, $wpi_invoice_object, $post;
-      
+
       //** Alwys load styles without checking if given page has an invoice */
       wp_enqueue_style('wpi-theme-specific');
       wp_enqueue_style('wpi-default-style');
-      
+
       /* Determine if the current page is invoice's page */
       if ($wpi_settings['web_invoice_page'] != $post->ID) {
         return;
       }
-      
+
       // If invoice_id is passed, run validate_page_hash  to make sure this is the right page and invoice_id exists
       if (isset($_GET['invoice_id'])) {
-        
+
         if (WPI_Functions::validate_page_hash(mysql_escape_string($_GET['invoice_id']))) {
-          
+
           /** load global invoice object */
           $post_id = wpi_invoice_id_to_post_id($invoice_id);
-          
+
           $wpi_invoice_object = new WPI_Invoice();
           $wpi_invoice_object->load_invoice("id=$post_id");
           $wpi_invoice_object->data;
-          
+
           add_filter('viewable_invoice_types', array( $this, 'viewable_types' ));
-          
+
           //* Determine if current invoice object is "viewable" */
           if(!in_array($wpi_invoice_object->data['post_status'], apply_filters('viewable_invoice_types', array('active')))) {
             return;
           }
-          
+
           // Load front end scripts
           wp_enqueue_script('jquery.validate');
           wp_enqueue_script('wpi-gateways');
@@ -489,35 +489,35 @@ if (!class_exists('WPI_Core')) {
           add_action('wpi_description', 'shortcode_unautop');
           add_action('wpi_description', 'convert_chars');
           add_action('wpi_description', 'capital_P_dangit');
-          
+
           // Declare the variable that will hold our AJAX url for JavaScript purposes
           wp_localize_script('jquery', 'wpi_ajax', array( 'url' => admin_url( 'admin-ajax.php' ) ) );
-          
+
           add_action('wp_head', array('WPI_UI', 'frontend_header'));
-          
+
           if ($wpi_settings['replace_page_title_with_subject'] == 'true' || $wpi_settings['hide_page_title'] == 'true') {
             add_action('wp_title', array('WPI_UI', 'wp_title'), 0, 3);
           }
-          
+
           if ($wpi_settings['replace_page_heading_with_subject'] == 'true' || $wpi_settings['hide_page_title'] == 'true') {
             add_action('the_title', array('WPI_UI', 'the_title'), 0, 2);
           }
-          
+
           add_action('the_content', array('WPI_UI', 'the_content'));
-          
+
           if ( $wpi_settings['where_to_display'] == 'replace_tag' ) {
             add_shortcode('wp-invoice', array('WPI_UI', 'the_content_shortcode'));
           }
-        
+
         } else {
           /* Show 404 when invoice doesn't exist */
           $not_found = get_query_template('404');
           require_once $not_found;
           die();
         }
-        
+
       }
-      
+
       // Fixed WordPress filters if page is being opened in HTTPS mode
       if (isset($_SERVER['HTTPS']) && $_SERVER["HTTPS"] == "on") {
         if(function_exists('force_ssl')) {
@@ -530,7 +530,7 @@ if (!class_exists('WPI_Core')) {
           add_filter('script_loader_src', 'force_ssl');
         }
       }
-      
+
       // Lookup functionality
       if(isset($_POST['wp_invoice_lookup_input'])) {
         header("location:" . get_invoice_permalink($_POST['wp_invoice_lookup_input']));

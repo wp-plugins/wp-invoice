@@ -730,7 +730,7 @@ function wpi_validate_invoice() {
 function wpi_validate_recurring_units(e) {
   var unit = jQuery("#wpi_wpi_invoice_recurring_unit_").val();
   if ( unit == 'days' ) {
-    jQuery(e).val( jQuery(e).val()>=7&&jQuery(e).val()<=365?jQuery(e).val():7 );
+    jQuery(e).val( jQuery(e).val()>=1&&jQuery(e).val()<=365?jQuery(e).val():1 );
   }
   if ( unit == 'months' ) {
     jQuery(e).val( jQuery(e).val()>=1&&jQuery(e).val()<=12?jQuery(e).val():1 );
