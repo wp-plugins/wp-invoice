@@ -58,6 +58,57 @@ jQuery(document).ready(function(){
     */
   });
   
+  jQuery("#currency-list .wpi_dynamic_table_row[new_row=true] input.names_changer").live("change", function() {
+  
+    
+    var this_row = jQuery(this).parents('tr.wpi_dynamic_table_row');
+  // Slug of row in question
+    var old_slug = jQuery(this_row).attr('slug');
+    var new_slug = jQuery(this).val();
+
+    // Don't allow to blank out slugs
+    if(new_slug == "") {
+      return;
+    }
+    
+    // If slug input.slug exists in row, we modify it
+    jQuery(".slug" , this_row).val(new_slug);
+    // Update row slug
+    jQuery(this_row).attr('slug', new_slug);
+    
+    // Cycle through all child elements and fix names
+    jQuery('input,select,textarea', this_row).each(function(element) {
+      var old_name = jQuery(this).attr('name');
+      if (typeof old_name!='undefined'){
+        var new_name =  old_name.replace(old_slug,new_slug);
+        jQuery(this).attr('name', new_name);
+      }
+      var old_id = jQuery(this).attr('id');
+      if (typeof old_id !='undefined'){
+        var new_id =  old_id.replace(old_slug,new_slug);
+        jQuery(this).attr('id', new_id);
+      }
+    });
+
+    // Cycle through labels too
+    jQuery('label', this_row).each(function(element) {
+      var old_for = jQuery(this).attr('for');
+      if(typeof old_for!='undefined'){
+        var new_for =  old_for.replace(old_slug,new_slug);
+        jQuery(this).attr('for', new_for);
+      }
+    });
+   
+  });
+  
+  
+  
+  /** remove html5 check for reqirements and make it manualy on submit */
+  jQuery("#currency-list :input[required]").each( function() {
+    jQuery( this ).removeAttr( 'required' ).attr( 'validation_required', true );
+  });
+  
+  
   jQuery("#minor-publishing table.form-table").find('tbody').toggle();
   jQuery("#wpi_button_show_advanced").live("click", function(){
     jQuery(this).parents("#minor-publishing table.form-table").find('tbody').toggle();
@@ -663,7 +714,7 @@ jQuery("#wp_invoice_copy_invoice_cancel").click(function() {
   Do not submit form if no user is defined
 */
 jQuery("#wpi_new_invoice_form").submit(function() {
-    if(jQuery("#wp_invoice_userlookup").val() == "") return false;  
+  if(jQuery("#wp_invoice_userlookup").val() == "") return false;  
 });
 // -- Settings Page -- //
 /*
@@ -679,16 +730,16 @@ jQuery("#wpi_new_invoice_form").submit(function() {
 /*
   Confirms that user wants to overwrite any tempaltes in their wpi folder
 */
-  jQuery('#wpi_wpi_settings_install_use_custom_templates_').live('click', function(event) {
-    if(jQuery(this).is(":checked")) {
+  jQuery('input.wpi_install_custom_templates').live('click', function() {
       var answer = confirm("This will overwrite any theme files you currently have in your /wpi/ folder.")
-      if(answer)
-        return true;
-      else
-        return false;
-    } else {
-      jQuery(".wpi_use_custom_template_settings").hide();
-     }
+      if( answer ) {
+        jQuery.post(ajaxurl,
+          {
+            'action':'wpi_install_custom_templates'
+          }, function( response ){
+            jQuery('.wpi_install_custom_templates_result').html(response.join()).show();
+          }, 'json');
+      }
   });
 /*
   Called when user changes wheather the client can change payment method, or must use the default
@@ -697,12 +748,52 @@ jQuery("#wpi_new_invoice_form").submit(function() {
   jQuery('.wpi_settings_client_change_payment_method').live('change', function(event) {
     wpi_can_client_change_payment_method();
   });
+  
+  var wpi_currency_accordion = jQuery("#currency-list").accordion({
+    header: "h3",
+    animated: false,
+    autoHeight: false,
+    collapsible: true,
+    icons: {
+      'header': 'ui-icon-plus',
+      'headerSelected':'ui-icon-minus'
+    },
+    active:false
+  });
+  
 /*
   Do any validation/data work before the settings page form is submitted
 */
   jQuery("#wpi_settings_form").submit(function() {
+    var validation_ok = true;
+    jQuery(".wpi_dynamic_table_row :input[validation_required=true]").each(function(){
+      if (!jQuery(this).val()){
+        wpi_show_error("This is a required field.");
+        error_field = this;
+        validation_ok = false;
+      }
+    });
+    
+    jQuery(".wpi_dynamic_table_row[new_row=true] .code").each(function(){
+      if (!jQuery(this).val().match("[A-Z]{3}")){
+        wpi_show_error("Please enter a valid currency code.");
+        error_field = this;
+        validation_ok = false;
+      }
+    });
+    
     // Convert list of favorite countries into CSV format, and paste CSV into hidden field
      jQuery("input[name='wpi_settings[globals][favorite_countries]']").val(jQuery("#wpi_favorite_countries option" ).attrList( "value", "," ));
+     
+     if (!validation_ok) {
+       jQuery("#wp_invoice_settings_page").tabs('select', 2); // switch to third tab
+       if(jQuery("#currency-list").accordion( "option", "active")===false){
+         jQuery("#currency-list").accordion( "option", "active",0);
+       }
+       jQuery(error_field).focus();
+       return false;
+     }
+     
   });
 /*
   Confirm complete removal of WPI databases
@@ -721,19 +812,7 @@ jQuery("#wpi_new_invoice_form").submit(function() {
     jQuery("#invoice_sorter_table input[type=checkbox]").attr("checked",!tog);
     tog = !tog;
    }); 
-  /*
-  Done via PHP 
-  jQuery('#invoices-filter .subsubsub a').click(function() {
-    jQuery(".invoice-search-input").val(jQuery(this).attr('class'));
-    var s = jQuery(this).attr('class').toLowerCase().split(" ");
-    jQuery("#invoice_sorter_table tr:hidden").show();
-    jQuery.each(s, function(){
-       jQuery("#invoice_sorter_table tr:visible .indexColumn:not(:contains('"
-        + this + "'))").parent().hide();
-    });
-    return false; 
-  });
-  */
+
   jQuery("#invoice_sorter_table tr:has(td)").each(function(){
      var t = jQuery(this).text().toLowerCase(); //all row text
      jQuery("<td class='indexColumn'></td>")
@@ -905,6 +984,11 @@ submitHandler: function(form) {
     } else {
       jQuery("#the-list td.cb input:checkbox").removeAttr('checked');
     }
+  });
+  
+  //** GA Track Events options hidding */
+  jQuery("#wpi_wpi_settings_ga_event_tracking_enabled_").click(function(e) {
+    jQuery(this).parents('ul').find('li.wpi_ga_events_list').toggle();
   });
 
 });

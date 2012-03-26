@@ -142,7 +142,7 @@ class wpi_paypal extends wpi_gateway_base {
 	 */
   function __construct() {
     parent::__construct();
-    $this->options['settings']['ipn']['value'] = urlencode( get_bloginfo('url').'/wp-admin/admin-ajax.php?action=wpi_gateway_server_callback&type=wpi_paypal' );
+    $this->options['settings']['ipn']['value'] = admin_url('admin-ajax.php?action=wpi_gateway_server_callback&type=wpi_paypal');
 		
 		add_action( 'wpi_payment_fields_paypal', array( $this, 'wpi_payment_fields' ) );
 	}
@@ -209,29 +209,30 @@ class wpi_paypal extends wpi_gateway_base {
 						// If field is set of 3 fields for paypal phone number
 						if ( $field_slug == 'phonenumber' ) {
 							
-							echo '<li class="wpi_checkout_row"><label>'.__('Phone Number', WPI).'</label>';
+							echo '<li class="wpi_checkout_row"><div class="control-group"><label class="control-label">'.__('Phone Number', WPI).'</label><div class="controls">';
 							
 							$phonenumber = !empty($invoice['user_data']['phonenumber']) ? $invoice['user_data']['phonenumber'] : "---";
 							$phone_array = split('[/.-]', $phonenumber);
 							
 							foreach( $field_data as $field ) {
+                //** Change field properties if we need */
+                $field = apply_filters('wpi_payment_form_styles', $field, $field_slug, 'wpi_paypal');
 								ob_start();
-
                 ?>
                   <input type="<?php echo esc_attr( $field['type'] ); ?>" class="<?php echo esc_attr( $field['class'] ); ?>"  name="<?php echo esc_attr( $field['name'] ); ?>" value="<?php echo esc_attr( $phone_array[key($phone_array)] ); next($phone_array); ?>" />
                 <?php
-
                 $html = ob_get_contents();
                 ob_end_clean();
 								echo $html;
 							}
 							
-							echo '</li>';
+							echo '</div></div></li>';
 							
 						}
+            //** Change field properties if we need */
+            $field_data = apply_filters('wpi_payment_form_styles', $field_data, $field_slug, 'wpi_paypal');
 
             $html = '';
-
             switch ( $field_data['type'] ) {
               case self::TEXT_INPUT_TYPE:
 
@@ -240,8 +241,12 @@ class wpi_paypal extends wpi_gateway_base {
                 ?>
 
                 <li class="wpi_checkout_row">
-                  <label for="<?php echo esc_attr( $field_slug ); ?>"><?php _e($field_data['label'], WPI); ?></label>
-                  <input type="<?php echo esc_attr( $field_data['type'] ); ?>" class="<?php echo esc_attr( $field_data['class'] ); ?>"  name="<?php echo esc_attr( $field_data['name'] ); ?>" value="<?php echo !empty($invoice['user_data'][$field_slug])?$invoice['user_data'][$field_slug]:'';?>" />
+                  <div class="control-group">
+                    <label class="control-label" for="<?php echo esc_attr( $field_slug ); ?>"><?php _e($field_data['label'], WPI); ?></label>
+                    <div class="controls">
+                      <input type="<?php echo esc_attr( $field_data['type'] ); ?>" class="<?php echo esc_attr( $field_data['class'] ); ?>"  name="<?php echo esc_attr( $field_data['name'] ); ?>" value="<?php echo !empty($invoice['user_data'][$field_slug])?$invoice['user_data'][$field_slug]:'';?>" />
+                    </div>
+                  </div>
                 </li>
 
                 <?php

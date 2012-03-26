@@ -1,14 +1,14 @@
-/*
-  Styles Specifically for TwentyTen Based Themes
-*/
-
+/** Default WP-Invoice styles */
+#wp_invoice_process_wait {
+  margin: 0;
+  float: left;
+}
 .wp_invoice_business_name {
   font-weight: bold;
 }
 .wp_invoice_business_phone {
   font-style: italic;
 } 
-  
 .wpi_left_col,
 .wpi_right_col {
   float: left;
@@ -118,7 +118,7 @@ div.wpi_payment_form  .paypal_button {
 
 div.wpi_payment_form  .text-input.wpi_error,
 div.wpi_payment_form  .input_field.wpi_error {
-  border: 1px solid #AE1C1C;
+  border: 1px solid #AE1C1C !important;
 }
 
 div.wpi_payment_form  input.wpi_checkout_input_error{
@@ -205,7 +205,7 @@ div.wpi_checkout_payment_box li label {
     float: left;
     position: relative;
     top: 6px;
-    width: 130px;
+    width: 140px;
 }
 
 form.wpi_checkout .text-input,

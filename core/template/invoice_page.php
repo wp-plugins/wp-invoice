@@ -1,6 +1,6 @@
 <div id="invoice_page" class="wpi_invoice_form wpi_payment_form clearfix">
     <div class="wpi_left_col">
-        <b class="wpi_greeting"><?php echo sprintf(__('Welcome, %s!', WPI), recipients_name(array('return'=>true))) ?></b>
+        <h3 class="wpi_greeting"><?php echo sprintf(__('Welcome, %s!', WPI), recipients_name(array('return'=>true))) ?></h3>
  
         <div class="invoice_description">
           <div class="invoice_top_message">
@@ -11,6 +11,8 @@
             <?php if(!is_quote()) : ?>
               <p><?php echo sprintf(__('We have sent you invoice %1s with a balance of %2s.', WPI), invoice_id(array('return'=>true)), balance_due(array('return'=>true))); ?></p>
             <?php endif; ?>
+              
+            <p><?php wpi_invoice_due_date(); ?></p>
 
             <?php if(is_recurring()): ?>
               <p><?php _e('This is a recurring bill.', WPI) ?></p>
@@ -61,8 +63,10 @@
 		?>
 		</div>
 		<?php } ?>
- 
-		<?php do_action('wpi_front_end_right_col_bottom'); ?>
+      <div class="clear"></div>
+      <div class="wpi_front_end_right_col_bottom">
+        <?php do_action('wpi_front_end_right_col_bottom'); ?>
+      </div>
 			
 	</div>
 </div>

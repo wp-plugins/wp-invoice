@@ -42,17 +42,20 @@
     <input type="hidden" name="cmd" value="_xclick">
     <input type="hidden" name="rm" value="2">
   <?php endif; ?>
-	
-	<div id="credit_card_information">
-		
-		<?php do_action('wpi_payment_fields_paypal', $invoice); ?>
-		
-		<ul id="wp_invoice_process_wait">
-			<li>
-				<label><img src="<?php echo $invoice['billing']['wpi_paypal']['settings']['button_url']['value']; ?>" /></label>
-				<button type="submit" id="cc_pay_button" class="hide_after_success submit_button"><?php _e('Process Payment of ', WPI); ?><?php echo (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$"); ?><span id="pay_button_value"><?php echo WPI_Functions::money_format($invoice['net']); ?></span></button>
-				<img style="display: none;" class="loader-img" src="<?php echo WPI_URL; ?>/core/css/images/processing-ajax.gif" alt="" />
-			</li>
-		</ul>
-		
-	</div>
+  
+  <div id="credit_card_information">
+    
+    <?php do_action('wpi_payment_fields_paypal', $invoice); ?>
+    
+    <ul id="wp_invoice_process_wait">
+      <li>
+        <div class="wpi-control-group">
+          <div class="controls">
+            <button type="submit" id="cc_pay_button" class="hide_after_success submit_button"><?php _e('Process Payment of ', WPI); ?><?php echo (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$"); ?><span id="pay_button_value"><?php echo WPI_Functions::money_format($invoice['net']); ?></span></button>
+          </div>
+          <img style="display: none;" class="loader-img" src="<?php echo WPI_URL; ?>/core/css/images/processing-ajax.gif" alt="" />
+        </div>
+      </li>
+    </ul>
+    
+  </div>

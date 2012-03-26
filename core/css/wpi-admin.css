@@ -1,3 +1,7 @@
+ul {
+  margin: 0;
+  padding: 0;
+}
 .wpi_advanced_option {
   display: none;
 }
@@ -1043,5 +1047,17 @@ div.jqi button{ padding: 3px 10px 3px 10px; margin: 0 10px; }
 div.wpi_crm_link {
   padding: 10px;
 }
-
-
+p.wpi_readonly {
+  background: none repeat scroll 0 0 #EFEFEF;
+  border: 1px solid #DDDDDD;
+  border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  padding: 10px;
+  -moz-text-shadow: 1px 1px 0 #FFFFFF;
+  -webkit-text-shadow: 1px 1px 0 #FFFFFF;
+  text-shadow: 1px 1px 0 #FFFFFF;
+}
+ul.wpi_sublist {
+  padding-left: 20px;
+}

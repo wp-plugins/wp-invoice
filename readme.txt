@@ -1,6 +1,6 @@
 === WP-Invoice - Web Invoice and Billing ===
 Contributors: usability_dynamics, Anton Korotkoff, andypotanin, jbrw
-Donate link: http://usabilitydynamics.com/products/wp-invoice/
+Donate link: https://usabilitydynamics.com/products/wp-invoice/
 Tags: web invoice, bill, paypal, invoice, pay, online payment, send invoice, bill clients, authorize.net, credit cards, recurring billing, ARB
 Requires at least: 3.1
 Tested up to: 3.3
@@ -21,7 +21,6 @@ Once an invoice is created from the WP admin section, an email with a brief desc
 
 Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, or PayPal account.  For recurring billing we have integrated Authorize.net's ARB API that will allow you to setup payment schedules along with invoices.
 
-
 = New Features =
 
 * Automatically import invoices from Web Invoice plugin.
@@ -34,7 +33,6 @@ Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, 
 * Discount Line Items
 * Custom Payment Entry, and administrative adjustments
 * Customizable Invoice and Receipt Templates
-
 
 = More Features =
 
@@ -62,11 +60,11 @@ Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, 
 3. Follow set-up steps on main Invoice page
 4. To create your first invoice navigate to Invoice -> New Invoice, and select the user who will be the recipient.
 
-Please see the [wp-invoice plugin home page](http://usabilitydynamics.com/products/wp-invoice/) for details.
+Please see the [wp-invoice plugin home page](https://usabilitydynamics.com/products/wp-invoice/) for details.
 
 == Frequently Asked Questions ==
 
-Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/forums/9692-wp-invoice/) for suggestions and help.
+Please visit the [wp-invoice community page](https://usabilitydynamics.com/products/wp-invoice/forums/) for suggestions and help.
 
 == Screenshots ==
 
@@ -79,8 +77,10 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 7. Create pre-defined line items
 8. View 3 standard reports - collected vs uncollected invoices, 10 most valuable clients and top grossing line items
 
-
 == Upgrade Notice ==
+
+= Version 3.06.0 =
+* New features.
 
 = Version 3.04.3 =
 * Total improvements.
@@ -98,6 +98,17 @@ Please visit the [wp-invoice community page](http://feedback.twincitiestech.com/
 * Complete rewrite. Old invoice data is not deleted, please notify us if you have any upgrading issues.
 
 == Change Log ==
+
+= Version 3.06.0 =
+* New Contextual Help. It is now fully compatible with WordPress 3.3+. Each information block has it's own tab.
+* Notifications with WP-CRM. Now you have the ability to manage WP-Invoice notification templates with WP-CRM.
+* Added the ability to show the Due Date on the invoice page.
+* Added the ability to manage currencies. You can add any currency you want to use, or delete unwanted currencies.
+* Single Page Checkout improvements. 
+* Added the ability to Visualize Sales. New sales graph according to the filter displayed on the invoice list page.
+* New feature for tracking Google Analytics events added.
+* Other small improvements in functionality and UI.
+* Updated ability to backup and restore your WP-Invoice configuration.
 
 = Version 3.05.0 =
 * PayPal Subscriptions integrations added.

@@ -94,3 +94,6 @@ td.wpi_premium_feature_image {
 .wpi_features_not_found {
   padding: 10px;
 }
+#currency-list > div {
+  padding-top: 10px;
+}

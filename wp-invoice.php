@@ -4,7 +4,7 @@
   Plugin URI: http://usabilitydynamics.com/products/wp-invoice/
   Description: Send itemized web-invoices directly to your clients.  Credit card payments may be accepted via Authorize.net, MerchantPlus NaviGate, or PayPal account. Recurring billing is also available via Authorize.net's ARB. Visit <a href="admin.php?page=wpi_page_settings">WP-Invoice Settings Page</a> to setup.
   Author: UsabilityDynamics.com
-  Version: 3.05.0
+  Version: 3.06.0
   Author URI: http://UsabilityDynamics.com/
   Copyright 2011  Usability Dynamics, Inc.   (email : andy.potanin@UsabilityDynamics.com)
 
@@ -32,7 +32,7 @@ define('WPI_Path', WP_PLUGIN_DIR . '/wp-invoice');
 /** Path for front-end links */
 define('WPI_URL', WP_PLUGIN_URL . '/wp-invoice');
 
-define("WP_INVOICE_VERSION_NUM", "3.05.0");
+define("WP_INVOICE_VERSION_NUM", "3.06.0");
 define("WPI", "wp-invoice");
  
 /** Directory paths */
@@ -56,6 +56,10 @@ require_once("core/wpi_payment_api.php");
 //** Loads all the metaboxes for the crm page */
 include_once WPI_Path . '/core/ui/wpi_metaboxes.php';
 
+//** Need to do this before init. Temporary here. */
+add_filter("pre_update_option_wpi_options", array('WPI_Functions', 'pre_update_option_wpi_options'),10,3);
+add_filter("option_wpi_options", array('WPI_Functions', 'option_wpi_options'));
+
 //**  Set to true to display debugging messages throughout the UI */
 $wp_invoice_debug = false;
 
@@ -75,6 +79,19 @@ if (!class_exists('WPI_Core')) {
     public $links;
     public $ui_path;
     public $current_user;
+    
+    
+    /**
+    * CRM Notification actions
+    *
+    * Available template tags you can use in WP CRM plugin for user notifications:
+    *
+    */
+    static public $crm_notification_actions = array(
+      'wpi_send_thank_you_email' => 'WPI: Invoice Paid (Client Receipt)',
+      'wpi_cc_thank_you_email'   => 'WPI: Invoice Paid (Notify Administrator)',
+      'wpi_send_invoice_creator_email' => 'WPI: Invoice Paid (Notify Creator)',
+    );
     
     /**
      * Singleton.
@@ -145,6 +162,26 @@ if (!class_exists('WPI_Core')) {
     function init() {
       global $wpdb, $wp_version, $user_ID, $wpi_settings, $wp_invoice_debug, $wpi_notification;
       
+      //** Download backup of configuration BEFORE any additional info added to it by filters */
+      if($_REQUEST['page'] == 'wpi_page_settings'
+        && $_REQUEST['wpi_action'] == 'download-wpi-backup'
+        && wp_verify_nonce($_REQUEST['_wpnonce'], 'download-wpi-backup')) {
+          global $wpi_settings;
+
+          $sitename = sanitize_key( get_bloginfo( 'name' ) );
+          $filename = $sitename . '-wp-invoice.' . date( 'Y-m-d' ) . '.txt';
+
+          header("Cache-Control: public");
+          header("Content-Description: File Transfer");
+          header("Content-Disposition: attachment; filename=$filename");
+          header("Content-Transfer-Encoding: binary");
+          header( 'Content-Type: text/plain; charset=' . get_option( 'blog_charset' ), true );
+
+          echo json_encode($wpi_settings);
+
+        die();
+      }
+      
       // Action for premium features to use to hook in before init
       do_action('wpi_pre_init');
       
@@ -162,7 +199,8 @@ if (!class_exists('WPI_Core')) {
       
       // Run Everytime
       $this->Functions->register_post_type();
-      
+
+      add_action("wpi_contextual_help",   array('WPI_UI', "wpi_contextual_help"));
       add_action("admin_enqueue_scripts", array('WPI_UI', "admin_enqueue_scripts"));
       add_action("admin_enqueue_scripts", array('WPI_UI', "admin_print_styles"));
       
@@ -195,23 +233,33 @@ if (!class_exists('WPI_Core')) {
       
       add_action('wp_ajax_wpi_total_revalidate', array('WPI_Ajax', 'revalidate'));
 
-      /** Add our actions for our payment handlers */
+      //** Add our actions for our payment handlers */
       add_action('wp_ajax_nopriv_wpi_gateway_process_payment', array('WPI_Gateway_Base', 'process_payment'));
       add_action('wp_ajax_wpi_gateway_process_payment', array('WPI_Gateway_Base', 'process_payment'));
       add_action('wp_ajax_nopriv_wpi_front_change_payment_form_ajax', array('WPI_Gateway_Base', 'change_payment_form_ajax'));
       add_action('wp_ajax_wpi_front_change_payment_form_ajax', array('WPI_Gateway_Base', 'change_payment_form_ajax'));
-      /** Server Callback functionality */
+
+      //** Server Callback functionality */
       add_action('wp_ajax_nopriv_wpi_gateway_server_callback', array('WPI_Gateway_Base', 'server_callback'));
       add_action('wp_ajax_wpi_gateway_server_callback', array('WPI_Gateway_Base', 'server_callback'));
 
-      /** WP-CRM integration */
+      //** Install custom templates to theme */
+      add_action('wp_ajax_wpi_install_custom_templates', array('WPI_Ajax', 'install_templates'));
+
+      //** WP-CRM integration */
       add_action('wpi_integrate_crm_user_panel', array('WPI_UI', 'crm_user_panel'));
       if ( class_exists('WP_CRM_Core') ) {
         add_action('wp_crm_data_structure_attributes', array('WPI_UI', 'wp_crm_data_structure_attributes'));
         add_filter('wpi_crm_custom_fields', array('WPI_Functions', 'wpi_crm_custom_fields'), 10, 2);
-        add_filter('wp_crm_contextual_help', array('WPI_UI', 'wp_crm_contextual_help'));
+        /* Contextual Help for CRM */
+        add_filter('crm_page_wp_crm_settings_help', array('WPI_UI', 'wp_crm_contextual_help'));
+        /** Add CRM notification fire action */
+        add_filter("wp_crm_notification_actions", array('WPI_Functions', 'wpi_crm_custom_notification'));
+        /*add_filter("pre_update_option_wp_crm_settings", array('WPI_Functions', 'wpi_crm_add_default_templates'),10,3);*/
+        
       }
-
+      
+      
       /** If we are in debug mode, lets add these actions */
       if($wpi_settings['debug']){
         add_action('wp_ajax_wpi_debug_get_invoice', array('WPI_Ajax', 'debug_get_invoice'));
@@ -300,7 +348,6 @@ if (!class_exists('WPI_Core')) {
       wp_register_script('wp-invoice-functions', WPI_URL . "/core/js/wpi-functions.js",  array('wp-invoice-events'));      
       
       wp_register_script('jquery-ui-sortable', '/wp-includes/js/jquery/ui.sortable.js', array('jquery'));
-      //wp_register_script('jquery.json', WPI_URL . '/core/js/jquery.json-2.2.min.js', array('jquery'));
 
       // Find and register theme-specific style if a custom wp_properties.css does not exist in theme
       if(!$this->Functions->is_true($wpi_settings['do_not_load_theme_specific_css']) && $this->Functions->has_theme_specific_stylesheet()) {
@@ -327,13 +374,6 @@ if (!class_exists('WPI_Core')) {
       
       do_action("wpi_pre_header_{$current_screen->id}", $current_screen->id);
       //do_action("wpi_print_styles");
-      
-      if ( version_compare($wp_version, '3.3', '>=') ) {
-        
-      } else {
-        add_filter('contextual_help', array('WPI_UI', 'contextual_help_old'));
-      }
-
     }
     
     /*
@@ -378,9 +418,17 @@ if (!class_exists('WPI_Core')) {
      */
     function admin_init() {
       global $wpi_settings;
-      /*if (isset($_REQUEST['wpi_do'])) {
-        $this->Functions->DoFunction($_REQUEST['wpi_do']);
-      }*/
+      
+      //** Handle backup */
+      if($backup_file = $_FILES['wpi_settings']['tmp_name']['settings_from_backup']) {
+        $backup_contents = file_get_contents($backup_file);
+
+        if(!empty($backup_contents))
+          $decoded_settings = json_decode($backup_contents, true);
+
+        if(!empty($decoded_settings))
+          $_REQUEST['wpi_settings'] = $decoded_settings;
+      }
       
       if ( !empty( $_REQUEST['wpi_settings'] ) && is_array($_REQUEST['wpi_settings']) ) {
         $this->Settings->SaveSettings($_REQUEST['wpi_settings']);
@@ -482,6 +530,10 @@ if (!class_exists('WPI_Core')) {
           wp_enqueue_script('wpi-gateways');
           wp_enqueue_script('jquery.maskedinput');
           wp_enqueue_script('wpi-frontend-scripts');
+          
+          if ( !empty( $wpi_settings['ga_event_tracking'] ) && $wpi_settings['ga_event_tracking']['enabled'] == 'true' ) {
+            wp_enqueue_script('wpi-ga-tracking', WPI_URL . "/core/js/wpi.ga.tracking.js", array('jquery'));
+          }
 
           //** Apply Filters to the invoice description */
           add_action('wpi_description', 'wpautop');

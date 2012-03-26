@@ -195,7 +195,9 @@ function wpi_create_slug(slug) {
 
     // Get Last row to update names to match slug
     var added_row = jQuery(".wpi_dynamic_table_row:last", table);
-
+    
+    jQuery(added_row).mouseenter(function(){curency_and_delete_action(this,'show');}).mouseleave(function(){curency_and_delete_action(this,'hide');});
+    
     // Display row just in case
     jQuery(added_row).show();
 
@@ -203,6 +205,7 @@ function wpi_create_slug(slug) {
     jQuery("textarea", added_row).val('');
     jQuery("input[type=text]", added_row).val('');
     jQuery("input[type=checkbox]", added_row).attr('checked', false);
+    jQuery("textarea:disabled,input[type=text]:disabled,input[type=checkbox]:disabled", added_row).removeAttr('disabled');
 
     // Increment name value automatically
     if(auto_increment) {
@@ -211,7 +214,8 @@ function wpi_create_slug(slug) {
       var old_name = jQuery(this).attr('name');
 
       var matches = old_name.match(/\[(\d{1,2})\]/);
-
+      var old_count=false;
+      var new_count=false;
       if (matches) {
         old_count = parseInt(matches[1]);
         new_count = (old_count + 1);
@@ -415,17 +419,11 @@ function wpi_create_slug(slug) {
     jQuery('.wpi_recurring_bill_settings').val('');
     jQuery('.wpi_recurring_bill_settings input').attr('checked', false);
     jQuery('.wpi_recurring_bill_settings').hide();
-//    jQuery(".wpi_not_for_recurring").show();
+    jQuery(".wpi_not_for_recurring").show();
 //    jQuery(".wpi_not_for_deposit").show();
     is_recurring = false;
     wpi_recalc_totals();
     wpi_toggle_wpi_event_type();
-
-    /*
-     * This function was moved to wpi-events.js
-     */
-//    wpi_show_deposit_option();
-//    wpi_show_quote_option();
   }
 /*
   Displays payment charge box

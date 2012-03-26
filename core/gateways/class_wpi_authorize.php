@@ -107,7 +107,7 @@ class wpi_authorize extends wpi_gateway_base {
               'label' => "Silent Post URL",
               'type' => "readonly",
               'value' => "",
-              'description' => "Silent Post responses are returned in real-time, meaning as soon as the transaction processes the Silent Post is sent to your specified URL. Go to https://account.authorize.net -> Settings -> Silent Post URL and copy this URL to input field."
+              'description' => "Silent Post responses are returned in real-time, meaning as soon as the transaction processes the Silent Post is sent to your specified URL. Go to https://account.authorize.net -> Settings -> Silent Post URL and copy this URL to input field. Required only for Recurring Billing and not for all Merchants."
           )
       )
   );
@@ -223,7 +223,7 @@ class wpi_authorize extends wpi_gateway_base {
    */
   function __construct() {
     parent::__construct();
-    $this->options['settings']['silent_post_url']['value'] = urlencode(get_bloginfo('url') . '/wp-admin/admin-ajax.php?action=wpi_gateway_server_callback&type=wpi_authorize');
+    $this->options['settings']['silent_post_url']['value'] = admin_url('admin-ajax.php?action=wpi_gateway_server_callback&type=wpi_authorize');
     
     add_action( 'wpi_payment_fields_authorize', array( $this, 'wpi_payment_fields' ) );
     add_action( 'wpi_authorize_user_meta_updated', array( $this, 'user_meta_updated' ) );
@@ -255,7 +255,8 @@ class wpi_authorize extends wpi_gateway_base {
 					echo $html;
           // For each field
           foreach( $value as $field_slug => $field_data ) {
-
+            //** Change field properties if we need */
+            $field_data = apply_filters('wpi_payment_form_styles', $field_data, $field_slug, 'wpi_authorize');
             $html = '';
 
             switch ( $field_data['type'] ) {
@@ -266,8 +267,12 @@ class wpi_authorize extends wpi_gateway_base {
                 ?>
 
                 <li class="wpi_checkout_row">
-                  <label for="<?php echo esc_attr( $field_slug ); ?>"><?php _e($field_data['label'], WPI); ?></label>
-                  <input type="<?php echo esc_attr( $field_data['type'] ); ?>" class="<?php echo esc_attr( $field_data['class'] ); ?>"  name="<?php echo esc_attr( $field_data['name'] ); ?>" value="<?php echo !empty($invoice['user_data'][$field_slug])?$invoice['user_data'][$field_slug]:'';?>" />
+                  <div class="control-group">
+                    <label class="control-label" for="<?php echo esc_attr( $field_slug ); ?>"><?php _e($field_data['label'], WPI); ?></label>
+                    <div class="controls">
+                      <input type="<?php echo esc_attr( $field_data['type'] ); ?>" class="<?php echo esc_attr( $field_data['class'] ); ?>"  name="<?php echo esc_attr( $field_data['name'] ); ?>" value="<?php echo !empty($invoice['user_data'][$field_slug])?$invoice['user_data'][$field_slug]:'';?>" />
+                    </div>
+                  </div>
                 </li>
 
                 <?

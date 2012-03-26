@@ -1,6 +1,6 @@
 <div id="invoice_page" class="wpi_invoice_form wpi_payment_form clearfix">
   <div class="wpi_left_col">
-    <b class="wpi_greeting"><?php _e('Payment Receipt', WPI) ?></b>
+    <h3 class="wpi_greeting"><?php _e('Payment Receipt', WPI) ?></h3>
 
     <div class="invoice_description">
       <div class="invoice_top_message">

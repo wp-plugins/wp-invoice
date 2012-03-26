@@ -42,7 +42,7 @@ class WPI_Invoice {
     if(!$ID)
       return false;
 
-    $old_invoice = ($wpdb->get_var("SELECT ID FROM {$wpdb->prefix}posts WHERE ID = '{$ID}'") ? true : false);
+    $old_invoice = ($wpdb->get_var("SELECT ID FROM {$wpdb->posts} WHERE ID = '{$ID}'") ? true : false);
 
     $this->existing_invoice = $old_invoice;
     return $old_invoice;

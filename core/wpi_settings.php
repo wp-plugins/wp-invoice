@@ -387,28 +387,32 @@ class WPI_Settings {
       $this->options['currency']['types']['MXN'] = __("Mexican Peso", WPI);
       $this->options['currency']['types']['ZAR'] = __("South African Rand", WPI);
 
-      $this->options['currency']['symbol']['AUD'] = "$";
-      $this->options['currency']['symbol']['CAD'] = "$";
-      /** Letters for now. Will find another way later */
-      $this->options['currency']['symbol']['EUR'] = "EUR";
-      $this->options['currency']['symbol']['GBP'] = "GBP";
-      $this->options['currency']['symbol']['JPY'] = "JPY";
-      $this->options['currency']['symbol']['USD'] = "$";
-      $this->options['currency']['symbol']['NZD'] = "$";
-      $this->options['currency']['symbol']['CHF'] = "Fr.";
-      $this->options['currency']['symbol']['HKD'] = "$";
-      $this->options['currency']['symbol']['SGD'] = "$";
-      $this->options['currency']['symbol']['SEK'] = "kr";
-      $this->options['currency']['symbol']['DKK'] = "kr";
-      $this->options['currency']['symbol']['PLN'] = "zl";
-      $this->options['currency']['symbol']['NOK'] = "kr";
-      $this->options['currency']['symbol']['HUF'] = "Ft";
-      $this->options['currency']['symbol']['CZK'] = "Kc";
-      $this->options['currency']['symbol']['ILS'] = "NIS";
-      $this->options['currency']['symbol']['MXN'] = "$";
-      $this->options['currency']['symbol']['ZAR'] = "R";
+      $this->options['currency']['symbol']['AUD'] = "JA==";
+      $this->options['currency']['symbol']['CAD'] = "JA==";
+      $this->options['currency']['symbol']['EUR'] = "4oKs";
+      $this->options['currency']['symbol']['GBP'] = "wqM=";
+      $this->options['currency']['symbol']['JPY'] = "wqU=";
+      $this->options['currency']['symbol']['USD'] = "JA==";
+      $this->options['currency']['symbol']['NZD'] = "JA==";
+      $this->options['currency']['symbol']['CHF'] = "Q0hG";
+      $this->options['currency']['symbol']['HKD'] = "JA==";
+      $this->options['currency']['symbol']['SGD'] = "JA==";
+      $this->options['currency']['symbol']['SEK'] = "a3I=";
+      $this->options['currency']['symbol']['DKK'] = "a3Iu";
+      $this->options['currency']['symbol']['PLN'] = "esWC";
+      $this->options['currency']['symbol']['NOK'] = "a3I=";
+      $this->options['currency']['symbol']['HUF'] = "RnQ=";
+      $this->options['currency']['symbol']['CZK'] = "S8SN";
+      $this->options['currency']['symbol']['ILS'] = "4oKq";
+      $this->options['currency']['symbol']['MXN'] = "JA==";
+      $this->options['currency']['symbol']['ZAR'] = "Ug==";
 
+      foreach ($this->options['currency']['symbol'] as &$symbol){
+        $symbol = base64_decode($symbol);
+      }
+      
       $this->options['currency']['default_currency_code']       = 'USD';
+      $this->options['currency']['symbols_updated']             = true;
       $this->options['globals']['client_change_payment_method'] = 'true';
       $this->options['globals']['show_business_address']        = 'false';
       $this->options['globals']['show_quantities']              = 'false';
@@ -435,57 +439,56 @@ class WPI_Settings {
      */
     function SaveSettings($new_settings) {
       global $wpi_settings;
-        
-        //** Set 'first_time_setup_ran' as 'true' to avoid loading First Time Setup Page in future */
-        $new_settings['first_time_setup_ran'] = 'true';
-        
-        $this->options = WPI_Functions::array_merge_recursive_distinct($this->options, $new_settings);
-        
-        //** Copy template files from plugin folder to active theme/template */
-        if(isset($new_settings['install_use_custom_templates']) &&
-          isset($new_settings['use_custom_templates']) &&
-          $new_settings['install_use_custom_templates'] == 'yes' && 
-          $new_settings['use_custom_templates'] == 'yes') {
-            WPI_Functions::install_templates();
-        }
-        
-        //** Process Special Settings */
-        //** Default predefined services */
-        $this->options['predefined_services'][0]['name']     = __("Web Design Services", WPI);
-        $this->options['predefined_services'][0]['quantity'] = 1;
-        $this->options['predefined_services'][0]['price']    = 30;
-        $this->options['predefined_services'][1]['name']     = __("Web Development Services", WPI);
-        $this->options['predefined_services'][1]['quantity'] = 1;
-        $this->options['predefined_services'][1]['price']    = 30;
-        
-        $this->options['predefined_services'] = ( isset($new_settings['predefined_services']) ? $new_settings['predefined_services'] : $this->options['predefined_services'] );
 
-        //** E-Mail Templates */
-        if(isset($new_settings['notification'])) {
-          $this->options['notification'] = $new_settings['notification'];
-        }
-        
-        //** Process Special Settings */
-        
-        //** fix checkboxes */
-        foreach($this->options['billing'] as $key => $value) {
-            if(!isset($new_settings['billing'][$key]['allow'])) unset($this->options['billing'][$key]['allow']);
-        }
-        
-        $checkbox_array = array('increment_invoice_id', 'send_thank_you_email', 'cc_thank_you_email', 'force_https', 'show_recurring_billing', 'send_invoice_creator_email');
-        foreach($checkbox_array as $checkbox_name) {
-            if(!isset($new_settings[$checkbox_name])) unset($this->options[$checkbox_name]);
-        }
-        
-        $this->CommitUpdates();
-        
-        //** Update global variable */
-        $wpi_settings = WPI_Functions::array_merge_recursive_distinct($wpi_settings, $this->options);
-        //** Fix Predefined Services */
-        $wpi_settings['predefined_services'] = $this->options['predefined_services'];
-        //** Fix E-Mail Templates */
-        $wpi_settings['notification'] = $this->options['notification'];
-        wpi_gateway_base::sync_billing_objects();
+      //** Set 'first_time_setup_ran' as 'true' to avoid loading First Time Setup Page in future */
+      $new_settings['first_time_setup_ran'] = 'true';
+
+      $this->options = WPI_Functions::array_merge_recursive_distinct($this->options, $new_settings);
+      /** just fo now we use the merged options array and overwrite two brances with new values. It is the custom solution to be able detete currency. odokienko@UD */
+      if($new_settings['currency']){
+        $this->options['currency']['symbol'] = $new_settings['currency']['symbol'];
+        $this->options['currency']['types'] = $new_settings['currency']['types'];
+      }
+
+      //** Process Special Settings */
+      //** Default predefined services */
+      $this->options['predefined_services'][0]['name']     = __("Web Design Services", WPI);
+      $this->options['predefined_services'][0]['quantity'] = 1;
+      $this->options['predefined_services'][0]['price']    = 30;
+      $this->options['predefined_services'][1]['name']     = __("Web Development Services", WPI);
+      $this->options['predefined_services'][1]['quantity'] = 1;
+      $this->options['predefined_services'][1]['price']    = 30;
+
+      $this->options['predefined_services'] = ( isset($new_settings['predefined_services']) ? $new_settings['predefined_services'] : $this->options['predefined_services'] );
+
+      //** E-Mail Templates */
+      if(isset($new_settings['notification'])) {
+        $this->options['notification'] = $new_settings['notification'];
+      }
+
+      //** Process Special Settings */
+
+      //** fix checkboxes */
+      foreach($this->options['billing'] as $key => $value) {
+        if(!isset($new_settings['billing'][$key]['allow'])) unset($this->options['billing'][$key]['allow']);
+      }
+
+      $checkbox_array = array('increment_invoice_id', 'send_thank_you_email', 'cc_thank_you_email', 'force_https', 'show_recurring_billing', 'send_invoice_creator_email');
+      foreach($checkbox_array as $checkbox_name) {
+        if(!isset($new_settings[$checkbox_name])) unset($this->options[$checkbox_name]);
+      }
+      
+      
+
+      $this->CommitUpdates();
+      
+      //** Update global variable */
+      $wpi_settings = WPI_Functions::array_merge_recursive_distinct($wpi_settings, $this->options);
+      //** Fix Predefined Services */
+      $wpi_settings['predefined_services'] = $this->options['predefined_services'];
+      //** Fix E-Mail Templates */
+      $wpi_settings['notification'] = $this->options['notification'];
+      wpi_gateway_base::sync_billing_objects();
     }
 
     /**
@@ -495,16 +498,22 @@ class WPI_Settings {
       //** Options concept taken from Theme My Login (http://webdesign.jaedub.com) */
       $this->InitOptions();
       $storedoptions = get_option( 'wpi_options' );
+      
       /** @todo Currency are constants. [korotkov@ud] */
       $currency = $this->options['currency']['symbol'];
-      
       if ( $storedoptions && is_array( $storedoptions ) ) {
         foreach ( $storedoptions as $key => $value ) {
           $this->options[$key] = $value;
         }
-        //** We dont need currencies to be updated. [korotkov@ud] */
-        $this->options['currency']['symbol'] = $currency;
-      } else update_option( 'wpi_options', $this->options);
+        if (empty($storedoptions['currency']['symbols_updated'])){
+          $this->options['currency']['symbol'] = $currency;
+          $this->options['currency']['symbols_updated']=true;
+        }
+        
+      } else {
+        update_option( 'wpi_options', $this->options);
+      }
+      
     }
 
     /**
@@ -585,19 +594,18 @@ class WPI_Settings {
       global $wpdb;
 
       // Take all old wp_invoice options and convert them put them into a single option
-        // DOESN"T WORK WITH BILLING OPTIONS SINCE THEY ARE NOW HELD IN MULTIMENSIONAL ARRAY
-        $load_all_options = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}options WHERE option_name LIKE 'wp_invoice%'");
-        
-        if(is_array($load_all_options)) {
-            $counter = 0;
-            while(list($key,$entry) = each($load_all_options)) {
-                $this->setOption(str_replace("wp_invoice_", "", $entry->option_name), $entry->option_value);
-                delete_option($entry->option_name);
-                $counter++;
-            }
-            echo "$counter ".__('old options found, converted into new format, and deleted.', WPI);
-            $this->SaveOptions;
+      // DOESN"T WORK WITH BILLING OPTIONS SINCE THEY ARE NOW HELD IN MULTIMENSIONAL ARRAY
+      $load_all_options = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}options WHERE option_name LIKE 'wp_invoice%'");
+
+      if(is_array($load_all_options)) {
+        $counter = 0;
+        while(list($key,$entry) = each($load_all_options)) {
+          $this->setOption(str_replace("wp_invoice_", "", $entry->option_name), $entry->option_value);
+          delete_option($entry->option_name);
+          $counter++;
         }
-        
+        echo "$counter ".__('old options found, converted into new format, and deleted.', WPI);
+        $this->SaveOptions;
+      }
     }
 }

@@ -408,4 +408,47 @@ class WPI_Ajax {
   function revalidate() {
     WPI_Functions::total_revalidate();
   }
+  
+  /**
+   * 
+   * @return type 
+   */
+  function install_templates() {
+
+    $errors = array();
+
+    $custom_template_path = TEMPLATEPATH . "/wpi";
+    $original_template_path = dirname(__FILE__) . "/template";
+
+    if (!is_dir($custom_template_path)) {
+      if (!@mkdir($custom_template_path)) {
+        $errors[] = __("Unable to create 'wpi' folder in template folder. ", WPI);
+        die( json_encode( $errors ) );
+      }
+    }
+
+    $files_copied = 0;
+    if ($dir = @opendir($original_template_path)) {
+      while (($file = readdir($dir)) !== false) {
+        unset($info);
+        $info = pathinfo($file);
+        if ($info['extension'] == 'php') {
+          if (@copy($original_template_path . "/" . $file, "$custom_template_path/$file"))
+            $files_copied++;
+        }
+      }
+      closedir($dir);
+    } else {
+      $errors[] = __("Unable to open 'wpi' folder in template folder.", WPI);
+      die( json_encode( $errors ) );
+    }
+
+    if ((intval($files_copied)) != 0) {
+      $errors[] = sprintf(__("Success, (%s) template file(s) copied.", WPI), $files_copied);
+      die( json_encode( $errors ) );
+    } else {
+      $errors[] = __("No template files copied.", WPI);
+      die( json_encode( $errors ) );
+    }
+  }
 }

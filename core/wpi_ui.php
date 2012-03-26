@@ -33,16 +33,14 @@ class WPI_UI {
     WPI_Settings::setOption('pages', $wpi_settings['pages']);
     
     // Add Actions
-    add_action('load-' . $wpi_settings['pages']['main'], array( 'WPI_UI', 'pre_load_main_page' ));
-    add_action('load-' . $wpi_settings['pages']['edit'], array( 'WPI_UI', 'pre_load_edit_page' ));
+    add_action('load-' . $wpi_settings['pages']['main'],     array( 'WPI_UI', 'pre_load_main_page' ));
+    add_action('load-' . $wpi_settings['pages']['edit'],     array( 'WPI_UI', 'pre_load_edit_page' ));
+    add_action('load-' . $wpi_settings['pages']['reports'],  array( 'WPI_UI', 'pre_load_reports_page' ));
+    add_action('load-' . $wpi_settings['pages']['settings'], array( 'WPI_UI', 'pre_load_settings_page' ));
 
     //* Load common actions on all WPI pages */
     foreach($wpi_settings['pages'] as $page_slug) {
       add_action('load-' . $page_slug, array( 'WPI_UI', 'common_pre_header'));
-      //** WP 3.3 fix. - korotkov@ud */
-      if ( version_compare($wp_version, '3.3', '>=') ) {
-        add_action("load-$page_slug", array( 'WPI_UI', 'contextual_help' ));
-      }
     }
 
     // Add Filters
@@ -65,8 +63,12 @@ class WPI_UI {
   function get_capability_by_level($level) {
     $capability = '';
     switch ($level) {
-      /* Contributor */
+      /* Subscriber */
       case '0':
+        $capability = 'read';
+        break;
+      /* Contributor */
+      case '1':
         $capability = 'edit_posts';
         break;
       /* Author */
@@ -297,6 +299,16 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         self::process_invoice_actions($_REQUEST['action'], $id);
       }
     }
+
+    //** Default Help items */
+    $contextual_help['Creating New Invoice'][] = '<h3>'.__('Creating New Invoice', WPI).'</h3>';
+    $contextual_help['Creating New Invoice'][] = '<p>'.__("Begin typing the recipient's email into the input box, or double-click to view list of possible options.", WPI).'</p>';
+    $contextual_help['Creating New Invoice'][] = '<p>'.__("For new prospects, type in a new email address.", WPI).'</p>';
+
+    //** Hook this action is you want to add info */
+    $contextual_help = apply_filters('wpi_edit_page_help', $contextual_help);
+
+    do_action('wpi_contextual_help', array('contextual_help'=>$contextual_help));
   }
 
   /**
@@ -307,32 +319,6 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
   */
   function pre_load_main_page () {
     global $wpi_settings, $wpdb;
-
-    
-    /* Set default overview post status as 'active' */
-    /* @TODO: This functionality is depriciated. Should be removed. Maxim Peshkov
-    if(empty($_REQUEST['post_status'])) {
-
-      //* Determine if invoices with 'active' statuses exist /
-      $ids = $wpdb->get_col("
-        SELECT ID
-        FROM {$wpdb->posts}
-        WHERE post_type = 'wpi_object'
-        AND post_status = 'active'
-      ");
-
-      if(!empty($ids)) {
-        //* Get Referer /
-        $sendback = wp_get_referer();
-        //* Determine if reffer is not main page, we set it ( anyway, will do redirect to main page ) /
-        if(!strpos($sendback, $wpi_settings['links']['overview_page'])){
-          $sendback = $wpi_settings['links']['overview_page'];
-        }
-        wp_redirect( add_query_arg( array('post_status' => 'active'), $sendback ) );
-        die();
-      }
-    }
-    */
     
     /* Process Bulk Actions */
     if(!empty($_REQUEST['post']) && !empty($_REQUEST['action'])) {
@@ -352,10 +338,10 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
       }
     }
 
-    /* Action Messages */
+    //** Action Messages */
     if(!empty($_REQUEST['invoice_id'])) {
       $invoice_ids = str_replace(',', ', ', $_REQUEST['invoice_id']);
-      // Add Messages
+      //** Add Messages */
       if(isset($_REQUEST['trashed'])) {
         WPI_Functions::add_message(sprintf(__('"Invoice(s) %s trashed."', WPI), $invoice_ids));
       } elseif(isset($_REQUEST['untrashed'])) {
@@ -368,6 +354,108 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         WPI_Functions::add_message(sprintf(__('"Invoice(s) %s archived."', WPI), $invoice_ids));
       }
     }
+
+    //** Default Help items */
+    $contextual_help['General Help'][] = '<h3>'.__('General Information', WPI).'</h3>';
+    $contextual_help['General Help'][] = '<p>'.__('You are on the page which lists your invoices and other types on items that you are using.', WPI).'</p>';
+    $contextual_help['General Help'][] = '<p>'.__('Use filter box to find items you need.', WPI).'</p>';
+
+    //** Hook this action is you want to add info */
+    $contextual_help = apply_filters('wpi_main_page_help', $contextual_help);
+
+    do_action('wpi_contextual_help', array('contextual_help'=>$contextual_help));
+  }
+
+  /**
+   * Reports Page load handler
+   * @author korotkov@UD
+   */
+  function pre_load_reports_page() {
+
+    //** Default Help items */
+    $contextual_help['General Help'][] = '<h3>'.__('Reports', WPI).'</h3>';
+    $contextual_help['General Help'][] = '<p>'.__('This page allows you to manage your sales statistics.', WPI).'</p>';
+
+    //** Hook this action is you want to add info */
+    $contextual_help = apply_filters('wpi_reports_page_help', $contextual_help);
+
+    do_action('wpi_contextual_help', array('contextual_help'=>$contextual_help));
+  }
+
+  /**
+   * Settings Page load handler
+   * @author korotkov@UD
+   */
+  function pre_load_settings_page() {
+
+    //** Default Help items */
+    $contextual_help['Main'][] = '<h3>'.__('Main', WPI).'</h3>';
+    $contextual_help['Main'][] = '<p>'.__('<b>Business Name</b><br /> Enter your business name here. This field defaults to the blog name you chose during WordPress installation.', WPI).'</p>';
+    $contextual_help['Main'][] = '<p>'.__('<b>Business Address</b><br /> Enter your business address here. It will appear on the invoices and quotes you send.', WPI).'</p>';
+    $contextual_help['Main'][] = '<p>'.__('<b>Business Phone</b><br /> Enter your business phone here. It will appear on the invoices and quotes you send.', WPI).'</p>';
+    $contextual_help['Main'][] = '<p>'.__('<b>Email Address</b><br /> Enter your email address here. It will appear on the invoices and quotes you send.', WPI).'</p>';
+    $contextual_help['Main'][] = '<p>'.__('<b>Display Styles</b><br /> Here you can set, enable or disable the WP-Invoice default style settings. Only change the default values if you are an advanced user who understands CSS styles and is able to create their own stylesheets. <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-main/">More...</a>', WPI).'</p>';
+    $contextual_help['Main'][] = '<p>'.__('<b>Tax Handling</b><br /> Here you can set when tax calculation is done (depends on your country\'s fiscal system) and you can define a global default tax. <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-main/">More...</a>', WPI).'</p>';
+    $contextual_help['Main'][] = '<p>'.__('<b>Advanced Settings</b><br /> These settings control advanced features that have to do with billing, installation features, design issues and general actions for administrators and developers. <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-main/">More...</a>', WPI).'</p>';
+    
+    $contextual_help['Business Process'][] = '<h3>'.__('Business Process', WPI).'</h3>';
+    $contextual_help['Business Process'][] = '<p>'.__('<b>When creating an invoice</b><br />Options for managing invoice creating process. <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-business-process/">More...</a>', WPI).'</p>';
+    $contextual_help['Business Process'][] = '<p>'.__('<b>When viewing an invoice</b><br />Options for managing invoice view. <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-business-process/">More...</a>', WPI).'</p>';
+    $contextual_help['Business Process'][] = '<p>'.__('<b>How to insert invoice</b><br />Here you have four choices that will define the way an invoice will appear on the invoice display page you have set before. <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-business-process/">More...</a>', WPI).'</p>';
+    $contextual_help['Business Process'][] = '<p>'.__('<b>After a payment has been completed</b><br />Here we have options that will create automatic email notifications on successful payment of an invoice (partial or complete). <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-business-process/">More...</a>', WPI).'</p>';
+    $contextual_help['Business Process'][] = '<p>'.__('<b>Google Analytics Events Tracking</b><br />If you are using <a target="_blank" href="http://code.google.com/intl/en/apis/analytics/docs/tracking/asyncTracking.html">Google Analytics code snippet</a> for tracking site activity then you can do it better with WP-Invoice Event Tracking feature. Tic events you want to track in your Google Analytics account and see where/when/what people do. To view Events activity go to Content -> Events in your Google Analytics account.', WPI).'</p>';
+    $contextual_help['Business Process'][] = '<p>'.__('<u>Attempting to pay Invoices</u> - event is triggered on clicking "Process Payment" button on Invoice page.', WPI).'</p>';
+    $contextual_help['Business Process'][] = '<p>'.__('<u>View Invoices</u> - event is triggered when Invoice was viewed by the customer.', WPI).'</p>';
+    $contextual_help['Business Process'][] = '<p>'.__('<i>More Events soon!</i>', WPI).'</p>';
+    
+    $contextual_help['Payment'][] = '<h3>'.__('Payment', WPI).'</h3>';
+    $contextual_help['Payment'][] = '<p>'.__('<b>Default Currency</b><br />Sets the default currency you will use in your invoices. Default value is U.S. Dollars.', WPI).'</p>';
+    $contextual_help['Payment'][] = '<p>'.__('<b>Currency list</b><br>This expandable area allows you to manage the list of currencies you have. You can add new currencies or remove existing ones.<br>Be aware, if you add a new currency please make sure that it corresponds to ISO 4217 and the currency code can be accepted by the payment services / gateways you are using. Here\'s a <a href="http://en.wikipedia.org/wiki/List_of_circulating_currencies">list of currencies</a> with ISO codes and currency symbols.<br>Note that you cannot delete a currency which has already been used in an existing invoice or that is currently selected as default. To do so, delete any invoices using that currency first.', WPI).'</p>';
+    
+    $contextual_help['Payment'][] = '<p>'.__('<b>Default Payment Method</b><br />Here we choose the default payment method we want to use for invoice payments.', WPI).'</p>';
+    $contextual_help['Payment'][] = '<p>'.__('<b>Payment Gateways</b><br />Here you can specify Gateways which you want to use for your invoices by default. <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-payment/">More...</a>', WPI).'</p>';
+    $contextual_help['Payment'][] = '<p>'.__('<b>Manual Payment Information</b><br />If you don\'t want to use payment gateways but offline payments, or if an invoice has no payment gateways enabled, the text in this field will appear as a message to the customer, offering guidance on how to pay you. Write a short text with your bank account number or any other way you want to accept the offline payment. <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-payment/">More...</a>', WPI).'</p>';
+
+    $contextual_help['E-Mail Templates'][] = '<h3>'.__('E-Mail Templates', WPI).'</h3>';
+    $contextual_help['E-Mail Templates'][] = '<p>'.__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page. The following variables can be used within the Subject or the Content of the e-mail templates:', WPI).'</p>';
+
+    $email_vars['invoice_id'] = __('Invoice ID', WPI);
+    $email_vars['link'] = __('URL of invoice', WPI);
+    $email_vars['recipient'] = __('Name or business name of receipient', WPI);
+    $email_vars['amount'] = __('Due BalanceID', WPI);
+    $email_vars['subject'] = __('Invoice title', WPI);
+    $email_vars['description'] = __('Description of Invoice', WPI);
+    $email_vars['business_name'] = __('Business Name', WPI);
+    $email_vars['business_email'] = __('Business Email Address', WPI);
+    $email_vars['creator_name'] = __('Name of user who has created invoice', WPI);
+    $email_vars['creator_email'] = __('Email of user who has created invoice', WPI);
+    $email_vars['due_date'] = __('Invoice due date (if presented)', WPI);
+
+    $email_vars = apply_filters('wpi_email_template_vars', $email_vars);
+
+    if(is_array($email_vars)) {
+      $contextual_help['E-Mail Templates'][] = '<ul>';
+      foreach($email_vars as $var => $title) {
+        $contextual_help['E-Mail Templates'][] =  '<li><b>%' . $var . '%</b> - ' . $title . '</li>';
+      }
+      $contextual_help['E-Mail Templates'][] = '</ul>';
+    }
+
+    $contextual_help['E-Mail Templates'][] = '<p><a href="https://usabilitydynamics.com/tutorials/wp-invoice/email-templates/" target="_blank">'.__('More...', WPI).'</a></p>';
+
+    $contextual_help['Line Items'][] = '<h3>'.__('Line Items', WPI).'</h3>';
+    $contextual_help['Line Items'][] = '<p>'.__('Predefined Line Items are common services and/or products that you can create once and use in your invoices. For example, if you are a Web professional and your usual invoice has at least an hour of Web Design or / and Web Development services, you can create these item entries to save yourself from typing it every time. When you create a new invoice or quote (with the Quotes Premium Feature), or edit an existing one, you will be able to select these items from a list and if you want, edit the name, description, quantity, price and tax. <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-predefined-line-items/">More...</a>', WPI).'</p>';
+
+    $contextual_help['Premium Features'][] = '<h3>'.__('Premium Features', WPI).'</h3>';
+    $contextual_help['Premium Features'][] = '<p>'.__('This tab show a list of the premium features which are available for purchase and those which you have purchased for WP-Invoice. You can see a list of features available for purchase in the WP-Invoice Premium Features section of our website. <a target="_blank" href="https://usabilitydynamics.com/tutorials/wp-invoice/wp-invoice-settings-premium-features/">More...</a>', WPI).'</p>';
+
+    $contextual_help['Help'][] = '<h3>'.__('Help', WPI).'</h3>';
+    $contextual_help['Help'][] = '<p>'.__('This tab will help you troubleshoot your plugin and check for updates for Premium Features', WPI).'</p>';
+
+    //** Hook this action is you want to add info */
+    $contextual_help = apply_filters('wpi_settings_page_help', $contextual_help);
+
+    do_action('wpi_contextual_help', array('contextual_help'=>$contextual_help));
   }
 
   /**
@@ -675,240 +763,104 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
     add_meta_box('postbox_user_existing', __('User Information',WPI), 'postbox_user_existing', $screen_id, 'side', 'low');
   }
 
-    /**
-      Settings page
-     */
-    function page_settings() {
-        global $wpdb, $wpi_settings;
-        WPI_Functions::check_tables();
-        include($wpi_settings['admin']['ui_path'] . '/settings_page.php');
-    }
-
-    // Displays messages. Can be outputted anywhere, WP JavaScript automatically moves it to the top of the page
-    function show_message($content, $type="updated fade") {
-      if ($content)
-        echo "<div id=\"message\" class='$type' ><p>" . $content . "</p></div>";
-    }
-
-    // Displays error messages. Can be outputted anyways, WP JavaScript automatically moves it to the top of the page
-    function error_message($message, $return = false) {
-      $content = "<div id=\"message\" class='error' ><p>$message</p></div>";
-      if ($message != "") {
-        if ($return)
-          return $content;
-        echo $content;
-      }
-    }
-
-    // Displays the extra profile input fields (such as billing address) in the WP User
-    // Called by 'edit_user_profile' and 'show_user_profile'
-    function display_user_profile_fields() {
-      global $wpdb, $user_id, $wpi_settings;
-      $profileuser = get_user_to_edit($user_id);
-
-      include($wpi_settings['admin']['ui_path'] . '/profile_page_content.php');
-    }
-
-
   /**
-     *  Mostly for printing out pre-loaded styles.
-     *
-     * @since 3.0
-     */
-    function admin_print_styles() {
-      global $wpi_settings, $current_screen;
+    Settings page
+   */
+  function page_settings() {
+      global $wpdb, $wpi_settings;
+      WPI_Functions::check_tables();
+      include($wpi_settings['admin']['ui_path'] . '/settings_page.php');
+  }
 
-      wp_enqueue_style( 'wpi-custom-jquery-ui');
-      wp_enqueue_style( 'wpi-admin-css');
+  // Displays messages. Can be outputted anywhere, WP JavaScript automatically moves it to the top of the page
+  function show_message($content, $type="updated fade") {
+    if ($content)
+      echo "<div id=\"message\" class='$type' ><p>" . $content . "</p></div>";
+  }
 
-      //** Prints styles specific for this page */
-      wp_enqueue_style('wpi-this-page-css');
-      wp_enqueue_style('wpi-ie7');
-
+  // Displays error messages. Can be outputted anyways, WP JavaScript automatically moves it to the top of the page
+  function error_message($message, $return = false) {
+    $content = "<div id=\"message\" class='error' ><p>$message</p></div>";
+    if ($message != "") {
+      if ($return)
+        return $content;
+      echo $content;
     }
+  }
+
+  // Displays the extra profile input fields (such as billing address) in the WP User
+  // Called by 'edit_user_profile' and 'show_user_profile'
+  function display_user_profile_fields() {
+    global $wpdb, $user_id, $wpi_settings;
+    $profileuser = get_user_to_edit($user_id);
+
+    include($wpi_settings['admin']['ui_path'] . '/profile_page_content.php');
+  }
 
 
-  /**
-   * Legacy contextual help function for handling contextual help for different pages.
-   *
+/**
+   *  Mostly for printing out pre-loaded styles.
    *
    * @since 3.0
-   *
    */
-    function contextual_help_old() {
-        global $wpi_settings, $page_hook;
+  function admin_print_styles() {
+    global $wpi_settings, $current_screen;
 
-        switch ($page_hook) {
+    wp_enqueue_style( 'wpi-custom-jquery-ui');
+    wp_enqueue_style( 'wpi-admin-css');
 
-          // Invoice editing page
-          case $wpi_settings['pages']['edit']:
+    //** Prints styles specific for this page */
+    wp_enqueue_style('wpi-this-page-css');
+    wp_enqueue_style('wpi-ie7');
 
-          $return = "<h5>".__('Creating New Invoice', WPI)."</h5>";
-          $return .= '<div class="metabox-prefs">';
-          $return .= __("Begin typing the recipient's email into the input box, or double-click to view list of possible options.  For new prospects, type in a new email address.", WPI);
-          $return .= '</div>';
-          return $return;
-
-        break;
-
-        case $wpi_settings['pages']['main']:
-
-          $help[] = "<h5>".__('Support', WPI)."</h5>";
-          $help[] = "<p>".__('Please visit <a href="http://usabilitydynamics.com/products/wp-invoice/forum/">WP-Invoice Support Forum</a> to ask questions regarding the plugin.', WPI)."</p>";
-          $help[] = "<p>".__('To suggest ideas please visit the <a href="http://feedback.twincitiestech.com/forums/9692-wp-invoice">WP-Invoice Feedback site</a>.', WPI)."</p>";
-
-          $return = implode('', $help);
-        break;
-
-        case $wpi_settings['pages']['settings']:
-
-          $help[] = "<h5>".__('Main & Business Process', WPI)."</h5>";
-          $help[] = "<p>".__('<b>Business Address</b> - This will display on the invoice page when printed for clients\' records.', WPI)."</p>";
-
-          $help[] = "<h5>".__('E-Mail Templates', WPI)."</h5>";
-          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page. The following variables can be used within the Subject or the Content of the e-mail templates:', WPI)."</p>";
-
-          $email_vars['invoice_id'] = __('Invoice ID', WPI);
-          $email_vars['link'] = __('URL of invoice', WPI);
-          $email_vars['recipient'] = __('Name or business name of receipient', WPI);
-          $email_vars['amount'] = __('Due BalanceID', WPI);
-          $email_vars['subject'] = __('Invoice title', WPI);
-          $email_vars['description'] = __('Description of Invoice', WPI);
-          $email_vars['business_name'] = __('Business Name', WPI);
-          $email_vars['business_email'] = __('Business Email Address', WPI);
-          $email_vars['creator_name'] = __('Name of user who has created invoice', WPI);
-          $email_vars['creator_email'] = __('Email of user who has created invoice', WPI);
-          $email_vars['due_date'] = __('Invoice due date (if presented)', WPI);
-
-          $email_vars = apply_filters('wpi_email_template_vars', $email_vars);
-
-          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page..', WPI)."</p>";
-
-          if(is_array($email_vars)) {
-            $help[] = '<ul>';
-            foreach($email_vars as $var => $title) {
-              $help[] =  '<li><b>%' . $var . '%</b> - ' . $title . '</li>';
-            }
-            $help[] = '</ul>';
-          }
-          
-          $help = apply_filters( 'wpi_contextual_help', $help );
-
-          $return = implode('', $help);
-
-        break;
-
-        default: break;
-
-      }
-
-      return $return;
-
-    }
-
+  }
 
   /**
-   * Main function for handling contextual help for different pages.
-   *
-   * @todo Find a better way of including advanced "Screen Options" configuration for invoice edit pages
-   *
-   * @since 3.0
-   *
+   * WP-Invoice Contextual Help
+   * @global object $current_screen
+   * @param array $args 
+   * @author korotkov@ud
    */
-    function contextual_help() {
+  function wpi_contextual_help( $args=array() ) {
 
+    $defaults = array(
+      'contextual_help' => array()
+    );
 
-        global $wpi_settings, $page_hook;
-        
-        $screen = get_current_screen();
+    extract( wp_parse_args( $args, $defaults ) );
 
-        switch ($page_hook) {
+    //** If method exists add_help_tab in WP_Screen */
+    if(is_callable(array('WP_Screen','add_help_tab'))) {
 
-          //** Invoice editing page */
-          case $wpi_settings['pages']['edit']:
+      //** Loop through help items and build tabs */
+      foreach ((array)$contextual_help as $help_tab_title => $help){
 
-          $return = "<p>".__("Begin typing the recipient's email into the input box, or double-click to view list of possible options.", WPI)."</p>";
-          $return .= "<p>".__("For new prospects, type in a new email address.", WPI)."</p>";
-          
-          $screen->add_help_tab( array(
-            'id'	=> $page_hook.'_my_help_tab',
-            'title'	=> __('Creating New Invoice', 'wpi'),
-            'content'	=> $return,
-          ) );
-
-        break;
-
-        case $wpi_settings['pages']['main']:
-
-          $help[] = "<p>".__('Please visit <a href="http://usabilitydynamics.com/products/wp-invoice/forum/">WP-Invoice Support Forum</a> to ask questions regarding the plugin.', WPI)."</p>";
-          $help[] = "<p>".__('To suggest ideas please visit the <a href="http://feedback.twincitiestech.com/forums/9692-wp-invoice">WP-Invoice Feedback site</a>.', WPI)."</p>";
-
-          $return = implode('', $help);
-          
-          $screen->add_help_tab( array(
-            'id'	=> $page_hook.'_my_help_tab',
-            'title'	=> __('Support', WPI),
-            'content'	=> $return,
-          ) );
-          
-        break;
-
-        case $wpi_settings['pages']['settings']:
-
-          $help = array();
-          $help[] = "<p>".__('<b>Business Address</b> - This will display on the invoice page when printed for clients\' records.', WPI)."</p>";
-      
-          $screen->add_help_tab( array(
-            'id'	=> $page_hook.'_my_help_tab_business_process',
-            'title'	=> __('Main & Business Process', WPI),
-            'content'	=> implode('', $help)
-          ) );
-
-          $help = array();
-          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page. The following variables can be used within the Subject or the Content of the e-mail templates:', WPI)."</p>";
-
-          $email_vars['invoice_id'] = __('Invoice ID', WPI);
-          $email_vars['link'] = __('URL of invoice', WPI);
-          $email_vars['recipient'] = __('Name or business name of receipient', WPI);
-          $email_vars['amount'] = __('Due BalanceID', WPI);
-          $email_vars['subject'] = __('Invoice title', WPI);
-          $email_vars['description'] = __('Description of Invoice', WPI);
-          $email_vars['business_name'] = __('Business Name', WPI);
-          $email_vars['business_email'] = __('Business Email Address', WPI);
-          $email_vars['creator_name'] = __('Name of user who has created invoice', WPI);
-          $email_vars['creator_email'] = __('Email of user who has created invoice', WPI);
-          $email_vars['due_date'] = __('Invoice due date (if presented)', WPI);
-
-          $email_vars = apply_filters('wpi_email_template_vars', $email_vars);
-
-          $help[] = "<p>".__('You can create as many e-mailed templates as needed, they can later be used to quickly create invoice notifications and reminders, and being sent directly from an invoice page..', WPI)."</p>";
-
-          if(is_array($email_vars)) {
-            $help[] = '<ul>';
-            foreach($email_vars as $var => $title) {
-              $help[] =  '<li><b>%' . $var . '%</b> - ' . $title . '</li>';
-            }
-            $help[] = '</ul>';
-          }
-          
-          $screen->add_help_tab( array(
-            'id'	=> $page_hook.'_my_help_tab_email_templates',
-            'title'	=> __('E-Mail Templates', WPI),
-            'content'	=> implode('', $help),
-          ) );
-          
-          do_action("wpi_contextual_help_{$wpi_settings['pages']['settings']}");
-
-        break;
-
-        default: break;
+        //** Add tab with current info */
+        get_current_screen()->add_help_tab(
+          array(
+            'id'      => sanitize_title( $help_tab_title ),
+            'title'   => __( $help_tab_title, 'wp_crm' ),
+            'content' => implode("\n",(array)$contextual_help[$help_tab_title]),
+          )
+        );
 
       }
 
-      return $return;
-
+      if ( is_callable(array('WP_Screen','set_help_sidebar')) ) {
+        //** Add help sidebar with More Links */
+        get_current_screen()->set_help_sidebar(
+          '<p><strong>' . __('For more information:', WPI) . '</strong></p>' .
+          '<p>' . __('<a href="https://usabilitydynamics.com/products/wp-invoice/" target="_blank">WP-Invoice Product Page</a>', WPI) . '</p>' .
+          '<p>' . __('<a href="https://usabilitydynamics.com/products/wp-invoice/forum/" target="_blank">WP-Invoice Forums</a>', WPI) . '</p>'
+        );
+      }
+    } else {
+      //** If WP is out of date */
+      global $current_screen;
+      add_contextual_help($current_screen->id, '<p>'.__('Please upgrade Wordpress to the latest version for detailed help.', WPI).'</p><p>'.__('Or visit <a href="https://usabilitydynamics.com/products/wp-invoice/" target="_blank">WP-Invoice Help Page</a> on UsabilityDynamics.com', WPI).'</p>');
     }
 
+  }
 
   /**
    * Can overwite page title (heading)
@@ -1041,17 +993,24 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
   }
 
   /**
-   * Validation is already passed, this is the wp_head filter
-   * It needs a lot of work
-   *
-   * @TODO: Does it need at all? Old functionality? Should be revised. Maxim Peshkov.
+   * Header action
+   * 
+   * @global array $wpi_settings 
    */
   function frontend_header() {
-    global $wpi_settings;
+    global $wpi_settings, $wpi_invoice_object;
+
     ?>
+
     <script type="text/javascript">
       var site_url = '<?php echo WPI_Functions::current_page(); ?>';
-      <?php /* var ajax_image = '<?php echo $frontend_path; ?>/core/images/processing-ajax.gif'; */ ?>
+      jQuery(document).ready(function(){
+        <?php if ( !empty( $wpi_settings['ga_event_tracking'] ) && $wpi_settings['ga_event_tracking']['enabled'] == 'true' ): ?>
+          invoice_title = '<?php echo addslashes($wpi_invoice_object->data['post_title']); ?>';
+          invoice_amount = <?php echo $wpi_invoice_object->data['net']; ?>;
+          if ( typeof window._gaq != 'undefined' ) wpi.ga.tracking.init( <?php echo !empty($wpi_settings['ga_event_tracking']['events']['invoices'])?json_encode($wpi_settings['ga_event_tracking']['events']['invoices']):'{}'; ?> );
+        <?php endif; ?>
+      });
     </script>
     <meta name="robots" content="noindex, nofollow" />
     <?php
@@ -1061,7 +1020,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
       Shorthand function for drawing input fields
      */
     function input($args = '') {
-        $defaults = array('id' => '', 'class_from_name' => '', 'title' => '', 'class'=>'', 'name' => '', 'group' => '', 'special' => '', 'value' => '', 'type' => '', 'hidden' => false, 'style' => false, 'readonly' => false, 'label' => false);
+        $defaults = array('id' => '', 'class_from_name' => '', 'title' => '', 'class'=>'', 'pattern'=>'', 'name' => '', 'group' => '', 'special' => '', 'value' => '', 'type' => '', 'hidden' => false, 'style' => false, 'readonly' => false, 'label' => false);
         extract(wp_parse_args($args, $defaults), EXTR_SKIP);
         // if [ character is present, we do not use the name in class and id field
 
@@ -1072,7 +1031,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
         }
         if ($label)
             $return .= "<label for='$id'>";
-        $return .= "<input " . ($type ? "type=\"$type\" " : '') . " " . ($style ? "style=\"$style\" " : '') . " id=\"$id\" class=\"" . ($type ? "" : "input_field") . " $class_from_name $class " . ($hidden ? " hidden " : '') . "" . ($group ? "group_$group" : '') . " \"    name=\"" . ($group ? $group . "[" . $name . "]" : $name) . "\"  value=\"" . stripslashes($value) . "\"  title=\"$title\" $special " . ($type == 'forget' ? " autocomplete='off'" : '') . " " . ($readonly ? " readonly=\"readonly\" " : "") . " />";
+        $return .= "<input " . ($type ? "type=\"$type\" " : '') . " " . ($style ? "style=\"$style\" " : '') . " id=\"$id\" class=\"" . ($type ? "" : "input_field") . " $class_from_name $class " . ($hidden ? " hidden " : '') . "" . ($group ? "group_$group" : '') . " \"    name=\"" . ($group ? $group . "[" . $name . "]" : $name) . "\"  value=\"" . stripslashes($value) . "\"  title=\"$title\" $special " . ($type == 'forget' ? " autocomplete='off'" : '') . " " . ($readonly ? " readonly=\"readonly\" " : "") . " " . ($required ? " required=\"{$required}\" " : "") . ($pattern ? " pattern=\"{$pattern}\" " : "") .  "/>";
         if ($label)
             $return .= "$label </label>";
         return $return;
@@ -1229,7 +1188,7 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
       // Determine if WP CRM is installed
       if ( class_exists( 'WP_CRM_Core' ) ) {
         
-        echo '<div class="wpi_crm_link"><a  class="button" target="_blank" href="'.admin_url('admin.php?page=wp_crm_add_new&user_id='.$user_id).'">'.__('Go to user\'s profile', WPI).'</a></div>';
+        echo '<div class="wpi_crm_link"><a  class="button" target="_blank" href="'.admin_url('admin.php?page=wp_crm_add_new&user_id='.$user_id).'">'.__('View Profile', WPI).'</a></div>';
         
       } else {
         
@@ -1279,11 +1238,35 @@ jQuery("#<?php echo $input_id; ?>").autocomplete(wp_invoice_users, {
      * @author korotkov@ud
      */
     function wp_crm_contextual_help( $data ) {
-      
-      $data['content'][] = __('<h3>WP-Invoice</h3>', WPI);
-      $data['content'][] = __('<p>Advanced option <b>WP-Invoice custom field</b> may be used for adding custom user data fields for payments forms.</p>', WPI);
-      $data['content'][] = __('<p>Works for Authorize.net payment method only for now.</p>', WPI);
-      
+
+      $data['WP-Invoice Integration'][] = __('<h3>WP-Invoice</h3>', WPI);
+      $data['WP-Invoice Integration'][] = __('<p>Advanced option <b>WP-Invoice custom field</b> may be used for adding custom user data fields for payments forms.</p>', WPI);
+      $data['WP-Invoice Integration'][] = __('<p>Works for Authorize.net payment method only for now.</p>', WPI);
+      $data['WP-Invoice Integration'][] = __('<h3>WP-Invoice Notifications</h3>', WPI);
+      $data['WP-Invoice Integration'][] = __('<p>For your notifications on any of this Trigger actions &mdash; <i>WPI: Invoice Paid (Client Receipt)</i>, <i>WPI: Invoice Paid (Notify Administrator)</i>, <i>WPI: Invoice Paid (Notify Creator)</i> &mdash; you can use this shortcodes:</p>', WPI);
+      $data['WP-Invoice Integration'][] = "
+        <p>
+          <b>[user_email]</b>,
+          <b>[user_name]</b>,
+          <b>[user_id]</b>,
+          <b>[invoice_id]</b>,
+          <b>[invoice_title]</b>,
+          <b>[permalink]</b>,
+          <b>[total]</b>,
+          <b>[default_currency_code]</b>,
+          <b>[total_payments]</b>,
+          <b>[creator_name]</b>,
+          <b>[creator_email]</b>,
+          <b>[creator_id]</b>,
+          <b>[site]</b>,
+          <b>[business_name]</b>,
+          <b>[from]</b>,
+          <b>[admin_name]</b>,
+          <b>[admin_email]</b>,
+          <b>[admin_id]</b>.
+        </p>
+      ";
+
       return $data;
     }
 
