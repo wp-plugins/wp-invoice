@@ -438,8 +438,8 @@ function postbox_payment_methods($this_invoice) {
       </tr>
 
 
-      <tr class="wpi_advanced_payment_options column-publish-currency">
-        <th><?php _e("Default Currency", WPI) ?></th>
+      <tr class="column-publish-currency">
+        <th><?php _e("Currency", WPI) ?></th>
         <td>
           <select name="wpi_invoice[default_currency_code]">
     <?php foreach ($wpi_settings['currency']['types'] as $value => $currency_x) : ?>
@@ -519,8 +519,8 @@ function postbox_payment_methods($this_invoice) {
           <p><?php echo sprintf(__('If you do not want to use any payment venue then <a href="%s">setup Manual Payment information</a>.', WPI), admin_url('admin.php?page=wpi_page_settings#wpi_tab_payment')); ?></p>
         </td>
       </tr>
-      <tr class="wpi_advanced_payment_options column-publish-currency">
-        <th><?php _e("Default Currency", WPI) ?></th>
+      <tr class="column-publish-currency">
+        <th><?php _e("Currency", WPI) ?></th>
         <td>
           <select name="wpi_invoice[default_currency_code]">
     <?php foreach ($wpi_settings['currency']['types'] as $value => $currency_x) : ?>

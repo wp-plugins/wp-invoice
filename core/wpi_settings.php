@@ -499,14 +499,13 @@ class WPI_Settings {
       $this->InitOptions();
       $storedoptions = get_option( 'wpi_options' );
       
-      /** @todo Currency are constants. [korotkov@ud] */
-      $currency = $this->options['currency']['symbol'];
+      $currency = $this->options['currency'];
       if ( $storedoptions && is_array( $storedoptions ) ) {
         foreach ( $storedoptions as $key => $value ) {
           $this->options[$key] = $value;
         }
         if (empty($storedoptions['currency']['symbols_updated'])){
-          $this->options['currency']['symbol'] = $currency;
+          $this->options['currency'] = $currency;
           $this->options['currency']['symbols_updated']=true;
         }
         

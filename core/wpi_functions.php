@@ -2445,6 +2445,24 @@ class WPI_Functions {
   }
 
   /**
+   * Create label for user activity stream attribute
+   *
+   * @version 1.0
+   * @author odokienko@UD
+   */
+  function wp_crm_entry_type_label($attr,$entity) {
+    global $wp_crm;
+    switch ($attr){
+      case "wpi_notification":
+        $attr = __("WP-Invoice Notification");
+        break;
+    }
+ 
+    return $attr;
+  }
+
+
+  /**
    * Detects if at least one PF is installed
    * 
    * @global array $wpi_settings
@@ -2454,6 +2472,8 @@ class WPI_Functions {
   static function has_installed_premium_features() {
     global $wpi_settings;
     
+    if ( empty( $wpi_settings['installed_features'] ) ) return false;
+
     foreach ( $wpi_settings['available_features'] as $feature_key => $feature ) {
       if ( array_key_exists( $feature_key, $wpi_settings['installed_features'] ) && class_exists( $feature_key ) ) {
         return true;
@@ -2648,7 +2668,7 @@ function wp_invoice_send_email_receipt($invoice,$notification_data) {
   if ( function_exists('wp_crm_send_notification') && !empty($wpi_settings['use_wp_crm_to_send_notifications']) && $wpi_settings['use_wp_crm_to_send_notifications'] == 'true') {
     wp_crm_send_notification( 'wpi_send_thank_you_email', $notification_data );
     //** Add message to user activity stream */
-    wp_crm_add_to_user_log( $notification_data['user_id'], sprintf(__("WP-Invoice: Message with subject '%1s' was sent", WPI),$subject));
+    wp_crm_add_to_user_log( $notification_data['user_id'], sprintf(__("WP-Invoice: Message with subject '%1s' was sent", WPI),$subject),false,array('attribute'=>'wpi_notification'));
   }else{
     $message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
     $subject = html_entity_decode($subject, ENT_QUOTES, 'UTF-8');
@@ -2698,7 +2718,7 @@ function wp_invoice_send_me_notification($invoice,$notification_data) {
   if ( function_exists('wp_crm_send_notification') && !empty($wpi_settings['use_wp_crm_to_send_notifications']) && $wpi_settings['use_wp_crm_to_send_notifications'] == 'true') {
     wp_crm_send_notification( 'wpi_cc_thank_you_email', $notification_data );
     //** Add message to user activity stream */
-    wp_crm_add_to_user_log( $notification_data['admin_id'], sprintf(__("WP-Invoice: Message with subject '%1s' was sent", WPI),$subject));
+    wp_crm_add_to_user_log( $notification_data['admin_id'], sprintf(__("WP-Invoice: Message with subject '%1s' was sent", WPI),$subject),false,array('attribute'=>'wpi_notification'));
     
   }else{
 
@@ -2745,7 +2765,7 @@ function wp_invoice_send_creator_notification($invoice,$notification_data) {
   if ( function_exists('wp_crm_send_notification') && !empty($wpi_settings['use_wp_crm_to_send_notifications']) && $wpi_settings['use_wp_crm_to_send_notifications'] == 'true'  ) {
     wp_crm_send_notification( 'wpi_send_invoice_creator_email', $notification_data );
     //** Add message to user activity stream */
-    wp_crm_add_to_user_log( $notification_data['creator_id'], sprintf(__("WP-Invoice: Message with subject '%1s' was sent", WPI),$subject));
+    wp_crm_add_to_user_log( $notification_data['creator_id'], sprintf(__("WP-Invoice: Message with subject '%1s' was sent", WPI),$subject),false,array('attribute'=>'wpi_notification'));
   }else{
     $message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
     $subject = html_entity_decode($subject, ENT_QUOTES, 'UTF-8');

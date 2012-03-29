@@ -79,6 +79,9 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 
 == Upgrade Notice ==
 
+= Version 3.06.1 =
+* Critical bug fixes.
+
 = Version 3.06.0 =
 * New features.
 
@@ -98,6 +101,12 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 * Complete rewrite. Old invoice data is not deleted, please notify us if you have any upgrading issues.
 
 == Change Log ==
+
+= Version 3.06.1 =
+* Fixed blank installation currency issue.
+* Fixed array_key_exists issue.
+* Currency settings moved from "toggle advanced payment options" on "editing invoice" page.
+* Other simple fixes.
 
 = Version 3.06.0 =
 * New Contextual Help. It is now fully compatible with WordPress 3.3+. Each information block has it's own tab.
