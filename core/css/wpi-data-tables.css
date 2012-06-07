@@ -33,9 +33,9 @@
 
 .toplevel_page_wpi_main .dataTables_wrapper {
 	position: relative;
-	min-height: 302px;
+	min-height: 202px;
 	clear: both;
-	_height: 302px;
+	_height: 202px;
 	zoom: 1; /* Feeling sorry for IE */
 	margin-bottom: 50px;
 }
@@ -111,9 +111,9 @@ table.display {
 	margin: 0 auto;
 	clear: both;
 	width: 100%;
-	
+
 	/* Note Firefox 3.5 and before have a bug with border-collapse
-	 * ( https://bugzilla.mozilla.org/show%5Fbug.cgi?id=155955 ) 
+	 * ( https://bugzilla.mozilla.org/show%5Fbug.cgi?id=155955 )
 	 * border-spacing: 0; is one possible option. Conditional-css.com is
 	 * useful for this kind of thing
 	 *
@@ -121,7 +121,7 @@ table.display {
 	 * It subtracts one px relative to the other browsers from the first column, and
 	 * adds one to the end...
 	 *
-	 * If you want that effect I'd suggest setting a border-top/left on th/td's and 
+	 * If you want that effect I'd suggest setting a border-top/left on th/td's and
 	 * then filling in the gaps with other borders.
 	 */
 }
@@ -334,20 +334,20 @@ td.details {
 }
 
 .paging_full_numbers span.paginate_button:hover {
-	
+
 }
 
 .paging_full_numbers span.paginate_active {
 	background-color: #99B3FF;
   background-color: #7D7D7D;
-  color: #FFFFFF;  
+  color: #FFFFFF;
 }
 
 table.display tr.even.row_selected td {
 	background-color: #B0BED9;
 }
 
-table.display tr.odd.row_selected td {    
+table.display tr.odd.row_selected td {
 
 }
 
@@ -357,11 +357,11 @@ table.display tr.odd.row_selected td {
  */
 /* For the standard odd/even */
 tr.odd td.sorting_1 {
-	
+
 }
 
 tr.odd td.sorting_2 {
-	
+
 }
 
 /* For the Conditional-CSS grading rows */

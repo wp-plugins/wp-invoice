@@ -8,30 +8,15 @@ function get_invoice_permalink($identificator) {
 
   $hash = "";
   //** Check Invoice by ID and get hash */
-  if (!empty($identificator)) {
-    //** Hash always contains 32 symbols */
-    if (strlen($identificator) == 32) {
-      $hash = $identificator;
-    } else {
-      //** Determine if $identificator id custom_id - korotkov@ud */
-      $id = $wpdb->get_var("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'custom_id' AND meta_value = '{$identificator}'");
-      
-      //** Determine if $identificator is invoice_id */
-      if ( empty( $id ) ) {
-        $id = $wpdb->get_var("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'invoice_id' AND meta_value = '{$identificator}'");
-      }
-      
-      //** If empty id, determine if $identificator is post ID */
-      if ( empty( $id ) ) {
-        $id = $wpdb->get_var("SELECT ID FROM {$wpdb->posts} WHERE ID = '{$identificator}'");
-      }
-      
-      //** Get hash by post ID */
-      if(!empty($id)) {
-        $hash = $wpdb->get_var("SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = 'invoice_id' AND post_id = '{$id}'");
-        $hash = md5($hash);
-      }
-    }
+  if (empty($identificator)) return false;
+
+  $id = get_invoice_id($identificator);
+
+  //** Get hash by post ID */
+  if(!empty($id)) {
+    $hash = $wpdb->get_var($wpdb->prepare("SELECT md5(meta_value) FROM {$wpdb->postmeta} WHERE meta_key = 'invoice_id' AND post_id = %d",
+      $id
+    ));
   }
 
   if(empty($hash) || empty($wpi_settings['web_invoice_page'])) {
@@ -48,6 +33,46 @@ function get_invoice_permalink($identificator) {
       return get_permalink($wpi_settings['web_invoice_page']) . "&invoice_id=" . $hash;
     }
   }
+}
+
+/*
+ * This function can be used to get invoice id by several identifiers (hash, custom_id, invoice_id, post_id)
+ * @author odokienko@UD
+ * @return bool|int False or the invoice id
+ */
+function get_invoice_id($identificator){
+  global $wpdb;
+
+  $id = false;
+  if (strlen($identificator) == 32) {
+    //** Determine if $identificator is invoice HASH */
+    $id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key='invoice_id' and md5(meta_value)=%s",
+        $identificator
+    ));
+  }
+
+  if ( empty( $id ) ){
+    //** Determine if $identificator id custom_id - korotkov@ud */
+    $id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'custom_id' AND meta_value = %s",
+        $identificator
+    ));
+  }
+
+  //** Determine if $identificator is invoice_id */
+  if ( empty( $id ) ) {
+    $id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'invoice_id' AND meta_value = %s",
+      $identificator
+    ));
+  }
+
+  //** If empty id, determine if $identificator is post ID */
+  if ( empty( $id ) ) {
+    $id = $wpdb->get_var($wpdb->prepare("SELECT ID FROM {$wpdb->posts} WHERE post_type='wpi_object' and ID=%s",
+      $identificator
+    ));
+  }
+
+  return $id;
 }
 
 /**

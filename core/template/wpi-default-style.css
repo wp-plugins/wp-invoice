@@ -8,11 +8,11 @@
 }
 .wp_invoice_business_phone {
   font-style: italic;
-} 
+}
 .wpi_left_col,
 .wpi_right_col {
   float: left;
-  width: 425px;  
+  width: 425px;
 }
 
 .wpi_left_col {
@@ -24,7 +24,7 @@ div.invoice_top_message  {
 }
 
 div.wpi_payment_form  {
-  
+
 }
 
 div.wpi_payment_form  ul.wpi_inline_fields  li {
@@ -45,7 +45,7 @@ div.wpi_payment_form  ul.wpi_checkout_block{
     width: 100%;
 }
 
-div.wpi_payment_form ul, 
+div.wpi_payment_form ul,
 div.wpi_payment_form ol {
   margin:0;
   padding:0;
@@ -76,7 +76,7 @@ div.wpi_payment_form div.partial_payments  #my_amount{
 
 div.wpi_payment_form  li {
     min-height: 2em;
-    list-style: none;    
+    list-style: none;
 }
 
 div.wpi_payment_form  li.section_title {
@@ -178,7 +178,7 @@ div.wpi_checkout_payment_box ul.wpi_checkout_block {
     width: 100%;
 }
 
-form.wpi_checkout li, 
+form.wpi_checkout li,
 div.wpi_checkout_payment_box li {
     min-height: 2em;
     list-style: none;
@@ -200,7 +200,7 @@ form.wpi_checkout li span.validation {
     padding-left: 9px;
 }
 
-form.wpi_checkout li label, 
+form.wpi_checkout li label,
 div.wpi_checkout_payment_box li label {
     float: left;
     position: relative;
@@ -210,7 +210,6 @@ div.wpi_checkout_payment_box li label {
 
 form.wpi_checkout .text-input,
 div.wpi_checkout_payment_box select {
-    border: 1px solid #363636;
     color: #3E3E3E;
     margin: 3px 0;
     padding: 3px;

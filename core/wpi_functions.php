@@ -18,7 +18,7 @@ class WPI_Functions {
   function console_log($text = false) {
     global $wpi_settings;
 
-    if($wpi_settings['developer_mode'] != 'true') {
+    if(isset($wpi_settings['developer_mode']) && $wpi_settings['developer_mode'] != 'true') {
       return;
     }
 
@@ -252,18 +252,18 @@ class WPI_Functions {
   }
 
   /**
-   * 
+   *
    * @global object $wpdb
    * @param array $search_vars
    * @param string $interval
    * @return mixed
-   * @author odokienko@UD 
+   * @author odokienko@UD
    */
   static function get_sales_by ($search_vars = false, $interval="weekly") {
     global $wpdb;
-    
+
     switch ($interval){
-      case "weekly": 
+      case "weekly":
         $interval_function = 'WEEK';
         break;
       case 'daily':
@@ -274,9 +274,7 @@ class WPI_Functions {
         $interval_function = 'MONTH';
         break;
     }
-    
-    //$search_vars = false; // now we ingnore any filters
-    
+
     if (!empty($search_vars)) {
 
       if (is_string($search_vars)) {
@@ -294,7 +292,7 @@ class WPI_Functions {
           $sql .= " AND (";
           $sql .= " LOWER(`{$wpdb->posts}`.post_title) LIKE '%$tofind%'";
           /* Now go through the post meta table */
-          $sql .= " OR 
+          $sql .= " OR
                     `{$wpdb->posts}`.ID IN (SELECT post_id FROM {$wpdb->postmeta} WHERE LOWER(meta_value) LIKE '%$tofind%')";
           $sql .= ")";
           continue;
@@ -381,29 +379,50 @@ class WPI_Functions {
         }
       }
     }
-    
-    $sql = " 
+
+    $date_table = "
+       (
+        select @maxDate - interval (a.a+(10*b.a)+(100*c.a)) day aDate from
+        (select 0 as a union all select 1 union all select 2 union all select 3
+        union all select 4 union all select 5 union all select 6 union all
+        select 7 union all select 8 union all select 9) a, /*10 day range*/
+        (select 0 as a union all select 1 union all select 2 union all select 3
+        union all select 4 union all select 5 union all select 6 union all
+        select 7 union all select 8 union all select 9) b, /*100 day range*/
+        (select 0 as a union all select 1 union all select 2 union all select 3
+        union all select 4 union all select 5 union all select 6 union all
+        select 7 union all select 8 union all select 9) c, /*1000 day range*/
+        (select @minDate := date_format((select min(post_date) from {$wpdb->posts} where `{$wpdb->posts}`.post_type = 'wpi_object' {$sql}),'%Y-%m-%d'), @maxDate := date_format((select max(post_date) from {$wpdb->posts} where `{$wpdb->posts}`.post_type = 'wpi_object' {$sql}),'%Y-%m-%d')) e
+      )";
+
+
+    $sql = "
       SELECT distinct
-      YEAR(FROM_UNIXTIME(`{$wpdb->prefix}wpi_object_log`.time)) as int_year, 
-      {$interval_function}(FROM_UNIXTIME(`{$wpdb->prefix}wpi_object_log`.time)) int_erval, 
-      sum(`{$wpdb->prefix}wpi_object_log`.value) as sum_interval
-      FROM `{$wpdb->prefix}wpi_object_log`
-      JOIN `{$wpdb->posts}` ON `{$wpdb->prefix}wpi_object_log`.object_id = `{$wpdb->posts}`.id
-      /*JOIN {$wpdb->postmeta} ON  `{$wpdb->postmeta}`.post_id=`{$wpdb->posts}`.id*/
-      WHERE `{$wpdb->prefix}wpi_object_log`.attribute = 'balance'
-      AND `{$wpdb->posts}`.post_type = 'wpi_object'
-      AND ACTION = 'add_payment'
-      {$sql}
+      YEAR(datetable.aDate) as int_year,
+      {$interval_function}(datetable.aDate) int_erval,
+      COALESCE(sum(`{$wpdb->prefix}wpi_object_log`.value),0) as sum_interval
+      FROM ($date_table) datetable
+      left join `{$wpdb->prefix}wpi_object_log` on (
+        datetable.aDate=date_format(FROM_UNIXTIME(`{$wpdb->prefix}wpi_object_log`.time),'%Y-%m-%d')
+        and (
+          `{$wpdb->prefix}wpi_object_log`.object_id in (
+            select `{$wpdb->posts}`.id from `{$wpdb->posts}` where `{$wpdb->posts}`.post_type = 'wpi_object' {$sql}
+          )
+        )
+        AND ACTION = 'add_payment'
+        AND `{$wpdb->prefix}wpi_object_log`.attribute = 'balance'
+      )
+      WHERE datetable.aDate between @minDate and @maxDate
       GROUP BY 1,2
     ";
-      
+
     //die($sql);
 
     $results = $wpdb->get_results($sql);
 
     return $results;
   }
-  
+
   /*
    * Get Search filter fields
    */
@@ -499,7 +518,9 @@ class WPI_Functions {
 
     $amount = (float) $amount;
 
-    return $currency_symbol . number_format($amount, 2, '.', ',');
+    $thousands_separator_symbol = !isset( $wpi_settings['thousands_separator_symbol'] )?',':($wpi_settings['thousands_separator_symbol'] == '0'?'':$wpi_settings['thousands_separator_symbol']);
+
+    return $currency_symbol . number_format($amount, 2, '.', $thousands_separator_symbol);
   }
 
   /**
@@ -548,7 +569,7 @@ class WPI_Functions {
         $r['uncollected_client_value'][$object['user_email']] = !empty($r['uncollected_client_value'][$object['user_email']]) ? $r['uncollected_client_value'][$object['user_email']] : 0 + $object['subtotal'] + $object['total_tax'] - $object['total_discount'];
         $r['total_unpaid'][] = $objects[$object['ID']]['subtotal'] + $objects[$object['ID']]['total_tax'] - $objects[$object['ID']]['total_discount'];
       }
-      
+
     }
 
     if (isset($r['collected_line_items']) && is_array($r['collected_line_items'])) {
@@ -998,7 +1019,7 @@ class WPI_Functions {
   function get_status($invoice_id) {
 
     $this_invoice = new WPI_Invoice();
-    $this_invoice->load_invoice("id=$invoice_id");    
+    $this_invoice->load_invoice("id=$invoice_id");
 
     if (is_array($this_invoice->data['log'])) {
       foreach (array_reverse($this_invoice->data['log']) as $event) {
@@ -1074,9 +1095,9 @@ class WPI_Functions {
 
   /**
    * Returns highest invoice ID
-   * 
+   *
    * @global object $wpdb
-   * @return longint 
+   * @return longint
    * @author korotkov@ud
    */
   function get_highest_custom_id() {
@@ -1110,7 +1131,7 @@ class WPI_Functions {
 
   /**
    * Removes empty values from array
-   * 
+   *
    * @param array $array
    * @return array
    * @author korotkov@ud
@@ -1131,11 +1152,15 @@ class WPI_Functions {
    */
   function Activate() {
     global $wpdb, $wpi_settings;
-
-    /* Setup WPI schedule to handle recurring invoices */
-    wp_schedule_event(time(), 'hourly', 'wpi_hourly_event');
-    /* Scheduling daily update event */
-    wp_schedule_event(time(), 'daily', 'wpi_update');
+    /* check if scheduler already sheduled */
+    if(!wp_next_scheduled('wpi_hourly_event')){
+      /* Setup WPI schedule to handle recurring invoices */
+      wp_schedule_event(time(), 'hourly', 'wpi_hourly_event');
+    }
+    if(!wp_next_scheduled('wpi_update')){
+      /* Scheduling daily update event */
+      wp_schedule_event(time(), 'daily', 'wpi_update');
+    }
 
     WPI_Functions::log(__("Schedule created with plugin activation.", WPI));
 
@@ -1195,6 +1220,40 @@ class WPI_Functions {
         update_user_meta($user_id, $field_id, $data[$field_id]);
       }
     }
+  }
+
+  /**
+   * Called by profile_update action/hook
+   * If user_email changed then it updates user invoices with new user_email
+   * @param type $user_id
+   * @param type $old_user_data
+   * @return boolean
+   * @author odokienko@UD
+   */
+  function protect_user_invoices($user_id, $old_user_data) {
+    global $wpdb;
+
+    if (empty($user_id) || $user_id == 0) {
+      return false;
+    }
+
+    $userdata = get_userdata($user_id);
+
+    if ($userdata->user_email != $old_user_data->user_email){
+
+      $wpdb->query("
+        UPDATE {$wpdb->postmeta} postmeta, {$wpdb->posts} posts
+        SET postmeta.meta_value = '" . $userdata->user_email . "'
+        WHERE posts.ID = postmeta.post_id
+          AND postmeta.meta_key = 'user_email'
+          AND postmeta.meta_value = '" . $old_user_data->user_email . "'
+          AND posts.post_type = 'wpi_object'
+      ");
+
+      WPI_Functions::console_log('WPI_Invoice::protect_user_invoices() '.__('user_email changed.', WPI));
+
+    }
+
   }
 
   /*
@@ -1627,7 +1686,7 @@ class WPI_Functions {
     if ( !empty( $invoice['type'] ) ) {
       $invoice_type = $invoice['type'];
     }
-    
+
     // Save status of invoice (quote or not quote)
     if(isset ($invoice['quote'])) {
       if($invoice['quote'] == "on") {
@@ -1709,25 +1768,25 @@ class WPI_Functions {
     $ni = new WPI_Invoice();
     $ni->SendNotificationLog($_REQUEST);
   }
-  
+
   /**
    * It's a callback function. It calls on a option "wpi_options" changes
-   * 
+   *
    * @param mixed $new_value
    * @param mixed $old_value (do not used)
-   * @return $new_value 
+   * @return $new_value
    * @author odokienko@UD
    */
   function pre_update_option_wpi_options($new_value,$old_value){
     global $wpdb;
-    
-    
+
+
     $default_currency_code = $new_value['currency']["default_currency_code"];
     $protected_currencies = array();
-    
+
     /* check for curency with default_currency_code*/
-    $protected_currencies[] = $default_currency_code; 
-    
+    $protected_currencies[] = $default_currency_code;
+
     /* check for currencies that are already used in invoices */
     $results = $wpdb->get_results("
       SELECT DISTINCT `{$wpdb->prefix}postmeta`.meta_value
@@ -1739,7 +1798,7 @@ class WPI_Functions {
     foreach($results as $curr_row){
       $protected_currencies[] = $curr_row->meta_value;
     }
-  
+
     foreach ($protected_currencies as $curr){
       if (empty($new_value['currency']['types'][$curr])){
         $new_value['currency']['types'][$curr] = $old_value['currency']['types'][$curr];
@@ -1749,16 +1808,16 @@ class WPI_Functions {
       }
     }
 
-    
-    
+
+
     foreach ($new_value['currency']['symbol'] as &$symbol){
       $symbol = base64_encode($symbol);
     }
-    
-    
-    /** 
-     * and checking the option "use_wp_crm_to_send_notifications". If it is set to true 
-     * than retrieves an option 'wp_crm_settings' and check it for containing 
+
+
+    /**
+     * and checking the option "use_wp_crm_to_send_notifications". If it is set to true
+     * than retrieves an option 'wp_crm_settings' and check it for containing
      * a default WPI notification templates and add them if necessary
      */
     if(!empty($new_value['use_wp_crm_to_send_notifications'])){
@@ -1793,31 +1852,31 @@ class WPI_Functions {
         update_option('wp_crm_settings', $wp_crm_settings);
       }
     }
-    
-    
-    
+
+
+
     return $new_value;
   }
 
-  
+
   /**
    * It's a callback function. It calls on a option "wpi_options" get_option
-   * 
+   *
    * @param mixed $new_value
    * @param mixed $old_value (do not used)
-   * @return $new_value 
+   * @return $new_value
    * @author odokienko@UD
    */
   function option_wpi_options($value){
-    
+
     if (empty($value['currency']['symbol'])) return $value;
-    
+
     foreach ($value['currency']['symbol'] as $key => $symbol){
       $value['currency']['symbol'][$key] = base64_decode($symbol);
     }
     return $value;
   }
-  
+
   /**
    * Creates post type.
    *
@@ -2096,7 +2155,7 @@ class WPI_Functions {
 
       //** Update option to latest version so this isn't run on next admin page load */
       update_option( "wp_invoice_version", $wpi_version );
-      
+
       //** Try to create new schema tables */
       WPI_Functions::create_new_schema_tables();
 
@@ -2188,7 +2247,7 @@ class WPI_Functions {
 
       // If didn't work, we quit
       if (!is_dir(WPI_Premium)) {
-        continue;
+        return;
       }
 
       // Save code
@@ -2281,8 +2340,8 @@ class WPI_Functions {
     if (!$time) {
       $time = time();
     }
-    
-     $wpdb->show_errors(); 
+
+     $wpdb->show_errors();
 
     $wpdb->insert($wpdb->base_prefix . 'wpi_object_log', array(
       'object_id' => $object_id,
@@ -2294,8 +2353,8 @@ class WPI_Functions {
       'time' => $time,
       'blog_id' => $blog_id
     ));
- 
-      
+
+
     if($wpdb->insert_id) {
       return $wpdb->insert_id;
     } else {
@@ -2381,15 +2440,15 @@ class WPI_Functions {
 
   /**
    * Returns WP-CRM attributes list
-   * 
+   *
    * @global object $wp_crm
-   * @return array 
+   * @return array
    * @author korotkov@ud
    */
   function get_wpi_crm_attributes() {
     /** If WP-CRM not installed */
     if ( !class_exists('WP_CRM_Core') ) return;
-    
+
     global $wp_crm;
 
     $attributes = array();
@@ -2406,16 +2465,16 @@ class WPI_Functions {
 
   /**
    * WP-CRM custom fields procces filter
-   * 
+   *
    * @param array $current_fields
    * @param string $name
-   * @return array 
+   * @return array
    * @author korotkov@ud
    */
   function wpi_crm_custom_fields( $current_fields, $name ) {
     $attributes = self::get_wpi_crm_attributes();
     if ( empty( $attributes ) ) return $current_fields;
-    
+
     foreach( $attributes as $attr_key => $attr_value ) {
       $current_fields['customer_information'][ $attr_key ] = array(
         'type'  => 'text',
@@ -2427,8 +2486,8 @@ class WPI_Functions {
 
     return $current_fields;
   }
-  
-  
+
+
   /**
    * Filter CRM actions list
    * @param array $current
@@ -2444,7 +2503,7 @@ class WPI_Functions {
     return $current;
   }
 
-  /**
+     /**
    * Create label for user activity stream attribute
    *
    * @version 1.0
@@ -2457,21 +2516,20 @@ class WPI_Functions {
         $attr = __("WP-Invoice Notification");
         break;
     }
- 
+
     return $attr;
   }
 
-
   /**
    * Detects if at least one PF is installed
-   * 
+   *
    * @global array $wpi_settings
    * @return bool
    * @author korotkov@ud
    */
   static function has_installed_premium_features() {
     global $wpi_settings;
-    
+
     if ( empty( $wpi_settings['installed_features'] ) ) return false;
 
     foreach ( $wpi_settings['available_features'] as $feature_key => $feature ) {
@@ -2479,20 +2537,47 @@ class WPI_Functions {
         return true;
       }
     }
-    
+
     return false;
   }
 
+  /**
+   * Changing of Mail From for Notifications.
+   *
+   * @global array $wpi_settings
+   * @return string
+   */
+  function notification_mail_from() {
+    global $wpi_settings;
+
+    $email = empty( $wpi_settings['mail_from_user_email'] ) ? "wordpress@".strtolower($_SERVER['SERVER_NAME']) : $wpi_settings['mail_from_user_email'];
+
+    return $email;
+  }
+
+  /**
+   * Changing of Mail From Name for Notifications.
+   *
+   * @global array $wpi_settings
+   * @return type
+   */
+  function notification_mail_from_name() {
+    global $wpi_settings;
+
+    $sendername = empty( $wpi_settings['mail_from_sender_name'] ) ? "WordPress" : stripslashes($wpi_settings['mail_from_sender_name']);
+
+    return $sendername;
+  }
 }
 
 /**
  * Draw users dropdown list
- * 
+ *
  * @global object $wpdb
  * @param string $post_type
  * @param string $select_name
  * @param bool $return_users
- * @return bool|nothing 
+ * @return bool|nothing
  * @author korotkov@ud
  */
 function wpi_invoice_users_dropdown($post_type, $select_name, $return_users=false) {
@@ -2538,7 +2623,7 @@ function wpi_invoice_users_dropdown($post_type, $select_name, $return_users=fals
 
 /**
  * Mark invoice as Paid
- * 
+ *
  * @param int $invoice_id
  * @param bool $check_balance
  * @return bool
@@ -2581,20 +2666,20 @@ function wp_invoice_mark_as_paid($invoice_id, $check_balance=false) {
 
 /**
  * Mark invoice as Pending (for PayPal IPN)
- * 
+ *
  * @param int $invoice_id
  * @author korotkov@ud
  */
 function wp_invoice_mark_as_pending($invoice_id) {
   $post_id = wpi_invoice_id_to_post_id($invoice_id);
-  
+
   wp_update_post(
           array(
               'ID' => $post_id,
               'post_status' => 'pending'
           )
   );
-  
+
 	/** Mark invoice as processed by IPN (used for trashing abandoned SPC transactions) */
 	update_post_meta($post_id, 'processed_by_ipn', 'true');
   WPI_Functions::log_event($post_id, 'invoice', 'update', '', __('Pending', WPI));
@@ -2602,7 +2687,7 @@ function wp_invoice_mark_as_pending($invoice_id) {
 
 /**
  * Determine if invoice is paid full
- * 
+ *
  * @global object $wpdb
  * @param int $invoice_id
  * @return bool
@@ -2610,30 +2695,34 @@ function wp_invoice_mark_as_pending($invoice_id) {
  */
 function wpi_is_full_paid_invoice($invoice_id) {
   global $wpdb;
-  
+
   $invoice_obj = new WPI_Invoice();
   $invoice_obj->load_invoice("id={$invoice_id}");
-  
+
   $object_id = wpi_invoice_id_to_post_id($invoice_id);
   $payment_history = $wpdb->get_results("SELECT * FROM {$wpdb->base_prefix}wpi_object_log WHERE object_id = '{$object_id}' AND action = 'add_payment'", ARRAY_A);
   $paid_amount = 0;
-  
+
   foreach ($payment_history as $payment) {
     $paid_amount += abs($payment['value']);
   }
-  
+
   return $paid_amount >= ( $invoice_obj->data['subtotal'] - $invoice_obj->data['total_discount'] );
 }
 
 /**
  * Formates amount
- * 
+ *
  * @param number $amount
- * @return string 
+ * @return string
  */
 function wp_invoice_currency_format($amount) {
+  global $wpi_settings;
+
+  $thousands_separator_symbol = !isset( $wpi_settings['thousands_separator_symbol'] )?',':($wpi_settings['thousands_separator_symbol'] == '0'?'':$wpi_settings['thousands_separator_symbol']);
+
   if ($amount) {
-    return number_format($amount, 2, '.', ',');
+    return number_format($amount, 2, '.', $thousands_separator_symbol);
   } else {
     return $amount;
   }
@@ -2641,14 +2730,14 @@ function wp_invoice_currency_format($amount) {
 
 /**
  * Emails user after payment is done
- * 
+ *
  * @param array $invoice
  * @author korotkov@ud
  * @refactoring odokienko@UD
  */
 function wp_invoice_send_email_receipt($invoice,$notification_data) {
   global $wpi_settings;
-  
+
   $subject = sprintf(__("Invoice #%s has been paid", WPI), $notification_data['invoice_id']);
   $headers = array(
       "From: {$notification_data['business_name']} <{$notification_data['from']}>\r\n",
@@ -2663,7 +2752,7 @@ function wp_invoice_send_email_receipt($invoice,$notification_data) {
     $notification_data['from']
   );
 
-  /** 
+  /**
    * @todo add condition witch will be look at this option odokienko@UD */
   if ( function_exists('wp_crm_send_notification') && !empty($wpi_settings['use_wp_crm_to_send_notifications']) && $wpi_settings['use_wp_crm_to_send_notifications'] == 'true') {
     wp_crm_send_notification( 'wpi_send_thank_you_email', $notification_data );
@@ -2688,7 +2777,7 @@ function wp_invoice_send_email_receipt($invoice,$notification_data) {
  * @global array $wpi_settings
  * @param array $invoice
  * @author korotkov@UD
- * 
+ *
  * @refactoring odokienko@UD
  */
 function wp_invoice_send_me_notification($invoice,$notification_data) {
@@ -2697,8 +2786,8 @@ function wp_invoice_send_me_notification($invoice,$notification_data) {
       "From: {$notification_data['business_name']} <{$notification_data['from']}>\r\n",
       "Content-Type: text/html"
   );
-  $subject = sprintf(__("Invoice #%s has been paid", WPI), $notification_data['invoice_id']); 
-  
+  $subject = sprintf(__("Invoice #%s has been paid", WPI), $notification_data['invoice_id']);
+
   $message = sprintf(
     __("%1s has paid invoice #%2s.<br><br>%3s<br>Total payments: %4s %5s of %6s %7s.<br><br>You can overview invoice status and payment history by clicking this link:<br>%8s<br><br>User information:<br><br>ID: %9s<br>Name: %10s<br>Email: %11s<br><br>--------------------<br>%12s", WPI),
     $notification_data['user_name'],
@@ -2714,12 +2803,12 @@ function wp_invoice_send_me_notification($invoice,$notification_data) {
     $notification_data['user_email'],
     $notification_data['site']
   );
-  
+
   if ( function_exists('wp_crm_send_notification') && !empty($wpi_settings['use_wp_crm_to_send_notifications']) && $wpi_settings['use_wp_crm_to_send_notifications'] == 'true') {
     wp_crm_send_notification( 'wpi_cc_thank_you_email', $notification_data );
     //** Add message to user activity stream */
     wp_crm_add_to_user_log( $notification_data['admin_id'], sprintf(__("WP-Invoice: Message with subject '%1s' was sent", WPI),$subject),false,array('attribute'=>'wpi_notification'));
-    
+
   }else{
 
     $message = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
@@ -2732,11 +2821,11 @@ function wp_invoice_send_me_notification($invoice,$notification_data) {
 
 /**
  * Sends notification to invoice creator
- * 
+ *
  * @global array $wpi_settings
  * @param array $invoice
  * @author korotkov@UD
- * 
+ *
  * @refactoring odokienko@UD
  */
 function wp_invoice_send_creator_notification($invoice,$notification_data) {
@@ -2789,34 +2878,39 @@ function send_notification( $invoice ) {
     $paid_invoice = new WPI_Invoice();
     $paid_invoice->load_invoice("id={$invoice['invoice_id']}");
     $invoice = $paid_invoice->data;
-    
+
     $notification_data['invoice_id'] = (!empty($invoice['custom_id'])) ? $invoice['custom_id'] : $invoice['invoice_id'];
     $notification_data['invoice_title']= $invoice['post_title'];
     $notification_data['from'] = stripslashes(get_option('admin_email'));
     $notification_data['permalink'] = get_invoice_permalink($invoice['invoice_id']);
     $notification_data['business_name'] = $wpi_settings['business_name'];
     $notification_data['site']         = stripslashes($wpi_settings['business_name']);
-    
+
     $notification_data['user_email'] = $invoice['user_data']['user_email'];
     $notification_data['user_name'] = wpi_get_user_display_name($invoice);
     $notification_data['user_id']      = $invoice['user_data']['ID'];
-    
-    $admin = get_user_by_email(get_option('admin_email'));  
+
+    $admin = get_user_by_email(get_option('admin_email'));
     $notification_data['admin_email']  = stripslashes( $admin->user_email );
     $notification_data['admin_id']  = $admin->ID;
     $notification_data['admin_name']  = stripslashes( $admin->display_name );
-    
+
     $creator  = get_userdata( $invoice['post_author'] );
     $notification_data['creator_email']= stripslashes( $creator->user_email );
     $notification_data['creator_name'] = stripslashes( $creator->display_name );
-    $notification_data['creator_id'] = $creator->ID ;  
+    $notification_data['creator_id'] = $creator->ID ;
 
-    
+
     $notification_data['total']        = $invoice['subtotal'] - $invoice['total_discount'] + $invoice['total_tax'];
     $notification_data['default_currency_code'] = $invoice['default_currency_code'];
     $notification_data['total_payments'] = $invoice['total_payments'];
-    
-        
+
+    //** If we are going to change our Mail From */
+    if ( !empty($wpi_settings['change_mail_from']) && $wpi_settings['change_mail_from'] == 'true' ) {
+      add_filter('wp_mail_from',      array('WPI_Functions', 'notification_mail_from'));
+      add_filter('wp_mail_from_name', array('WPI_Functions', 'notification_mail_from_name'));
+    }
+
     /** Email client */
     if (!empty($wpi_settings['send_thank_you_email']) && $wpi_settings['send_thank_you_email'] == 'true') {
       wp_invoice_send_email_receipt($invoice,$notification_data);
@@ -2831,16 +2925,19 @@ function send_notification( $invoice ) {
     if ( !empty( $wpi_settings['send_invoice_creator_email'] ) && $wpi_settings['send_invoice_creator_email'] == 'true' ){
       wp_invoice_send_creator_notification($invoice,$notification_data);
     }
-    
+
+    remove_filter('wp_mail_from',      array('WPI_Functions', 'notification_mail_from'));
+    remove_filter('wp_mail_from_name', array('WPI_Functions', 'notification_mail_from_name'));
+
   }
 
 }
 
 /**
  * Returns display_name from invoice if exists or from userdata
- * 
+ *
  * @param type $invoice
- * @return type 
+ * @return type
  * @author korotkov@ud
  */
 function wpi_get_user_display_name( $invoice ) {
@@ -2848,7 +2945,7 @@ function wpi_get_user_display_name( $invoice ) {
   if ( !empty( $invoice['user_data']['display_name'] ) ) {
     return $invoice['user_data']['display_name'];
   }
-  
+
   /** Get current user data and return it */
   $user = get_userdata( $invoice['user_data']['ID'] );
   return $user->display_name;
@@ -2888,27 +2985,27 @@ function wp_invoice_show_business_information() {
 
 /**
  * Returns due date in format
- * 
+ *
  * @param type $invoice
- * @return type 
+ * @return type
  * @author korotkov@ud
  */
 function get_due_date( $invoice ) {
-  
+
   if ( !empty( $invoice['due_date_year'] ) && !empty( $invoice['due_date_month'] ) && !empty( $invoice['due_date_day'] ) ) {
     return date( get_option('date_format'), strtotime( $invoice['due_date_day'].'-'.$invoice['due_date_month'].'-'.$invoice['due_date_year'] ) );
   }
-  
+
   return false;
-  
+
 }
 
 /**
  * Find a full diff between two arrays.
- * 
+ *
  * @param array $array1
  * @param array $array2
- * @return array 
+ * @return array
  * @author korotkov@ud
  */
 function wpi_multi_array_diff($array1, $array2) {

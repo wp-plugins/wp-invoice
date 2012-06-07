@@ -86,14 +86,21 @@ td.wpi_premium_feature_image {
     font-size: 11px;
     margin: 0;
 }
+
 .wpi_box_header strong {
     color: #000000;
     display: block;
     margin-bottom: 10px;
 }
+
 .wpi_features_not_found {
   padding: 10px;
 }
+
 #currency-list > div {
   padding-top: 10px;
+}
+
+.wpi_settings_list input[type="text"] {
+  margin-right: 5px;
 }

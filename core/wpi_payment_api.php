@@ -7,6 +7,7 @@ class WPI_Payment_Api {
 
   const WPI_METHOD_AUTHORIZE_NET   = 'wpi_authorize';
 	const WPI_METHOD_PAYPAL   = 'wpi_paypal';
+	const WPI_METHOD_CHARGIFY = 'wpi_chargify';
 
   const WPI_METHOD_STATUS_COMPLETE = 'Complete';
   const WPI_METHOD_STATUS_ERROR    = 'Error';
@@ -16,7 +17,7 @@ class WPI_Payment_Api {
   private $settings = array();
   private $url      = '';
   private $items    = array();
-  
+
   // Default params
   private $defaults = array(
     'wpi_authorize' => array(
@@ -50,7 +51,8 @@ class WPI_Payment_Api {
       'x_phone'       => '',
       'x_fax'         => ''
     ),
-		'wpi_paypal' => array(true)
+		'wpi_paypal' => array(true),
+		'wpi_chargify' => array(true),
   );
 
   // Default response object
@@ -83,7 +85,7 @@ class WPI_Payment_Api {
 
           $this->method['x_login']        = $this->settings['gateway_username']['value'];
           $this->method['x_tran_key']     = $this->settings['gateway_tran_key']['value'];
-          
+
           $this->method['x_delim_data']   = $this->settings['gateway_delim_data']['value'];
           $this->method['x_delim_char']   = $this->settings['gateway_delim_char']['value'];
           $this->method['x_encap_char']   = $this->settings['gateway_encap_char']['value'];
@@ -142,7 +144,7 @@ class WPI_Payment_Api {
                              : '';
 
           require_once('gateways/authorize.net/authnet.class.php');
-          
+
           $transaction = new WP_Invoice_Authnet( $this->method );
           $transaction->setUrl( $this->url );
           $transaction->addItems( $this->items );
@@ -158,14 +160,32 @@ class WPI_Payment_Api {
 					$this->response['payment_method'] = self::WPI_METHOD_AUTHORIZE_NET;
 
           break;
-					
+
 				case self::WPI_METHOD_PAYPAL:
-						
+
 					$this->response['payment_status'] = self::WPI_METHOD_STATUS_COMPLETE;
 					$this->response['receiver_email'] = !empty( $args['payer_email'] ) ? $args['payer_email'] : '';
 					$this->response['payment_method'] = self::WPI_METHOD_PAYPAL;
 
 					break;
+				/**
+         * @TODO: Commented temporary. Need to finish related Premium Feature first. And maybe reimplement this using hooks.
+         * @author korotkov@ud
+         *
+				case self::WPI_METHOD_CHARGIFY:
+
+				  $res = wpi_chargify::start_subscription( $args );
+				  $this->response = array(
+				    'payment_status' => is_numeric( $res ) ? self::WPI_METHOD_STATUS_COMPLETE : self::WPI_METHOD_STATUS_ERROR ,
+				    'receiver_email' => !empty( $args['payer_email'] ) ? $args['payer_email'] : '',
+				    'payment_method' => self::WPI_METHOD_CHARGIFY,
+				    'transaction_id' => $res,
+				  );
+				  if( !is_numeric( $res ) ){
+				    $this->response[ 'error_message' ] = $res;
+				  }
+         *
+         */
 
         default:
           break;

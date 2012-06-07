@@ -195,9 +195,9 @@ function wpi_create_slug(slug) {
 
     // Get Last row to update names to match slug
     var added_row = jQuery(".wpi_dynamic_table_row:last", table);
-    
+
     jQuery(added_row).mouseenter(function(){curency_and_delete_action(this,'show');}).mouseleave(function(){curency_and_delete_action(this,'hide');});
-    
+
     // Display row just in case
     jQuery(added_row).show();
 
@@ -754,7 +754,7 @@ function wpi_save_invoice() {
     }
   });
   // Get data from MCE Editor
-  invoice_data['wpi_invoice[description]'] = jQuery("textarea[name='content']").val();
+  invoice_data['wpi_invoice[description]'] = jQuery('textarea[name="content"]').val();
 
   jQuery.ajax({
     data: invoice_data,
@@ -854,11 +854,11 @@ function wpi_update_charges_list() {
 function wpi_adjust_for_tax_column(action) {
    if(action == 'show') {
     flexible_width_holder_content = '300px'
-    fixed_width_holder = '250px'
+    fixed_width_holder = '280px'
     jQuery(".row_tax").show();
   } else {
     flexible_width_holder_content = '250px'
-    fixed_width_holder = '200px'
+    fixed_width_holder = '240px'
     /* Set global Tax value as default */
     if(jQuery('#wp_invoice_tax').length > 0) {
       jQuery(".row_tax input").val(jQuery('#wp_invoice_tax').val());
@@ -1172,7 +1172,8 @@ function wpi_recalc_totals() {
       row_total = 0;
     }
 
-    jQuery(".row_total", this).html(row_total.toFixed(2));
+    jQuery(".row_total", this).html(row_total);
+    jQuery(".row_total", this).formatCurrency({roundToDecimalPlace: 2,useHtml:true});
 
   });
 
@@ -1202,7 +1203,8 @@ function wpi_recalc_totals() {
       row_total = 0;
     }
 
-    jQuery(".row_total", this).html(row_total.toFixed(2) );
+    jQuery(".row_total", this).html(row_total);
+    jQuery(".row_total", this).formatCurrency({roundToDecimalPlace: 2,useHtml:true});
 
   });
 
@@ -1355,17 +1357,11 @@ function wpi_recalc_totals() {
     }
   }
 
-
   jQuery(".calculate_invoice_adjustments").val(adjustments).formatCurrency({roundToDecimalPlace: 2});
   jQuery(".calculate_invoice_subtotal").val(subtotal).formatCurrency({roundToDecimalPlace: 2});
   jQuery(".calculate_discount_total").val(total_discount).formatCurrency({roundToDecimalPlace: 2});
   jQuery(".calculate_invoice_tax").val(total_tax).formatCurrency({roundToDecimalPlace: 2});
-  jQuery(".calculate_invoice_total").val(total_due).formatCurrency({
-    decimalSymbol: ',',
-    digitGroupSymbol: '.',
-    dropDecimals: false,
-    groupDigits: true
-  });
+  jQuery(".calculate_invoice_total").val(total_due).formatCurrency({roundToDecimalPlace: 2});
 }
 
 function empty( mixed_var ) {

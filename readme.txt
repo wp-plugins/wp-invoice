@@ -102,6 +102,28 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 
 == Change Log ==
 
+= Version 3.07.0 =
+* Added WordPress 3.4-RC1 compatibility.
+* Added (modified) shortcodes [wp-invoice-history] and [wp-invoice-lookup].
+* Added ability to chose thousands separator symbol.
+* Added ability to change "From" field in WP-Invoice e-mails.
+* Added JS validation on WP-Invoice Settings page.
+* Added protection of user invoices from changing emails.
+* Added prevention of wpi_hourly_event and wpi_update from being scheduled twice.
+* Added a 0 (zero) value to Visualize sales if there were no sales during specific period.
+* Added Merchant's Information and invoice items information to Google Analytics Tracking function.
+* PDF Feature: Added PNG to JPEG conversion for WPI PDF because TCPDF fails when logo image is a transparent PNG.
+* PDF Feature: Fixed issues with PDF Output.
+* PDF Feature: Fixed URL displaying if WordPress is set up not in server root.
+* Fixed jQuery UI scripts and styles adding.
+* Fixed Invoice Lookup widget: Now it available only for Logged In users. For non-admin users are allows to lookup only their own invoices.
+* Fixed New invoice Email autocomplete function.
+* Fixed problems on plugin's activation if plugin's dir-name is different from wp-invoice e.g wp-invoice-new.
+* Fixed Invoice partial payments in case when amount is very high.
+* WP-CRM integration: Changed notification slug to wpi_notification and added notification label "WP-Invoice Notification" to slug wpi_notification.
+* Contextual Help updates.
+* Visual/cosmetic UI fixes.
+* Other improvements and fixes.
 = Version 3.06.1 =
 * Fixed blank installation currency issue.
 * Fixed array_key_exists issue.

@@ -9,15 +9,15 @@
     margin-bottom: 7px;
     margin-left: 93px;
  }
- 
+
  .wp_invoice_new_user ul.wpi_user_selection {
-  
+
  }
- 
+
  select.wpi_user_email_selection option {
   max-width: 275px;
  }
- 
+
  #postbox_user_existing .inside {
   margin:0;
   padding:0;
@@ -26,12 +26,12 @@
  #postbox_user_existing .inside table {
   width: 95%;
  }
- 
+
  #postbox_user_existing .wpi_user_email_selection_wrapper{
   background: #EDEDED;
   padding: 10px 0 10px 10px;
  }
- 
+
  .wpi_invoice_paid {
   background: none repeat scroll 0 0 #333A33;
   color: #FCFCFC;
@@ -97,4 +97,11 @@ tr.wpi_advanced_payment_options  {
 #wpi_invoice_form .wp_invoice_accordion th span,
 #wpi_invoice_form .wp_invoice_accordion .wp_invoice_tooltip {
   color: #6C6C6C;
+}
+
+/** Comments box (Quotes) **/
+#wpi_comments_box .inside {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 400px;
 }

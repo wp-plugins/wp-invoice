@@ -1,18 +1,27 @@
 <?php
 
 /**
-  Lookup Widget
+ * Lookup Widget class
  */
 class InvoiceLookupWidget extends WP_Widget {
 
-  /** constructor */
+  /**
+   * Construct
+   */
   function InvoiceLookupWidget() {
     parent::WP_Widget(false, $name = 'Invoice Lookup');
   }
 
-  /** @see WP_Widget::widget */
+  /**
+   * Draw widget.
+   *
+   * @see WP_Widget::widget
+   * @param type $args
+   * @param type $instance
+   */
   function widget($args, $instance) {
     extract($args);
+
     $title = apply_filters('widget_title', $instance['title']);
     $message = $instance['message'];
     $button_text = $instance['button_text'];
@@ -25,12 +34,24 @@ class InvoiceLookupWidget extends WP_Widget {
     echo $after_widget;
   }
 
-  /** @see WP_Widget::update */
+  /**
+   * Update widget.
+   *
+   * @see WP_Widget::update
+   * @param type $new_instance
+   * @param type $old_instance
+   * @return type
+   */
   function update($new_instance, $old_instance) {
     return $new_instance;
   }
 
-  /** @see WP_Widget::form */
+  /**
+   * Widget settings form.
+   *
+   * @see WP_Widget::form
+   * @param type $instance
+   */
   function form($instance) {
     $title = esc_attr($instance['title']);
     $message = esc_attr($instance['message']);
@@ -44,20 +65,28 @@ class InvoiceLookupWidget extends WP_Widget {
 
 }
 
-// class FooWidget
-
 /**
-  Invoice History
+ * Invoice History widget
  */
 class InvoiceHistoryWidget extends WP_Widget {
 
-  /** constructor */
+  /**
+   * Construct
+   */
   function InvoiceHistoryWidget() {
     $widget_ops = array('classname' => 'widget_invoice_history', 'description' => __('User&#8217;s Paid and Pending Invoices'));
     parent::WP_Widget('invoice_history', __('Invoice History'), $widget_ops);
   }
 
-  /** @see WP_Widget::widget */
+  /**
+   * Draw widget.
+   *
+   * @see WP_Widget::widget
+   * @global type $current_user
+   * @param type $args
+   * @param type $instance
+   * @return type
+   */
   function widget($args, $instance) {
     extract($args);
     global $current_user;
@@ -69,45 +98,12 @@ class InvoiceHistoryWidget extends WP_Widget {
     $message = $instance['message'];
     $button_text = !empty($instance['button_text']) ? $instance['button_text'] : __('Submit');
     ?>
-      <?php echo $before_widget; ?>
-      <?php if ($title)
-        echo $before_title . $title . $after_title; ?>
+    <?php echo $before_widget; ?>
+    <?php if ($title)
+      echo $before_title . $title . $after_title; ?>
     <div class="wpi_widget_invoice_history">
-      <!-- <?php //$invoice_array = WPI_Functions::get_user_quotes("user_id={$current_user->ID}");
-      if (!empty($invoice_array) && is_array($invoice_array)) { ?>
-          <b class="wpi_sidebar_title">Quotes</b>
-          <ul class="wpi_invoice_history_list wpi_quotes_list">
-        <?php foreach ($invoice_array as $invoice) {
-          if ($invoice['reporting']['status'] == 'balance_due') { ?>
-                          <li><a href="<?php echo get_invoice_permalink($invoice['invoice_id']); ?>"><?php echo $invoice['subject']; ?></a></li>
-          <?php }
-        } ?>
-          </ul>
-      <?php } ?> -->
-
-      <?php
-      //$invoice_array = WPI_Functions::get_user_invoices("user_id={$current_user->ID}&status=balance_due");
-      /* if(is_array($invoice_array)) {
-        ?>
-        <b class="wpi_sidebar_title">Due Invoice(s)</b>
-        <ul class="wpi_invoice_history_list wpi_due_invoices">
-        <?php
-        foreach($invoice_array as $invoice) {
-        if($invoice['reporting']['status'] == 'balance_due') {
-        ?>
-        <li><a href="<?php echo get_invoice_permalink($invoice['invoice_id']); ?>"><?php echo $invoice['subject']; ?></a></li>
-        <?php
-        }
-        }
-        ?>
-        </ul>
-        <?php
-        } */
-      ?>
-
       <?php
       $invoice_array = WPI_Functions::get_user_invoices("user_email={$current_user->user_email}&status=active");
-
       if (!empty($invoice_array) && is_array($invoice_array)) {
         ?>
         <b class="wpi_sidebar_title"><?php _e("Active Invoice(s)"); ?></b>
@@ -116,44 +112,53 @@ class InvoiceHistoryWidget extends WP_Widget {
           foreach ($invoice_array as $invoice) {
             ?>
             <li><a href="<?php echo get_invoice_permalink($invoice->data['invoice_id']); ?>"><?php echo $invoice->data['post_title']; ?></a></li>
-          <?php
-        }
-        ?>
+            <?php
+          }
+          ?>
         </ul>
         <?php
       }
       ?>
-
-    <?php
-    $invoice_array = WPI_Functions::get_user_invoices("user_email={$current_user->user_email}&status=paid");
-    if (!empty($invoice_array) && is_array($invoice_array)) {
-      ?>
+      <?php
+      $invoice_array = WPI_Functions::get_user_invoices("user_email={$current_user->user_email}&status=paid");
+      if (!empty($invoice_array) && is_array($invoice_array)) {
+        ?>
         <b class="wpi_sidebar_title"><?php _e("Paid Invoice(s)"); ?></b>
         <ul class="wpi_invoice_history_list wpi_active_invoices">
           <?php
           foreach ($invoice_array as $invoice) {
             ?>
             <li><a href="<?php echo get_invoice_permalink($invoice->data['invoice_id']); ?>"><?php echo $invoice->data['post_title']; ?></a></li>
-          <?php
-        }
-        ?>
+            <?php
+          }
+          ?>
         </ul>
-      <?php
-    }
-    ?>
-
+        <?php
+      }
+      ?>
     </div>
-
     <?php echo $after_widget; ?>
     <?php
   }
 
-  /** @see WP_Widget::update */
+  /**
+   * Update widget
+   *
+   * @see WP_Widget::update
+   * @param type $new_instance
+   * @param type $old_instance
+   * @return type
+   */
   function update($new_instance, $old_instance) {
     return $new_instance;
   }
 
-  /** @see WP_Widget::form */
+  /**
+   * Widget settings form
+   *
+   * @see WP_Widget::form
+   * @param type $instance
+   */
   function form($instance) {
     $title = !empty($instance['title']) ? esc_attr($instance['title']) : '';
     $message = !empty($instance['message']) ? esc_attr($instance['message']) : '';
@@ -166,5 +171,4 @@ class InvoiceHistoryWidget extends WP_Widget {
 
 }
 
-// class FooWidget
 ?>

@@ -174,16 +174,16 @@ class wpi_authorize extends wpi_gateway_base {
         'name'  => 'cc_data[zip]',
         'label' => 'Zip'
       ),
-      
+
       'country'     => array(
         'type'   => 'text',
         'class'  => 'text-input',
         'name'   => 'cc_data[country]',
-        'label'  => 'County'
+        'label'  => 'Country'
       )
-        
+
     ),
-      
+
     'billing_information' => array(
       
       'card_num'    => array(

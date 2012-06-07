@@ -445,7 +445,7 @@ class WPI_Settings {
 
       $this->options = WPI_Functions::array_merge_recursive_distinct($this->options, $new_settings);
       /** just fo now we use the merged options array and overwrite two brances with new values. It is the custom solution to be able detete currency. odokienko@UD */
-      if($new_settings['currency']){
+      if(isset($new_settings['currency']) && $new_settings['currency']){
         $this->options['currency']['symbol'] = $new_settings['currency']['symbol'];
         $this->options['currency']['types'] = $new_settings['currency']['types'];
       }

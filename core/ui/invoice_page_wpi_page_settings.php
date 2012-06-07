@@ -56,6 +56,11 @@ if(isset($_REQUEST['message'])) {
 ?>
 <script type="text/javascript">
 
+var wpi = {
+  'currency':'<?php echo $wpi_settings['currency']['symbol'][$wpi_settings['currency']['default_currency_code']]; ?> ',
+  'thousandsSeparator':'<?php echo !isset( $wpi_settings['thousands_separator_symbol'] )?',':($wpi_settings['thousands_separator_symbol'] == '0'?'':$wpi_settings['thousands_separator_symbol']) ?>'
+};
+
 jQuery(document).ready( function() {
   var wp_invoice_settings_page = jQuery("#wp_invoice_settings_page").tabs({cookie: {expires: 30}});
     // The following runs specific functions when a given tab is loaded
@@ -159,10 +164,10 @@ class WPI_Settings_page {
       <td>
         <ul class="wpi_something_advanced_wrapper">
           <li><label for="wpi_tax_method"><?php _e('Calculate Taxable Subtotal', WPI) ?> <?php echo WPI_UI::select("name=tax_method&group=wpi_settings&values=".serialize(array("after_discount" => __("After Discount", WPI),"before_discount" => __("Before Discount", WPI)))."&current_value=".(!empty($wpi_settings['tax_method']) ? $wpi_settings['tax_method'] : "")); ?> </label></li>
-          <li><?php echo WPI_UI::checkbox("name=use_global_tax&class=wpi_show_advanced&group=wpi_settings&value=true&label=" . __('Use global tax.', WPI),$wpi_settings['use_global_tax']); ?></li>                    
+          <li><?php echo WPI_UI::checkbox("name=use_global_tax&class=wpi_show_advanced&group=wpi_settings&value=true&label=" . __('Use global tax.', WPI),$wpi_settings['use_global_tax']); ?></li>
           <li class="wpi_advanced_option">
-            Tax value: <?php echo WPI_UI::input("style=width:50px;&name=global_tax&group=wpi_settings&value={$wpi_settings['global_tax']}")?>%          
-            <div class="description wpi_advanced_option"><?php _e("This will make all new invoices have default Tax value which can be changed for different invoice.", WPI) ?></div>          
+            Tax value: <?php echo WPI_UI::input("style=width:50px;&name=global_tax&group=wpi_settings&value={$wpi_settings['global_tax']}")?>%
+            <div class="description wpi_advanced_option"><?php _e("This will make all new invoices have default Tax value which can be changed for different invoice.", WPI) ?></div>
           </li>
         </ul>
       </td>
@@ -198,12 +203,26 @@ class WPI_Settings_page {
             <span class="wpi_green_notification"><?php _e('A "wpi" folder has been found, any files with the proper file names will be used instead of the default template files.', WPI) ?></span>
             <?php } ?>
           </li>
-          </li>
           <li><input class="button wpi_install_custom_templates" type="button" value="<?php _e("Install", WPI); ?>" /> <?php _e("the custom templates inside the <b>wpi</b> folder in your active theme's folder.", WPI); ?></li>
           <li class="wpi_install_custom_templates_result" style="display:none;"></li>
           <?php if ( WPI_Functions::has_installed_premium_features() ): ?>
           <li><?php echo WPI_UI::checkbox("name=wpi_settings[disable_automatic_feature_update]&value=true&label=".__("Disable automatic Premium Feature updates.", WPI), WPI_Functions::is_true($wpi_settings['disable_automatic_feature_update'])); ?></li>
           <?php endif; ?>
+          <li>
+            <label for="wpi_thousands_separator_symbol">
+              <?php _e('Thousands Separator Symbol', WPI); ?>
+              <?php echo WPI_UI::select(array(
+                'name'  => 'thousands_separator_symbol',
+                'group' => 'wpi_settings',
+                'values' => array(
+                  '0' => __('None'),
+                  '.' => '.(period)',
+                  ',' => ',(comma)'
+                ),
+                'current_value' => !isset($wpi_settings['thousands_separator_symbol'])?',':$wpi_settings['thousands_separator_symbol']
+              )); ?>
+            </label>
+          </li>
         </ul>
       </td>
     </tr>
@@ -268,14 +287,52 @@ class WPI_Settings_page {
             <th><?php _e("After a payment has been completed", WPI) ?></th>
             <td>
               <ul class="wpi_settings_list">
-                <li><?php echo WPI_UI::checkbox("name=send_thank_you_email&group=wpi_settings&value=true&label=".__('Email a confirmation to client', WPI), $wpi_settings['send_thank_you_email']); ?></li>
-                <li><?php echo WPI_UI::checkbox("name=cc_thank_you_email&group=wpi_settings&value=true&label=".  sprintf(__('Email address set for administrative puproses from <a href="%s">General Settings</a>', WPI), get_option('home')."/wp-admin/options-general.php")." (<u>".get_option('admin_email')."</u>)",$wpi_settings['cc_thank_you_email']); ?></li>
-                <li><?php echo WPI_UI::checkbox("name=send_invoice_creator_email&group=wpi_settings&value=true&label=".__('Email invoice creator', WPI),$wpi_settings['send_invoice_creator_email']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=send_thank_you_email&group=wpi_settings&value=true&label=".__('Send email confirmation to the client.', WPI), $wpi_settings['send_thank_you_email']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=cc_thank_you_email&group=wpi_settings&value=true&label=".  sprintf(__('Send email notification to the address set for administrative purposes from <a href="%s">General Settings</a>', WPI), get_option('home')."/wp-admin/options-general.php")." (<u>".get_option('admin_email')."</u>)",$wpi_settings['cc_thank_you_email']); ?></li>
+                <li><?php echo WPI_UI::checkbox("name=send_invoice_creator_email&group=wpi_settings&value=true&label=".__('Send email notification to invoice creator.', WPI),$wpi_settings['send_invoice_creator_email']); ?></li>
                 <li><?php echo WPI_UI::checkbox("name=use_wp_crm_to_send_notifications&group=wpi_settings&value=true&label=".__('Use CRM to send notifications', WPI).(((!function_exists('wp_crm_send_notification') ))?"&special=disabled='disabled'":''), ((function_exists('wp_crm_send_notification'))?$wpi_settings['use_wp_crm_to_send_notifications']:false)); ?><div class="description"><?php if ( !function_exists('wp_crm_send_notification') ) : ?>Get <a class="small" href="<?php echo admin_url('plugin-install.php?tab=search&amp;type=term&amp;s=WP-CRM+andypotanin');?>">WP-CRM plugin</a> to enhance notification management.<?php else:?>You can visit WP-CRM <a class="small" href="<?php echo admin_url('admin.php?page=wp_crm_settings#tab_notifications');?>">Notifications</a> tab to adjust email templates.<?php endif;?></div></li>
               </ul>
             </td>
           </tr>
-          
+          <tr>
+            <th>
+              <a class="wp_invoice_tooltip" title="<?php _e("This options allow you to change the default email address that WordPress sends it's mail from, and the name of the sender that the email is from.", WPI); ?>">
+                <?php _e("Mail From options", WPI); ?>
+              </a>
+            </th>
+            <td>
+              <ul class="wpi_settings_list">
+                <li>
+                  <?php echo WPI_UI::input(array(
+                    'label' => __('Sender Name'),
+                    'type'  => 'text',
+                    'name'  => 'mail_from_sender_name',
+                    'group' => 'wpi_settings',
+                    'value' => empty( $wpi_settings['mail_from_sender_name'] ) ? 'WordPress' : $wpi_settings['mail_from_sender_name']
+                  )); ?>
+                  <div class="description">The sender name that the email is from</div>
+                </li>
+                <li>
+                  <?php echo WPI_UI::input(array(
+                    'label' => __('User E-mail'),
+                    'type'  => 'text',
+                    'name'  => 'mail_from_user_email',
+                    'group' => 'wpi_settings',
+                    'value' => empty( $wpi_settings['mail_from_user_email'] ) ? 'wordpress@'.strtolower($_SERVER['SERVER_NAME']) : $wpi_settings['mail_from_user_email']
+                  )); ?>
+                  <div class="description">Email address e.g. username@example.com</div>
+                </li>
+                <li>
+                  <?php echo WPI_UI::checkbox(array(
+                    'label' => __("Apply 'Mail From' settings."),
+                    'name'  => 'change_mail_from',
+                    'value' => 'true',
+                    'group' => 'wpi_settings'
+                  ), $wpi_settings['change_mail_from']); ?>
+                </li>
+              </ul>
+            </td>
+          </tr>
           <tr>
             <th>
               <a class="wp_invoice_tooltip" title="<?php _e("If you are using <b>Google Analytics Site Tracking</b> code on your site then you can track WP-Invoice events.", WPI); ?>">
@@ -301,9 +358,9 @@ class WPI_Settings_page {
                         </li>
                       </ul>
                     </li>
-                    
+
                     <?php do_action('wpi_settings_page_ga_events_list', $wpi_settings); ?>
-                    
+
                   </ul>
                 </li>
               </ul>
@@ -349,7 +406,7 @@ class WPI_Settings_page {
                         </td>
                         <td align="left" class="symbol-row" style="text-align: center;">
                           <?php echo WPI_UI::input("name=wpi_settings[currency][symbol][{$slug}]&class=currency_sign&value=".urlencode($currency_array['symbol'][$slug])."&type=text&required=required&style=float:right;width:150px;margin-right:55px;")?>
-                        </td> 
+                        </td>
                         <td>
                           <?php echo WPI_UI::input("name=wpi_settings[currency][types][{$slug}]&value={$title}&type=text&required=required&style=width:150px;margin-left:35px;")?>
                         </td>
@@ -366,7 +423,7 @@ class WPI_Settings_page {
                     </tfoot>
                   </table>
                 </div>
-              </div>  
+              </div>
             </td>
           </tr>
 
@@ -608,7 +665,7 @@ class WPI_Settings_page {
         <?php echo WPI_Functions::pretty_print_r($wpi_settings); ?>
       </div>
     </div>
-    
+
     <div class="wpi_settings_block">
       <?php _e("Restore Backup of WP-Invoice Configuration", WPI); ?>: <input name="wpi_settings[settings_from_backup]" type="file" />
       <a href="<?php echo wp_nonce_url( "admin.php?page=wpi_page_settings&wpi_action=download-wpi-backup", 'download-wpi-backup'); ?>"><?php _e('Download Backup of Current WP-Invoice Configuration.', WPI);?></a>
@@ -643,12 +700,12 @@ class WPI_Settings_page {
         <tr>
           <td colspan="2" class="wpi_premium_feature_intro">
               <span class="header"><?php _e('WP-Invoice Premium Features',WPI) ?></span>
-              
+
               <p>
                 <?php _e('Check for any premium feature updates from the Usability Dynamics Update server:', WPI); ?>
                 <input type="button" id="wpi_ajax_check_plugin_updates" value="<?php esc_attr(_e('Check Updates', WPI)); ?>">
               </p>
-              
+
               <p><?php _e('When purchasing the premium features you will need to specify your domain to add the license correctly.  This is your domain:',WPI); echo ' <b>'. $this_domain .'</b>'; ?></p>
               <p id="wpi_plugins_ajax_response" class="hidden"></p>
           </td>

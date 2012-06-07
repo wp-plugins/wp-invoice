@@ -1,12 +1,12 @@
 (function($) {
-  
+
   $.fn.formatCurrency = function(settings) {
     settings = jQuery.extend({
       name: "formatCurrency",
       useHtml: false,
       global: true
     }, settings);
-    
+
     return this.each(function() {
       var num = "0";
       num = $(this)[settings.useHtml ? 'html' : 'val']();
@@ -20,8 +20,8 @@
       if (cents < 10)
         cents = "0" + cents;
       for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
-        num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
-    
+        num = num.substring(0, num.length - (4 * i + 3)) + wpi.thousandsSeparator + num.substring(num.length - (4 * i + 3));
+
       $(this)[settings.useHtml ? 'html' : 'val'](((sign) ? '' : '-') + jQuery('<div/>').html(wpi.currency).text() + num + '.' + cents);
     });
   };

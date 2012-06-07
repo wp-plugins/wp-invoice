@@ -45,7 +45,7 @@ ul {
   -moz-border-radius-topleft: 5px;
   -moz-border-radius-topright: 5px;
   border-top-left-radius: 5px;
-  border-top-right-radius: 5px;  
+  border-top-right-radius: 5px;
   text-shadow: 2px 2px 2px #D3D3D3;
 }
 
@@ -89,7 +89,7 @@ ul {
     position: relative;
     text-shadow: 2px 2px 1px #E7E7E7;
     top: 3px;
-  
+
 }
 .invoice_page_wpi_page_manage_invoice  table#get_user_info tr.invoice_main th label {
 
@@ -155,7 +155,7 @@ span.wpi_cancel {
   cursor: pointer;
   text-decoration: underline;
   color: #21759B;
-  
+
 }
 .wpi_inactive_link {
   cursor: normal !important;
@@ -166,7 +166,7 @@ span.wpi_cancel {
 .wpi_new_win {
   background: url(images/new-window.png) no-repeat right center;
   padding-right: 20px;
-  
+
 }
 
 #wpi_manage_page #minor-publishing {
@@ -196,7 +196,7 @@ span.wpi_cancel {
 .wpi_publish_seetings {
   width: 100%;
   text-align: left;
-}      
+}
 .wpi_publish_seetings li .wpi_checkbox{
   width: 15px !important;
   min-width: 15px !important;
@@ -205,7 +205,7 @@ span.wpi_cancel {
   border-bottom: 1px solid #f1f1f1;
   padding: 5px 0 5px 10px;
   margin-bottom: 0 !important;
-  
+
 }
 .timestampdiv select{
 height:20px;
@@ -230,7 +230,7 @@ font-size:11px;
 
 input.wpi_small {
   width: 45px !important;
-  
+
 }
 input.wpi_money {
   width: 45px !important;
@@ -255,20 +255,20 @@ input.wpi_time {
 
 
 #wpi_enter_payments .input_field {
-  
+
   width: 250px;
-  
+
 }
 
 #wpi_enter_payments {
   border-bottom: 1px solid #dadada;
   background-color:#f5f5f5;
-  width: 100%; 
+  width: 100%;
   margin-top: 0;
   padding-bottom: 10px;
 }
 
-#postbox_status_and_history .footer_functions { 
+#postbox_status_and_history .footer_functions {
   border-top: 1px solid #dadada;
   background-color:#f5f5f5;
   margin-top: 0;
@@ -387,11 +387,11 @@ min-height: 200px;
   width: 340px;
 }
 
-#wpi_manage_page #side-sortables{
+#wpi_manage_page .crm-wp-less-v34 #side-sortables{
   width: 335px;
 }
 
-#wpi_manage_page #post-body{
+#wpi_manage_page .crm-wp-less-v34 #post-body{
   margin-right: -400px;
 }
 #wpi_manage_page #titlediv #title {
@@ -403,7 +403,7 @@ width: 99%
 
 }
 
-#wpi_manage_page #post-body-content{
+#wpi_manage_page .crm-wp-less-v34 #post-body-content{
   margin-right: 410px;
 }
 
@@ -438,8 +438,9 @@ width: 99%
   margin-right: 400px;
 }
 
- 
-#wpi_invoice_form #side-info-column .form-table th {width: 80px; color: #777777}
+
+#wpi_invoice_form #side-info-column .form-table th,
+#wpi_invoice_form #postbox-container-1 .form-table th {width: 80px; color: #777777}
 #wpi_invoice_form .form-table td {padding-left: 0; padding-right: 0;}
 
 
@@ -473,10 +474,10 @@ width: 99%
   background-image: url(images/ajax-loader.gif) ;
   position: relative;
   top: -27px;
-  left: 200px;  
+  left: 200px;
   display:none;
   float: left;
-  
+
 }
 
 .wpi_loading_ajax_bottom{
@@ -488,7 +489,7 @@ width: 99%
   right: 20px;
   display:none;
   float: left;
-  
+
 }
 #wp_invoice_settings_page #insert_css.insert_css {width: 100%; height: 500px;}
 
@@ -536,7 +537,7 @@ width: 99%
   border-bottom-left-radius: 4px;
   background-color: #f1f1f1;
   border-color: #dfdfdf;
-  
+
 }
 
 
@@ -578,7 +579,7 @@ width: 99%
   width: 200px;
   color: #8F8F8F;
   background: transparent !important;
-}  
+}
 
 
 #wpi_invoice_form .input_field, .itemized_list  .input_field{
@@ -712,7 +713,7 @@ width:100%;
   width: 200px;
   color:#000;
   display:none;
-  }  
+  }
 #wpi_invoice_form option {padding-right: 10px;}
 .wp_invoice_timestamp select{
   height:20px !important;
@@ -734,8 +735,8 @@ width:100%;
 .wp_invoice_click_me, .wp_invoice_click_me a{cursor: pointer; color:#FF7200; text-decoration:none; font-size: 11px;}
 .wp_invoice_click_me:hover {text-decoration:underline}
 
-.wp_invoice_archived{display:none; background: #EFEFEF}  
-#wp_invoice_show_archived {text-decoration:none;font-size:.9em;color:#8F8F8F;}  
+.wp_invoice_archived{display:none; background: #EFEFEF}
+#wp_invoice_show_archived {text-decoration:none;font-size:.9em;color:#8F8F8F;}
 .wp_invoice_credit_card_processors {display:none;}
 .wp_invoice_rounded_box {width: 99%; margin: 20px 0; background: #FFF; border: 5px solid #eaeaea; -moz-border-radius:15px; }
 .wp_invoice_rounded_box p{font-size: 1.2em; font-family: calibri; padding: 0 10px; }
@@ -752,7 +753,7 @@ width:100%;
 
 .wpi_button {text-align: center;}
 .itemized_list li  {clear:both;}
- 
+
 .itemized_list  .item_description {margin-left: 35px; width:80%; padding: 5px !important;}
 .itemized_list  .item_name,
 .wpi_dynamic_table_row .item_name {margin-left: 35px;}
@@ -760,7 +761,7 @@ width:100%;
 .itemized_list  .row_quantity, .itemized_list .row_amount {width: 40px;}
 .itemized_list  .row_tax, .itemized_list .row_charge_tax {width: 40px;}
 .itemized_list  .row_price {width: 40px;}
-.itemized_list  .row_total {width: 60px; }
+.itemized_list  .row_total {/*width: 60px;*/ float: right; margin-right: 12px; }
 
 .itemized_list   .name {width: 100%; float: left;}
 
@@ -782,14 +783,14 @@ width:100%;
   height: 20px;
   width: 35px;
   display: block;
-  position: absolute; 
+  position: absolute;
 }
 
 .wpi_dynamic_table_row td {
   padding: 10px 0;
 }
 .wp_invoice_itemized_list_row .flexible_width_holder_content,
-.wpp_dynamic_table_row .flexible_width_holder_content{ 
+.wpp_dynamic_table_row .flexible_width_holder_content{
   position: relative;
 }
 .wpi_add_description_text { display:block; margin-left: 35px; font-size: 10px; color: #22749B; }
@@ -808,16 +809,16 @@ width:100%;
   }
 
 .itemized_list .wp_invoice_discount_row .row_delete {
-  background:url(images/del_row.gif) no-repeat center center; height: 20px; width: 35px; display: block; position: absolute; 
+  background:url(images/del_row.gif) no-repeat center center; height: 20px; width: 35px; display: block; position: absolute;
   }
-  
-.flexible_width_holder { 
+
+.flexible_width_holder {
   clear:left;
   float:left;
   margin-right:-285px;
   width:100%;
   }
-.flexible_width_holder_content{ 
+.flexible_width_holder_content{
   position: relative;
   /* margin-right:250px; */
 }
@@ -869,15 +870,15 @@ margin-bottom:20px;
 }
 
 .itemized_list .header span{
-  
+
 }
 
 .itemized_list .header {
   background: #F1F1F1;
   padding:5px 8px 8px;
   margin-bottom: 0;
-  font-weight: bold; 
-  
+  font-weight: bold;
+
 }
 
 .itemized_list .footer {
@@ -888,8 +889,8 @@ margin-bottom:20px;
 .wpi_invoice_totals { padding-top: 5px; float:right; /*width:40%;*/ }
 .wpi_invoice_totals dl {float: right; width: 285px;}
 .wpi_invoice_totals dt, .wpi_invoice_totals dd  {height: 25px; margin-bottom: 0;}
-.wpi_invoice_totals dt {float: left;  width: 150px;  clear:left; text-align: left;}
-.wpi_invoice_totals dd {float: right;  width: 80px; text-align:right; margin-right: 15px;  clear:right; font-weight: bold; }
+.wpi_invoice_totals dt {float: left;  /*width: 150px;*/  clear:left; text-align: left;}
+.wpi_invoice_totals dd {float: right;  width: 130px; text-align:right; margin-right: 15px;  clear:right; font-weight: bold; margin-left: 0px; }
 .wpi_invoice_totals input {
   width: 100%;
   text-align: right;

@@ -375,13 +375,13 @@ function show_partial_payments($args = '') {
 
           <li class="wpi_checkout_row">
             <label for="wpi_minimum_amount_option"><?php _e("Min. Payment Due:", WPI); ?></label>
-            <input type="radio" name="payment_amount" id="wpi_minimum_amount_option" value="<?php echo wp_invoice_currency_format($invoice['deposit_amount']); ?>" />
+            <input type="radio" name="payment_amount" id="wpi_minimum_amount_option" value="<?php echo $invoice['deposit_amount']; ?>" />
             <span><?php echo $currency_symbol . wp_invoice_currency_format($invoice['deposit_amount']); ?></span>
           </li>
 
           <li class="wpi_checkout_row">
             <label for="wpi_full_amount_option"><?php _e("Statement Balance:", WPI); ?></label>
-            <input checked="checked" type="radio" name="payment_amount" id="wpi_full_amount_option" value="<?php echo wp_invoice_currency_format($invoice['net']); ?>" />
+            <input checked="checked" type="radio" name="payment_amount" id="wpi_full_amount_option" value="<?php echo $invoice['net']; ?>" />
             <span><?php echo $currency_symbol . wp_invoice_currency_format($invoice['net']); ?></span>
           </li>
 

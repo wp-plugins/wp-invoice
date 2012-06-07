@@ -90,13 +90,13 @@ class WPI_Invoice {
     $email = trim($email);
 
     //** If e-mail exists, but no user_id is passed we get ID from email */
-    //** 
+    //**
     // Fix for different versions of wordpress.
     // 3.3 has 'data' object in result of get_user_by()
     //*/
     if ( version_compare($wp_version, '3.3', '>=') ) {
-      
-      if($user_id = get_user_by('ID', $user_id)->data->ID) {
+
+      if(!empty($user_id) && $user_id = get_user_by('ID', $user_id)->data->ID) {
         WPI_Functions::console_log(__('Loaded user from passed ID.', WPI));
         $new_user = false;
 

@@ -307,6 +307,11 @@ class WPI_Ajax {
    * @since 3.0
    */
   function send_notification(){
+    global $wpi_settings;
+
+    //** Start buffering to avoid appearing any errors in response */
+    ob_start();
+
     //** Setup, and send our e-mail */
     $headers = "From: ".get_bloginfo()." <".get_bloginfo('admin_email').">\r\n";
     $message = html_entity_decode($_REQUEST['body'], ENT_QUOTES, 'UTF-8');
@@ -315,15 +320,24 @@ class WPI_Ajax {
 
     //** Validate for empty fields data */
     if(empty($to) || empty($subject) || empty($message)) {
+      ob_end_clean();
       die(json_encode(array("status" => 500, "msg" => __("The fields should not be empty. Please, check the fields data and try to send notification again.", WPI))));
+    }
+
+    //** If we are going to change our Mail From */
+    if ( !empty($wpi_settings['change_mail_from']) && $wpi_settings['change_mail_from'] == 'true' ) {
+      add_filter('wp_mail_from',      array('WPI_Functions', 'notification_mail_from'));
+      add_filter('wp_mail_from_name', array('WPI_Functions', 'notification_mail_from_name'));
     }
 
     if (wp_mail($to, $subject, $message, $headers)) {
       $pretty_time = date(get_option('time_format') . " " . get_option('date_format'));
       $text = __("Notification Sent", WPI).(isset($_REQUEST['template']) && !empty($_REQUEST['template']) ? " (".$_REQUEST['template'].")" : "")." ".__('to', WPI)." {$to} ".__('at', WPI)." {$pretty_time}.";
       WPI_Functions::log_event(wpi_invoice_id_to_post_id($_REQUEST['invoice_id']), 'invoice', 'notification', '', $text, time());
+      ob_end_clean();
       die(json_encode(array("status" => 200, "msg" => __("Successfully sent the invoice notification!", WPI))));
     }
+    ob_end_clean();
     die(json_encode(array("status" => 500, "msg" => __("Unable to send the e-mail. Please, try again later.", WPI))));
   }
 
