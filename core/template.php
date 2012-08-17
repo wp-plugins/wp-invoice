@@ -117,3 +117,5 @@ function wpi_invoice_lookup($args = '') {
 function wp_invoice_history($args = '') {
   echo the_widget('InvoiceHistoryWidget', $args);
 }
+
+?>

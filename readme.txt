@@ -3,11 +3,11 @@ Contributors: usability_dynamics, Anton Korotkoff, andypotanin, jbrw
 Donate link: https://usabilitydynamics.com/products/wp-invoice/
 Tags: web invoice, bill, paypal, invoice, pay, online payment, send invoice, bill clients, authorize.net, credit cards, recurring billing, ARB
 Requires at least: 3.1
-Tested up to: 3.3
+Tested up to: 3.4
 Stable tag: trunk
 WP-Invoice lets you create and send web-invoices and setup recurring billing for your clients.
 
-== Description ==
+== Description == 
 
 This is the original WordPress invoicing and billing plugin - completely rewritten and re-released.
 
@@ -19,7 +19,7 @@ WP-Invoice lets WordPress blog owners send itemized invoices to their clients. I
 
 Once an invoice is created from the WP admin section, an email with a brief description and a unique link is sent to client. Clients follow the link to your blog's special invoice page, view their invoice, and pay their bill using PayPal. The control panel is very user-friendly and intuitive.
 
-Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, or PayPal account.  For recurring billing we have integrated Authorize.net's ARB API that will allow you to setup payment schedules along with invoices.
+Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, PayPal or Google Checkout account. For recurring billing we have integrated Authorize.net's ARB API that will allow you to setup payment schedules along with invoices. Subscriptions implemented using PayPal Subscriptions and Google Checkout Subscriptions.
 
 = New Features =
 
@@ -102,14 +102,26 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 
 == Change Log ==
 
+= Version 3.08.0 =
+* Added Export/Import Invoices.
+* Added Internal refunds.
+* Added WP-Property plugin's FEPS integration.
+* Added new Google Checkout payment method.
+* Added the ability to force manual payment by unchecking all methods.
+* Fixed 'execution time limit' issue in high-load systems.
+* User search UI improved.
+* Contextual Help updates.
+* Localization files updated.
+* Visual/cosmetic UI fixes.
+
 = Version 3.07.0 =
-* Added WordPress 3.4-RC1 compatibility.
+* Added Wordpress 3.4-RC1 compatibility.
 * Added (modified) shortcodes [wp-invoice-history] and [wp-invoice-lookup].
 * Added ability to chose thousands separator symbol.
 * Added ability to change "From" field in WP-Invoice e-mails.
 * Added JS validation on WP-Invoice Settings page.
 * Added protection of user invoices from changing emails.
-* Added prevention of wpi_hourly_event and wpi_update from being scheduled twice.
+* Added prevention of wpi_hourly_event and wpi_update from being sheduled twice.
 * Added a 0 (zero) value to Visualize sales if there were no sales during specific period.
 * Added Merchant's Information and invoice items information to Google Analytics Tracking function.
 * PDF Feature: Added PNG to JPEG conversion for WPI PDF because TCPDF fails when logo image is a transparent PNG.
@@ -124,6 +136,7 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 * Contextual Help updates.
 * Visual/cosmetic UI fixes.
 * Other improvements and fixes.
+
 = Version 3.06.1 =
 * Fixed blank installation currency issue.
 * Fixed array_key_exists issue.
@@ -135,7 +148,7 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 * Notifications with WP-CRM. Now you have the ability to manage WP-Invoice notification templates with WP-CRM.
 * Added the ability to show the Due Date on the invoice page.
 * Added the ability to manage currencies. You can add any currency you want to use, or delete unwanted currencies.
-* Single Page Checkout improvements. 
+* Single Page Checkout improvements.
 * Added the ability to Visualize Sales. New sales graph according to the filter displayed on the invoice list page.
 * New feature for tracking Google Analytics events added.
 * Other small improvements in functionality and UI.

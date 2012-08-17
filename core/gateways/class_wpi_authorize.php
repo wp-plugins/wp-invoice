@@ -15,7 +15,7 @@ class wpi_authorize extends wpi_gateway_base {
    */
   const TEXT_INPUT_TYPE   = 'text';
   const SELECT_INPUT_TYPE = 'select';
-  
+
   /**
    * Opations array for settings page
    */
@@ -111,63 +111,63 @@ class wpi_authorize extends wpi_gateway_base {
           )
       )
   );
-  
+
   /**
    * Fields list for frontend
    */
   var $front_end_fields = array(
-      
+
     'customer_information' => array(
-        
+
       'first_name'  => array(
         'type'  => 'text',
         'class' => 'text-input',
         'name'  => 'cc_data[first_name]',
         'label' => 'First Name'
       ),
-      
+
       'last_name'   => array(
         'type'  => 'text',
         'class' => 'text-input',
         'name'  => 'cc_data[last_name]',
         'label' => 'Last Name'
       ),
-      
+
       'user_email'  => array(
         'type'  => 'text',
         'class' => 'text-input',
         'name'  => 'cc_data[user_email]',
         'label' => 'User Email'
       ),
-      
+
       'phonenumber' => array(
         'type'  => 'text',
         'class' => 'text-input',
         'name'  => 'cc_data[phonenumber]',
         'label' => 'Phone Number'
       ),
-      
+
       'streetaddress'     => array(
         'type'  => 'text',
         'class' => 'text-input',
         'name'  => 'cc_data[streetaddress]',
         'label' => 'Address'
       ),
-      
+
       'city'        => array(
         'type'  => 'text',
         'class' => 'text-input',
         'name'  => 'cc_data[city]',
         'label' => 'City'
       ),
-      
+
       'state'       => array(
         'type'   => 'text',
         'class'  => 'text-input',
         'name'   => 'cc_data[state]',
         'label'  => 'State'
       ),
-      
+
       'zip'         => array(
         'type'  => 'text',
         'class' => 'text-input',
@@ -185,37 +185,37 @@ class wpi_authorize extends wpi_gateway_base {
     ),
 
     'billing_information' => array(
-      
+
       'card_num'    => array(
         'type'   => 'text',
         'class'  => 'credit_card_number input_field text-input',
         'name'   => 'cc_data[card_num]',
         'label'  => 'Card Number'
       ),
-      
+
       'exp_month'   => array(
         'type'   => 'text',
         'class'  => 'text-input exp_month',
         'name'   => 'cc_data[exp_month]',
         'label'  => 'Expiration Month'
       ),
-      
+
       'exp_year'    => array(
         'type'   => 'text',
         'class'  => 'text-input exp_year',
         'name'   => 'cc_data[exp_year]',
         'label'  => 'Expiration Year'
       ),
-      
+
       'card_code'   => array(
         'type'   => 'text',
         'class'  => 'text-input',
         'name'   => 'cc_data[card_code]',
         'label'  => 'Card Code'
       )
-        
+
     )
-  
+
   );
 
   /**
@@ -224,20 +224,20 @@ class wpi_authorize extends wpi_gateway_base {
   function __construct() {
     parent::__construct();
     $this->options['settings']['silent_post_url']['value'] = admin_url('admin-ajax.php?action=wpi_gateway_server_callback&type=wpi_authorize');
-    
+
     add_action( 'wpi_payment_fields_authorize', array( $this, 'wpi_payment_fields' ) );
     add_action( 'wpi_authorize_user_meta_updated', array( $this, 'user_meta_updated' ) );
   }
-  
+
   /**
    * Render fields
-   * 
-   * @param array $invoice 
+   *
+   * @param array $invoice
    */
   function wpi_payment_fields( $invoice ) {
 
     $this->front_end_fields = apply_filters( 'wpi_crm_custom_fields', $this->front_end_fields, 'cc_data' );
-    
+
     if ( !empty( $this->front_end_fields ) ) {
       // For each section
       foreach( $this->front_end_fields as $key => $value ) {
@@ -245,7 +245,7 @@ class wpi_authorize extends wpi_gateway_base {
         if ( !empty( $this->front_end_fields[ $key ] ) ) {
 					$html = '';
 					ob_start();
-					
+
 					?>
 					<ul class="wpi_checkout_block">
 						<li class="section_title"><?php _e( ucwords( str_replace('_', ' ', $key) ), WPI); ?></li>
@@ -310,17 +310,17 @@ class wpi_authorize extends wpi_gateway_base {
 					echo '</ul>';
         }
       }
-      
+
     }
-    
+
   }
 
   /**
 	 * Overrided process payment for Authorize.net
-	 * 
+	 *
 	 * @global object $invoice
 	 * @global array $wpi_settings
-	 * @param array $data 
+	 * @param array $data
 	 */
   function process_payment($data=null) {
     global $invoice, $wpi_settings;
@@ -374,7 +374,7 @@ class wpi_authorize extends wpi_gateway_base {
     $payment->setParameter("x_exp_date ", $cc_data['exp_month'] . $cc_data['exp_year']);
     $payment->setParameter("x_amount", $amount);
     $payment->setParameter("x_currency_code", $cc_data['currency_code']);
-    
+
     if ($recurring) {
       $payment->setParameter("x_recurring_billing", true);
     }
@@ -410,7 +410,7 @@ class wpi_authorize extends wpi_gateway_base {
       update_user_meta($wp_users_id, 'streetaddress', $cc_data['streetaddress']);
       update_user_meta($wp_users_id, 'phonenumber', $cc_data['phonenumber']);
       update_user_meta($wp_users_id, 'country', $cc_data['country']);
-      
+
       do_action( 'wpi_authorize_user_meta_updated', $cc_data );
 
       // Add payment amount
@@ -431,7 +431,7 @@ class wpi_authorize extends wpi_gateway_base {
       $invoice_obj->save_invoice();
       //Mark invoice as paid
       wp_invoice_mark_as_paid($invoice_id, $check = true);
-      
+
       send_notification( $invoice );
 
       $data['messages'][] = $payment->getResponseText();
@@ -557,7 +557,7 @@ class wpi_authorize extends wpi_gateway_base {
 
       $invoice_obj->save_invoice();
     }
-  
+
   }
 
 }

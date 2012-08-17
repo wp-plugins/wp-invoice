@@ -11,9 +11,9 @@
   <input type="hidden" name="return" value="<?php echo get_invoice_permalink($invoice['invoice_id']); ?>">
   <input type="hidden" name="cancel_return" value="<?php echo get_invoice_permalink($invoice['invoice_id']); ?>">
   <input type="hidden" name="cbt" value="Go back to Merchant">
-  <input type="hidden" name="item_name" value="<?php echo $invoice['post_title']; ?>"> 
+  <input type="hidden" name="item_name" value="<?php echo $invoice['post_title']; ?>">
   <input type="hidden" name="invoice" id="invoice_id" value="<?php echo $invoice['invoice_id']; ?>">
-  
+
   <?php if ( is_recurring() ): ?>
   <?php switch ( $invoice['recurring']['unit'] ) {
           case 'days':
@@ -42,20 +42,20 @@
     <input type="hidden" name="cmd" value="_xclick">
     <input type="hidden" name="rm" value="2">
   <?php endif; ?>
-  
-  <div id="credit_card_information">
-    
-    <?php do_action('wpi_payment_fields_paypal', $invoice); ?>
-    
-    <ul id="wp_invoice_process_wait">
-      <li>
-        <div class="wpi-control-group">
+
+	<div id="credit_card_information">
+
+		<?php do_action('wpi_payment_fields_paypal', $invoice); ?>
+
+		<ul id="wp_invoice_process_wait">
+			<li>
+				<div class="wpi-control-group">
           <div class="controls">
             <button type="submit" id="cc_pay_button" class="hide_after_success submit_button"><?php _e('Process Payment of ', WPI); ?><?php echo (!empty($wpi_settings['currency']['symbol'][$invoice['default_currency_code']]) ? $wpi_settings['currency']['symbol'][$invoice['default_currency_code']] : "$"); ?><span id="pay_button_value"><?php echo WPI_Functions::money_format($invoice['net']); ?></span></button>
           </div>
           <img style="display: none;" class="loader-img" src="<?php echo WPI_URL; ?>/core/css/images/processing-ajax.gif" alt="" />
         </div>
       </li>
-    </ul>
-    
-  </div>
+		</ul>
+
+	</div>
