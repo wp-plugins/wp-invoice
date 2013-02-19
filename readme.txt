@@ -81,6 +81,10 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 
 == Upgrade Notice ==
 
+= Version 3.08.4 =
+* Strongly recommended upgrade.
+* Fixes blank settings page.
+
 = Version 3.08.3 =
 * Strongly recommended upgrade.
 
@@ -91,6 +95,10 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 * New features.
 
 == Change Log ==
+
+= Version 3.08.4 =
+* Fixed critical bug with undefined function.
+* Fixed Custom Invoice ID management.
 
 = Version 3.08.3 =
 * Fixed critical bugs with checkboxes on settings page.
