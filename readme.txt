@@ -96,6 +96,12 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 
 == Change Log ==
 
+= Version 3.08.5 =
+* Fixed Premium Feature update issue.
+* Fixed ampersand issue which caused trimming input data.
+* Fixed Invoice Notification template. Replace %recurring% tag with %type% in notification templates.
+* Fixed displaying of Discount description tag.
+
 = Version 3.08.4 =
 * Fixed critical bug with undefined function.
 * Fixed Custom Invoice ID management.
