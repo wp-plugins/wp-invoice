@@ -102,6 +102,12 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 
 == Change Log ==
 
+= Version 3.08.8 =
+* Improved Single Page Checkout feature.
+* Fixed font issue in PDF feature.
+* Added WP-Invoice XML-RPC API.
+* Added Italian localization
+
 = Version 3.08.7 =
 * Fixed critical issue with the way invoices appear on the invoice page. 'How to Insert Invoice' option works correctly now.
 * Fixes for template functions.
