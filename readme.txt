@@ -105,6 +105,11 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 
 == Change Log ==
 
+= Version 3.09.0 =
+* Fixed multisite compatibility issue.
+* Fixed Stripe Subscriptions issue.
+* Added manual payment option for specific invoices.
+
 = Version 3.08.9 =
 * Added STRIPE Gateway for regular and recurring invoices.
 * Added InterKassa Gateway for regular invoicing.
