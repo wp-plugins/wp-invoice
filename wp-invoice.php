@@ -4,7 +4,7 @@
  * Plugin URI: http://usabilitydynamics.com/products/wp-invoice/
  * Description: Send itemized web-invoices directly to your clients.  Credit card payments may be accepted via Authorize.net, MerchantPlus NaviGate, or PayPal account. Recurring billing is also available via Authorize.net's ARB. Visit <a href="admin.php?page=wpi_page_settings">WP-Invoice Settings Page</a> to setup.
  * Author: UsabilityDynamics.com
- * Version: 3.09.2
+ * Version: 3.09.3
  * Author URI: http://UsabilityDynamics.com/
  * Copyright 2011 - 2012  Usability Dynamics, Inc. (email : info@UsabilityDynamics.com)
  *
@@ -24,7 +24,7 @@
  */
 
 /* Define WPI Version */
-define( 'WP_INVOICE_VERSION_NUM', '3.09.2' );
+define( 'WP_INVOICE_VERSION_NUM', '3.09.3' );
 
 /* Define shorthand for transdomain */
 define( 'WPI', 'wp-invoice' );
@@ -62,6 +62,7 @@ require_once( WPI_Path . '/core/wpi_payment_api.php' );
 require_once( WPI_Path . '/core/ui/wpi_metaboxes.php' );
 require_once( WPI_Path . '/core/wpi_xmlrpc_api.php' );
 require_once( WPI_Path . '/core/wpi_dashboard_widget.php' );
+require_once( WPI_Path . '/core/ud_api.php' );
 
 //** Need to do this before init. Temporary here. */
 add_filter( "pre_update_option_wpi_options", array( 'WPI_Functions', 'pre_update_option_wpi_options' ), 10, 3 );
