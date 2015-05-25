@@ -1,0 +1,439 @@
+=== WP-Invoice - Web Invoice and Billing ===
+Contributors: usability_dynamics, Anton Korotkoff, andypotanin, jbrw1984, maxim.peshkov, ideric
+Donate link: https://usabilitydynamics.com/products/wp-invoice/
+Tags: web invoice, bill, paypal, invoice, pay, online payment, send invoice, bill clients, authorize.net, credit cards, recurring billing, ARB, stripe, paypal, interkassa, 2checkout, merchantplus
+Requires at least: 4.0
+Tested up to: 4.2
+Stable tag: 3.10.0
+WP-Invoice lets you create and send web-invoices and setup recurring billing for your clients.
+
+== Description ==
+
+This is the original WordPress invoicing and billing plugin - completely rewritten and re-released.
+
+http://vimeo.com/27887971
+
+**[Download the original WordPress Invoicing plugin now!](http://downloads.wordpress.org/plugin/wp-invoice.zip)**
+
+WP-Invoice lets WordPress blog owners send itemized invoices to their clients. Ideal for web developers, SEO consultants, general contractors, or anyone with a WordPress blog and clients to bill. The plugin ties into WP's user management database to keep track of your clients and their information.
+
+Once an invoice is created from the WP admin section, an email with a brief description and a unique link is sent to client. Clients follow the link to your blog's special invoice page, view their invoice, and pay their bill using PayPal. The control panel is very user-friendly and intuitive.
+
+Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, PayPal or Google Checkout account. For recurring billing we have integrated Authorize.net's ARB API that will allow you to setup payment schedules along with invoices. Subscriptions implemented using PayPal Subscriptions and Google Checkout Subscriptions.
+
+= New Features =
+
+* Automatically import invoices from Web Invoice plugin.
+* WP-CRM Integration
+* Brand new user interface for much improved invoicing filtering and searching
+* Minimum and Split / Partial Payments
+* Invoices can be reassigned to a different recipient
+* Receipt Page with Invoice Log
+* Per-defined Line Items
+* Discount Line Items
+* Custom Payment Entry, and administrative adjustments
+* Customizable Invoice and Receipt Templates
+
+= More Features =
+
+* Create invoices from the WordPress control panel
+* Prefill customer information using the WordPress user list
+* Send invoice notifications to customers with a secured link back to the web-invoice
+* Accept credit card payment via Authorize.net or MerchantPlus NaviGate
+* PayPal available if you don't have a credit card processing account
+* Setup recurring billing using Authorize.net's ARB (Automatic Recurring Billing) feature
+* Force web-invoice pages to be viewed in SSL mode
+* Archive old invoices
+* Easily use old invoices as templates for new ones
+* Dynamic and intuitive user interface
+* Custom tax label, states input, and PayPal button URL
+* Insert an "Invoice Lookup" form using PHP or WordPress Shortcode anywhere
+* Create users directly from WP-Invoice
+* Customize billing settings per invoice
+* Customize invoice notification email per invoice
+* Invoice notification, reminder and receipt templates
+* Export/Import Invoices [Power Tools]
+* Sales Visualization [Power Tools]
+
+== Installation ==
+
+1. Upload all the files into your wp-content/plugins directory, be sure to put them into a folder called "wp-invoice"
+2. Activate the plugin at the plugin administration page
+3. Follow set-up steps on main Invoice page
+4. To create your first invoice navigate to Invoice -> New Invoice, and select the user who will be the recipient.
+
+Please see the [wp-invoice plugin home page](https://usabilitydynamics.com/products/wp-invoice/) for details.
+
+== Frequently Asked Questions ==
+
+Please visit the [wp-invoice community page](https://usabilitydynamics.com/products/wp-invoice/forums/) for suggestions and help.
+
+== Screenshots ==
+
+1. Add can add custom payments and charges
+2. Insert pre-defined line items and discounts
+3. Quickly view invoice status and progression
+4. Easily filter and find invoices
+5. Show invoice receipts and invoice history
+6. Create notification e-mail templates
+7. Create pre-defined line items
+8. View 3 standard reports - collected vs uncollected invoices, 10 most valuable clients and top grossing line items
+
+== Upgrade Notice ==
+
+= Version 3.10.0 =
+* Totally new Overview Page.
+
+= Version 3.09.6 =
+* WordPress 4.2 compatibility.
+
+= Version 3.09.5 =
+* WordPress 4.0 compatibility.
+
+= Version 3.09.4 =
+* New 2Checkout Gateway has been added.
+
+= Version 3.08.9 =
+* New STRIPE Gateway has been added.
+
+= Version 3.08.7 =
+* Fixed critical issue with the way invoices appear on the invoice page.
+
+= Version 3.08.6 =
+* Fixed conflicts with Simple Facebook Connect and SEO by Yoast plugins.
+
+= Version 3.08.4 =
+* Strongly recommended upgrade.
+* Fixes blank settings page.
+
+= Version 3.08.3 =
+* Strongly recommended upgrade.
+
+= Version 3.06.1 =
+* Critical bug fixes.
+
+= Version 3.06.0 =
+* New features.
+
+== Change Log ==
+
+= Version 3.10.0 =
+* Rewritten invoices overview page.
+* Fixed style issues on back end.
+* Added date range filter to invoices overview page.
+* Updated Power Tools feature.
+* Updated PDF Invoice feature.
+
+= Version 3.09.6 =
+* WordPress 4.2 compatible.
+
+= Version 3.09.5 =
+* WordPress 4.0 compatible.
+* General code improvements.
+* Fixed a lot of warnings and notices.
+* Fixed Stripe error handler.
+* Fixes to History and Lookup widgets.
+
+= Version 3.09.4 =
+* Updated libraries.
+* Google Wallet deprecated and removed.
+* Fixed issue with Stripe keys having spaces around.
+* Fixed a lot of Warnings/Strict Standards.
+* Added option to allow partial payments by default.
+* Fixes to Invoice History shortcode.
+* Fixed JavaScript jQuery deprecated code (live to on).
+* Added 2Checkout payment gateway.
+* Fixed WP-CRM integration.
+* Added fix that should prevent mod_security issue from appearing.
+
+= Version 3.09.3.1 =
+* Updated libraries.
+
+= Version 3.09.3 =
+* Fixed critical issues.
+* Fixed Stripe gateway's conflict.
+* Fixed fatal error on sending notifications.
+* Updated German (DE) localization.
+* Updated Russian (RU) localization.
+
+= Version 3.09.2 =
+* Fixed simple style issues.
+* Fixed JavaScript issues.
+* Added new option which allows to set whether or not to send passwords to new users created by the plugin.
+* Added new option which controls compatibility mode state. May help if you have problems with invoice appearence.
+* Fixes to Premium Features connector.
+* Added ability to re-order Line Items.
+* Updated InterKassa Gateway to the new protocol.
+* Updated localization files.
+
+= Version 3.09.1 =
+* Added API for managing Dashboard Widgets.
+* Added new option which allows to set whether guests can see invoice details.
+* Updated localization files.
+* Fixes to display invoice page.
+* Fixes to CRM connection (Notifications).
+* Fixed invoice paid time information.
+* Added new parameter 'allow_types' to the [wp-invoice-history] shortcode (value should the CSV of types to show).
+* Added the ability to send PayPal IPN URL with payment request.
+* Updated PDF Invoice Premium Feature.
+* Fixed simple style issues.
+
+= Version 3.09.0 =
+* Fixed multisite compatibility issue.
+* Fixed Stripe Subscriptions issue.
+* Added manual payment option for specific invoices.
+
+= Version 3.08.9 =
+* Added STRIPE Gateway for regular and recurring invoices.
+* Added InterKassa Gateway for regular invoicing.
+* Fixed User Lookup autocomplete inputs.
+* Fixed jQuery UI issues.
+* Removed unwanted Delegate JavaScript library that caused issues with autocomplete.
+* Improved Gateways API.
+
+= Version 3.08.8 =
+* Improved Single Page Checkout feature.
+* Fixed font issue in PDF feature.
+* Added WP-Invoice XML-RPC API.
+
+= Version 3.08.7 =
+* Fixed critical issue with the way invoices appear on the invoice page. 'How to Insert Invoice' option works correctly now.
+* Fixes for template functions.
+* Updated PDF Premium Feature. Fonts added.
+
+= Version 3.08.6 =
+* Fixed issue with Invoice History widget.
+* Fixed specific invoice page for some cases when it doesn't appear.
+* Updated Single Page Checkout feature.
+* Updated PDF Premium Feature.
+* Fixed paid amount for invoices list.
+* Fixed invoice time in order to GMT offset.
+* Improved Premium Features Updater.
+* Removed PayPal button URL option. Was not used.
+* Fixed conflicts with Simple Facebook Connect and SEO by Yoast plugins.
+* Fixed issues with MS instalations.
+* Localization Updates.
+* UI improvements.
+
+= Version 3.08.5 =
+* Fixed Premium Feature update issue.
+* Fixed ampersand issue which caused trimming input data.
+* Fixed Invoice Notification template. Replace %recurring% tag with %type% in notification templates.
+* Fixed displaying of Discount description tag.
+
+= Version 3.08.4 =
+* Fixed critical bug with undefined function.
+* Fixed Custom Invoice ID management.
+
+= Version 3.08.3 =
+* Fixed critical bugs with checkboxes on settings page.
+* Fixed the ability to disable Premium Features.
+
+= Version 3.08.2 =
+* Wordpress 3.5 compatibility fixes.
+* PHP 5.4 issues fixed.
+* Fixes for PDF Feature.
+* Global Tax can be non integer now.
+* History Widget fixes. It is available to check invoice types to show.
+* Fixes for Quotes Feature.
+* Added ability to set full discount to make Balance to be 0.
+* Localization files updated.
+* Visual/cosmetic UI fixes.
+
+= Version 3.08.1 =
+* Added WordPress 3.5 compatibility.
+* TCPDF bug fixed for PDF Feature.
+* Fixed conflict with file names which have 'cookie' substring.
+* Localization files updated.
+* Visual/cosmetic UI fixes.
+
+= Version 3.08.0 =
+* Added Export/Import Invoices.
+* Added Internal refunds.
+* Added WP-Property plugin's FEPS integration.
+* Added new Google Checkout payment method.
+* Added the ability to force manual payment by unchecking all methods.
+* Fixed 'execution time limit' issue in high-load systems.
+* User search UI improved.
+* Contextual Help updates.
+* Localization files updated.
+* Visual/cosmetic UI fixes.
+
+= Version 3.07.0 =
+* Added Wordpress 3.4-RC1 compatibility.
+* Added (modified) shortcodes [wp-invoice-history] and [wp-invoice-lookup].
+* Added ability to chose thousands separator symbol.
+* Added ability to change "From" field in WP-Invoice e-mails.
+* Added JS validation on WP-Invoice Settings page.
+* Added protection of user invoices from changing emails.
+* Added prevention of wpi_hourly_event and wpi_update from being sheduled twice.
+* Added a 0 (zero) value to Visualize sales if there were no sales during specific period.
+* Added Merchant's Information and invoice items information to Google Analytics Tracking function.
+* PDF Feature: Added PNG to JPEG conversion for WPI PDF because TCPDF fails when logo image is a transparent PNG.
+* PDF Feature: Fixed issues with PDF Output.
+* PDF Feature: Fixed URL displaying if WordPress is set up not in server root.
+* Fixed jQuery UI scripts and styles adding.
+* Fixed Invoice Lookup widget: Now it available only for Logged In users. For non-admin users are allows to lookup only their own invoices.
+* Fixed New invoice Email autocomplete function.
+* Fixed problems on plugin's activation if plugin's dir-name is different from wp-invoice e.g wp-invoice-new.
+* Fixed Invoice partial payments in case when amount is very high.
+* WP-CRM integration: Changed notification slug to wpi_notification and added notification label "WP-Invoice Notification" to slug wpi_notification.
+* Contextual Help updates.
+* Visual/cosmetic UI fixes.
+* Other improvements and fixes.
+
+= Version 3.06.1 =
+* Fixed blank installation currency issue.
+* Fixed array_key_exists issue.
+* Currency settings moved from "toggle advanced payment options" on "editing invoice" page.
+* Other simple fixes.
+
+= Version 3.06.0 =
+* New Contextual Help. It is now fully compatible with WordPress 3.3+. Each information block has it's own tab.
+* Notifications with WP-CRM. Now you have the ability to manage WP-Invoice notification templates with WP-CRM.
+* Added the ability to show the Due Date on the invoice page.
+* Added the ability to manage currencies. You can add any currency you want to use, or delete unwanted currencies.
+* Single Page Checkout improvements.
+* Added the ability to Visualize Sales. New sales graph according to the filter displayed on the invoice list page.
+* New feature for tracking Google Analytics events added.
+* Other small improvements in functionality and UI.
+* Updated ability to backup and restore your WP-Invoice configuration.
+
+= Version 3.05.0 =
+* PayPal Subscriptions integrations added.
+* Fixed slash issue on premium features page.
+* Simple fixes to Authorize.net recurring billing.
+* Fix to Single Page Checkout SSL option.
+* Fixed PHP Warning on settings page.
+* Fixes to PDF logo function.
+* Fix to ampersand in line item description.
+
+= Version 3.04.7.2 =
+* Fix to encoding of unsupported characters for non-UTF databases.
+
+= Version 3.04.7.1 =
+* Urgent fix to settings system.
+* Fix to currency symbols with unsupported encoding.
+
+= Version 3.04.7 =
+* Ability to use PDF link tag in notification templates if 'PDF Invoices and Receipts' Premium Feature installed.
+* Major fix for PDF library. Fixed Fatal Error if WP-Invoice and WP-Property are installed on the same site.
+* Major fix for updating settings functions.
+* Fix for currency signs.
+* Other simple internal improvements.
+
+= Version 3.04.6 =
+* Fixes for 'PDF Invoices and Receipts' Premium Feature.
+* Typo 'County' fixed.
+* Fixed currency symbol on Edit Invoice page.
+
+= Version 3.04.5 =
+* Option 'Automatically increment the invoice's custom ID by one.' fixed.
+* 'First Time Setup' page fixed.
+* South African Rand currency added.
+* Fixed error when username is empty on invoice page.
+* Added proper signs for every currency.
+* Fixes for 'PDF Invoices and Receipts' Premium Feature.
+* Fixes for 'Single Page Checkout' Premium Feature.
+* Other simple improvements and UI fixes.
+
+= Version 3.04.4 =
+* WordPress 3.3 compatibility.
+* Reported bugs fixed.
+
+= Version 3.04.3 =
+* Fixed Reports calculation process with discount.
+* UI fixes.
+* Installing from scratch issues fixed.
+* Default settings data improved.
+* Other improvements
+
+= Version 3.04.2 =
+* Fixed Reports calculation process.
+* Fixed critical bug with float value of paid amount.
+* Fixed bug from 3.04.0 with updating table structure.
+* Fixed bug when partial payment is allowed and it's amount is less than balance.
+* Settings UI improvements.
+
+= Version 3.04.1 =
+* Critical bug with unknown column 'blog_id' fixed.
+* Bug with disappeared recepient name fixed.
+
+= Version 3.04.0 =
+* WordPress Multi Site (MS) compatibility.
+* WP-CRM integration improvements.
+* Fix to allow IPN URL to be changed.
+* General improvements to Settings Page and Invoice Editor UI.
+
+= Version 3.03.0 =
+* Automatic import of Web Invoice plugin invoices.
+* Invoice logs display the user that created the invoice.
+* Dynamic column toggling improvements for the overview page.
+* Improvements to invoice editing page for better UI.
+* Fix to incorrect invoice total calculation when using a combination of discounts and taxes.
+* Added option to send invoice payment notification to invoice creator, as well as site admin.
+* Improved time formatting.
+* Added option to set global tax.
+* Fix to negative balance if price quantity is negative.
+* Fix to tax amount not being displayed in line items on overview page.
+* Fix to discount field not working if discount name is blank.
+* Fix to discount field only allowing integers.
+* EOL fixes that were causing parse errors on some hosts.
+* WP-CRM integration.
+
+= Version 3.02 =
+* Minor fixes.
+
+= Version 3.01 =
+* Invoice currency settings fixed.
+* Bug with loading of custom templates fixed.
+* Added an ability to use manual payment method if there is no any payment venue accepted.
+* Fixed bug with PayPal IPN which logged wrong amount.
+* Fixed bug with email notifications.
+* Default template layout and design improvements.
+* Other simple fixes and improvements.
+
+= Version 3.00 =
+* Complete rewrite and re-launch.
+* Over 130 tasks completed.
+
+= Version 2.039 =
+* Fixed bug custom PayPal button graphic not being saved
+* Fixed bug with payment selection dropdown appearing when not supposed to
+* Chnged update_option to add_option for invoice templates on install
+* Chnged Tabs to use jQuery UI Tabs
+* Improved UI on invoice page
+* Added feature to exclude certain IP addresses from invoice logs
+* Added shortcode [wp-invoice-list] to display logged in user's due and paid invoices
+* Added function check for premium features
+* Added message that displays when JavaScript is broken
+* Added code to prevent JavaScript conflict caused by the Hover plugin
+
+= Version 2.038 =
+* Added option to add custom zip code label
+* Added button to delete itemized lines
+
+= Version 2.037 =
+* Fixed a bug that prevented the new user form not displaying properly
+
+= Version 2.02 =
+* Fixed error with creating a template based invoice and new user at the same time
+* Added checkbox to send new user emails when creating a new user from an invoice
+* Added new invoice class
+
+= Version 2.00 =
+* Updated UI on overview page and on invoice management page.
+* Added a "date sent" column to overview page
+* Added two widgets for viewing invoice history and invoice lookup
+* Added feature to disable recurring billing
+
+= Version 1.95 =
+* Fixed array error that occurs if a user with an invoice has been deleted.
+
+= Version 1.94 =
+* Compatibility with WordPress 2.8.0
+* Upgraded: jquery.calculation, jquery.field and jquery.form to latest available.  Replaced jquery.delegate to jquery.livequery.
+
+= Version 1.93 =
+* Fixed jQuery conflict issues by isolating script loading to WP-Invoice Pages
+* Added function to hide errors if using PHP4 to avoid html_entity_decode() errors in function.php
