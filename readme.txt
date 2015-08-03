@@ -1,59 +1,94 @@
 === WP-Invoice - Web Invoice and Billing ===
-Contributors: usability_dynamics, Anton Korotkoff, andypotanin, jbrw1984, maxim.peshkov, ideric
-Donate link: https://usabilitydynamics.com/products/wp-invoice/
-Tags: web invoice, bill, paypal, invoice, pay, online payment, send invoice, bill clients, authorize.net, credit cards, recurring billing, ARB, stripe, paypal, interkassa, 2checkout, merchantplus
+Contributors: usability_dynamics, Anton Korotkoff, andypotanin, jbrw1984, maxim.peshkov, ideric, MariaKravchenko
+Donate link: https://www.usabilitydynamics.com/product/wp-invoice
+Tags: wp-invoice, web invoice, bill, paypal, invoice, pay, online payment, send invoice, bill clients, authorize.net, credit cards, recurring billing, ARB, stripe, paypal, interkassa, 2checkout, merchantplus
 Requires at least: 4.0
-Tested up to: 4.2
+Tested up to: 4.2.3
 Stable tag: 3.10.0
+License: GPLv2 or later
 WP-Invoice lets you create and send web-invoices and setup recurring billing for your clients.
 
 == Description ==
 
-This is the original WordPress invoicing and billing plugin - completely rewritten and re-released.
+WP-Invoice 4.0 is the most popular and flexible plugin for WordPress that allows you to make your site accept payments. Complete e-commerce solutions out of the box. Flexible and extendable.
 
 http://vimeo.com/27887971
 
-**[Download the original WordPress Invoicing plugin now!](http://downloads.wordpress.org/plugin/wp-invoice.zip)**
-
 WP-Invoice lets WordPress blog owners send itemized invoices to their clients. Ideal for web developers, SEO consultants, general contractors, or anyone with a WordPress blog and clients to bill. The plugin ties into WP's user management database to keep track of your clients and their information.
 
-Once an invoice is created from the WP admin section, an email with a brief description and a unique link is sent to client. Clients follow the link to your blog's special invoice page, view their invoice, and pay their bill using PayPal. The control panel is very user-friendly and intuitive.
+Once an invoice is created from the WP admin section, an email with a brief description and a unique link is sent to client. Clients follow the link to your blog's special invoice page, view their invoice, and pay their bill using one of the available payment system. The control panel is very user-friendly and intuitive.
 
-Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, PayPal or Google Checkout account. For recurring billing we have integrated Authorize.net's ARB API that will allow you to setup payment schedules along with invoices. Subscriptions implemented using PayPal Subscriptions and Google Checkout Subscriptions.
+Credit card payments may be accepted via Authorize.net, PayPal, Interkassa (Eastern Europe), Stripe and 2Checkout. Subscriptions (Recurring Billing) implemented using Authorize.net ARB, PayPal Subscriptions, Stripe Subscriptions and 2Checkout Recurring Billing. More gateways available as Add-ons.
 
-= New Features =
+> WP-Invoice on [GitHub](https://github.com/wp-invoice/wp-invoice)
 
-* Automatically import invoices from Web Invoice plugin.
-* WP-CRM Integration
-* Brand new user interface for much improved invoicing filtering and searching
-* Minimum and Split / Partial Payments
-* Invoices can be reassigned to a different recipient
-* Receipt Page with Invoice Log
-* Per-defined Line Items
-* Discount Line Items
-* Custom Payment Entry, and administrative adjustments
-* Customizable Invoice and Receipt Templates
+= Features =
 
-= More Features =
+* Free and Paid [Add-ons](https://www.usabilitydynamics.com/products#category-wp-invoice) available.
+* WP-CRM Integration.
+* Brand new user interface for much improved invoicing filtering and searching.
+* Partial Payments with minimum amount.
+* Receipt Page with Invoice Log.
+* Per-defined Line Items.
+* Discount Line Items.
+* Custom Payment Entry, and administrative adjustments.
+* Customizable Invoice and Receipt Templates.
+* Create invoices from the WordPress control panel.
+* Pre-fill customer information using the WordPress user list.
+* Send invoice notifications to customers with a secured link back to the web-invoice.
+* Setup recurring billing using Authorize.net's ARB (Automatic Recurring Billing) feature.
+* Force web-invoice pages to be viewed in SSL mode.
+* Archive old invoices.
+* Easily use old invoices as templates for new ones.
+* Dynamic and intuitive user interface.
+* Insert an "Invoice Lookup" form using PHP or WordPress shortcode anywhere.
+* Create users directly from WP-Invoice.
+* Customize billing settings per invoice.
+* Customize invoice notification email per invoice.
+* Invoice notification, reminder and receipt templates.
+* Export/Import Invoices (Power Tools Add-on).
+* Sales Visualization (Power Tools Add-on).
 
-* Create invoices from the WordPress control panel
-* Prefill customer information using the WordPress user list
-* Send invoice notifications to customers with a secured link back to the web-invoice
-* Accept credit card payment via Authorize.net or MerchantPlus NaviGate
-* PayPal available if you don't have a credit card processing account
-* Setup recurring billing using Authorize.net's ARB (Automatic Recurring Billing) feature
-* Force web-invoice pages to be viewed in SSL mode
-* Archive old invoices
-* Easily use old invoices as templates for new ones
-* Dynamic and intuitive user interface
-* Custom tax label, states input, and PayPal button URL
-* Insert an "Invoice Lookup" form using PHP or WordPress Shortcode anywhere
-* Create users directly from WP-Invoice
-* Customize billing settings per invoice
-* Customize invoice notification email per invoice
-* Invoice notification, reminder and receipt templates
-* Export/Import Invoices [Power Tools]
-* Sales Visualization [Power Tools]
+= Payment Options =
+
+* Authorize.net
+* PayPal
+* Interkassa (Eastern Europe)
+* Stripe
+* 2Checkout
+* PayPal Payments Pro (Add-on)
+* USAePay (Add-on)
+
+= Widgets =
+
+* **Invoice Lookup** widget allows you to add a simple invoice search form to a front-end. It will be accessible by your clients. Form accepts Invoice ID. Invoice page appears once correct Invoice ID submitted.
+* **Invoice History** widget allows your clients to see a list of their invoices on a front-end.
+
+= Shortcodes =
+
+Shortcodes are replicating widgets doing the same.
+
+* [wp-invoice-lookup]
+* [wp-invoice-history]
+
+= Available Add-ons list =
+If you found the default functionality of WP-Invoice is not enough for your needs please take a look at the list of available [Add ons](https://www.usabilitydynamics.com/products#category-wp-invoice)
+
+= Single Page Checkout =
+The Single Page Checkout (SPC) Add-on for WP-Invoice makes it easy to create one-page-checkout forms that can accept a variety of different payment gateways, such as Authorize.net and PayPal.
+[More about Add-on](https://www.usabilitydynamics.com/product/wp-invoice-single-page-checkout)
+
+= PDF Invoices and Receipts =
+PDF feature allows you to easily generate PDF versions of your invoices, receipts and quotes. A variety of settings makes it easy to configure PDF appearance.
+[More about Add-on](https://www.usabilitydynamics.com/product/wp-invoice-pdf)
+
+= Quotes =
+The Quotes feature let's you automate your workflow by creating quotes and letting your clients ask questions regarding quotes directly on your website. Once a quote is approved, it is converted to an invoice with a single click.
+[More about Add-on](https://www.usabilitydynamics.com/product/wp-invoice-quotes)
+
+= Power Tools =
+This Add-on allows you to export your invoices in the XML and JSON formats and import data from other WP-Invoice installations. Furthermore, it provides a graphic visualization of your sales, filtered by day, week or month.
+[More about Add-on](https://www.usabilitydynamics.com/product/wp-invoice-power-tools)
 
 == Installation ==
 
@@ -62,11 +97,11 @@ Credit card payments may be accepted via Authorize.net, MerchantPlus' NaviGate, 
 3. Follow set-up steps on main Invoice page
 4. To create your first invoice navigate to Invoice -> New Invoice, and select the user who will be the recipient.
 
-Please see the [wp-invoice plugin home page](https://usabilitydynamics.com/products/wp-invoice/) for details.
+Please see the [wp-invoice plugin home page](https://www.usabilitydynamics.com/product/wp-invoice) for details.
 
 == Frequently Asked Questions ==
 
-Please visit the [wp-invoice community page](https://usabilitydynamics.com/products/wp-invoice/forums/) for suggestions and help.
+[WP-Invoice FAQ](http://feedback.usabilitydynamics.com/knowledgebase/topics/41347-wp-invoice)
 
 == Screenshots ==
 
@@ -81,11 +116,8 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 
 == Upgrade Notice ==
 
-= Version 3.10.0 =
-* Totally new Overview Page.
-
-= Version 3.09.6 =
-* WordPress 4.2 compatibility.
+= Version 4.0.0 =
+* Refactoring
 
 = Version 3.09.5 =
 * WordPress 4.0 compatibility.
@@ -117,15 +149,15 @@ Please visit the [wp-invoice community page](https://usabilitydynamics.com/produ
 
 == Change Log ==
 
-= Version 3.10.0 =
-* Rewritten invoices overview page.
-* Fixed style issues on back end.
-* Added date range filter to invoices overview page.
-* Updated Power Tools feature.
-* Updated PDF Invoice feature.
-
-= Version 3.09.6 =
-* WordPress 4.2 compatible.
+= 4.0.0 =
+* Changed plugin initialization functionality.
+* Added Composer ( dependency manager ) modules and moved some functionality to composer modules ( vendors ).
+* Added doing WP-Invoice Settings backup on upgrade to new version. Get information about backup: get_option('wpi_options_backup');
+* Moved premium features to separate plugins.
+* Cleaned up functionality of plugin.
+* Refactored file structure of plugin.
+* Refactored 'View All' page.
+* Fixed Warnings and Notices.
 
 = Version 3.09.5 =
 * WordPress 4.0 compatible.
