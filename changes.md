@@ -2,7 +2,8 @@
 * Added more actions and filters.
 * Fixed warnings and notices.
 * Fixed typo.
-* Fixed RU localization.
+* Fixed RU localisation.
+* Fixed the bug when UsabilityDynamics Admin Notices could not be dismissed.
 
 #### 4.0.1 ( August 21, 2015 )
 * Fixed loading of localisation files. The bug persists in 4.0.0 version.
